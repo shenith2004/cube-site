@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560">
+<rect x="0" y="0" width="800" height="560" fill="#f8f8f8" />
+<rect x="0" y="0" width="800" height="34" fill="#f1f1f1" />
+<circle cx="20" cy="17" r="5" fill="#c9c7cc"/><circle cx="36" cy="17" r="5" fill="#c9c7cc"/><circle cx="52" cy="17" r="5" fill="#c9c7cc"/>
+<rect x="260" y="9" width="280" height="16" fill="#ffffff" />
+<text x="400" y="21" font-family="monospace" font-size="9" fill="#a2a2a2" text-anchor="middle" letter-spacing="1">PRODUCT.APP</text>
+<text x="40" y="72" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2" fill="#3c3a3e">FLOWBASE</text>
+<rect x="470" y="63" width="50" height="8" fill="#c9c7cc" /><rect x="536" y="63" width="50" height="8" fill="#c9c7cc" /><rect x="602" y="63" width="50" height="8" fill="#c9c7cc" />
+<rect x="672" y="55" width="90" height="26" rx="13" fill="#3c3a3e" />
+<circle cx="316" cy="118" r="5" fill="#ff6436"/><rect x="306" y="105" width="188" height="26" rx="13" fill="none" stroke="#c9c7cc"/><rect x="330" y="114" width="140" height="7" fill="#7b7a7c" />
+<text x="400" y="182" font-family="Arial, sans-serif" font-weight="700" font-size="40" fill="#3c3a3e" text-anchor="middle" letter-spacing="-1.5">Ship work, not status updates.</text>
+<rect x="250" y="202" width="300" height="9" fill="#c9c7cc" />
+<rect x="290" y="228" width="110" height="26" rx="13" fill="#3c3a3e" /><rect x="410" y="228" width="100" height="26" rx="13" fill="none" stroke="#c9c7cc"/>
+<rect x="90" y="284" width="620" height="256" fill="#ffffff" stroke="#c9c7cc"/>
+<rect x="90" y="284" width="140" height="256" fill="#f1f1f1" /><rect x="110" y="310" width="90" height="8" fill="#c9c7cc" /><rect x="110" y="332" width="70" height="8" fill="#c9c7cc" /><rect x="110" y="354" width="100" height="8" fill="#c9c7cc" /><rect x="110" y="376" width="80" height="8" fill="#c9c7cc" /><rect x="110" y="398" width="60" height="8" fill="#c9c7cc" />
+<rect x="250" y="304" width="140" height="70" fill="#f8f8f8" stroke="#f1f1f1"/><rect x="264" y="322" width="50" height="7" fill="#7b7a7c" /><rect x="264" y="340" width="80" height="14" fill="#3c3a3e" /><rect x="400" y="304" width="140" height="70" fill="#f8f8f8" stroke="#f1f1f1"/><rect x="414" y="322" width="50" height="7" fill="#7b7a7c" /><rect x="414" y="340" width="80" height="14" fill="#3c3a3e" /><rect x="550" y="304" width="140" height="70" fill="#f8f8f8" stroke="#f1f1f1"/><rect x="564" y="322" width="50" height="7" fill="#7b7a7c" /><rect x="564" y="340" width="80" height="14" fill="#3c3a3e" />
+<polyline points="250,500 310,470 370,486 430,440 490,452 550,410 610,424 690,392" fill="none" stroke="#3c3a3e" stroke-width="2.5"/>
+<circle cx="690" cy="392" r="5" fill="#ff6436"/>
+<rect x="250" y="520" width="440" height="1" fill="#c9c7cc" /></svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560">
+<rect x="0" y="0" width="800" height="560" fill="#f8f8f8" />
+<rect x="0" y="0" width="800" height="34" fill="#f1f1f1" />
+<circle cx="20" cy="17" r="5" fill="#c9c7cc"/><circle cx="36" cy="17" r="5" fill="#c9c7cc"/><circle cx="52" cy="17" r="5" fill="#c9c7cc"/>
+<rect x="260" y="9" width="280" height="16" fill="#ffffff" />
+<text x="400" y="21" font-family="monospace" font-size="9" fill="#a2a2a2" text-anchor="middle" letter-spacing="1">SALON.BEAUTY</text>
+<text x="40" y="72" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2" fill="#3c3a3e">LUMEN STUDIO</text>
+<rect x="470" y="63" width="50" height="8" fill="#c9c7cc" /><rect x="536" y="63" width="50" height="8" fill="#c9c7cc" /><rect x="602" y="63" width="50" height="8" fill="#c9c7cc" />
+<rect x="672" y="55" width="90" height="26" rx="13" fill="#3c3a3e" />
+<rect x="40" y="100" width="300" height="420" fill="#e2e0e4" /><path d="M40 520 L154 301.6 L220 402.4 L274 335.20000000000005 L340 520 Z" fill="#a2a2a2" opacity=".55"/><circle cx="265" cy="217.60000000000002" r="24" fill="#ffffff" opacity=".8"/>
+<text x="380" y="170" font-family="Georgia, serif" font-size="40" fill="#3c3a3e">Care, colour</text>
+<text x="380" y="216" font-family="Georgia, serif" font-size="40" fill="#3c3a3e">&amp; calm.</text>
+<rect x="380" y="244" width="320" height="9" fill="#c9c7cc" /><rect x="380" y="262" width="280" height="9" fill="#c9c7cc" />
+<rect x="380" y="292" width="140" height="26" rx="13" fill="#3c3a3e" />
+<rect x="380" y="350" width="380" height="1" fill="#c9c7cc" /><rect x="380" y="366" width="150" height="9" fill="#3c3a3e" /><rect x="700" y="366" width="60" height="9" fill="#7b7a7c" /><rect x="380" y="392" width="380" height="1" fill="#c9c7cc" /><rect x="380" y="408" width="150" height="9" fill="#3c3a3e" /><rect x="700" y="408" width="60" height="9" fill="#7b7a7c" /><rect x="380" y="434" width="380" height="1" fill="#c9c7cc" /><rect x="380" y="450" width="150" height="9" fill="#3c3a3e" /><rect x="700" y="450" width="60" height="9" fill="#7b7a7c" /><rect x="380" y="476" width="380" height="1" fill="#c9c7cc" /><rect x="380" y="492" width="150" height="9" fill="#3c3a3e" /><rect x="700" y="492" width="60" height="9" fill="#7b7a7c" />
+<rect x="380" y="518" width="380" height="1" fill="#c9c7cc" /></svg>

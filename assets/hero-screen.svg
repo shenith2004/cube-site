@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" font-family="Inter, Arial, sans-serif">
+  <defs>
+    <radialGradient id="glow" cx="68%" cy="48%" r="55%">
+      <stop offset="0" stop-color="#1f6f62" stop-opacity=".85"/>
+      <stop offset=".45" stop-color="#0f3a35" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#07100f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2fd3b4" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#2fd3b4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="faceL" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a5a50"/><stop offset="1" stop-color="#0c2a26"/>
+    </linearGradient>
+    <linearGradient id="faceR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a8d7b"/><stop offset="1" stop-color="#123d37"/>
+    </linearGradient>
+    <linearGradient id="faceT" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5ff0d0"/><stop offset="1" stop-color="#2fb89c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="#07100f"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+
+  <!-- browser chrome -->
+  <rect x="0" y="0" width="1600" height="56" fill="#0b1615"/>
+  <circle cx="34" cy="28" r="7" fill="#2a3b39"/><circle cx="58" cy="28" r="7" fill="#2a3b39"/><circle cx="82" cy="28" r="7" fill="#2a3b39"/>
+  <rect x="520" y="16" width="560" height="24" fill="#122220"/>
+  <text x="800" y="33" fill="#5f7c77" font-size="13" text-anchor="middle" letter-spacing="1">YOURBUSINESS.COM</text>
+
+  <!-- site nav -->
+  <text x="80" y="122" fill="#d9f5ee" font-size="22" font-weight="600" letter-spacing="3">YOUR BRAND</text>
+  <g fill="#6f8f89" font-size="14" letter-spacing="1.5">
+    <text x="1040" y="120">SERVICES</text><text x="1150" y="120">ABOUT</text><text x="1240" y="120">WORK</text>
+  </g>
+  <rect x="1340" y="96" width="180" height="40" rx="20" fill="#d9f5ee"/>
+  <text x="1430" y="121" fill="#07100f" font-size="14" text-anchor="middle" font-weight="600" letter-spacing="1">GET IN TOUCH</text>
+
+  <!-- headline blocks -->
+  <text x="80" y="290" fill="#eafff9" font-size="92" font-weight="700" letter-spacing="-3">Built to</text>
+  <text x="80" y="392" fill="#eafff9" font-size="92" font-weight="700" letter-spacing="-3">grow with</text>
+  <text x="80" y="494" fill="#5ff0d0" font-size="92" font-weight="700" letter-spacing="-3">you.</text>
+  <rect x="80" y="548" width="470" height="12" fill="#3d5a55"/>
+  <rect x="80" y="574" width="400" height="12" fill="#3d5a55"/>
+  <rect x="80" y="600" width="300" height="12" fill="#3d5a55"/>
+  <rect x="80" y="652" width="200" height="54" rx="27" fill="#5ff0d0"/>
+  <rect x="296" y="652" width="170" height="54" rx="27" fill="none" stroke="#3d5a55" stroke-width="2"/>
+
+  <!-- floor grid -->
+  <g stroke="#2fd3b4" stroke-opacity=".18" stroke-width="1.5">
+    <path d="M700 760 L1600 640 M700 800 L1600 700 M700 845 L1600 765 M700 900 L1600 840"/>
+    <path d="M820 900 L1000 620 M980 900 L1120 620 M1140 900 L1240 620 M1300 900 L1360 620 M1460 900 L1480 620"/>
+  </g>
+  <rect x="700" y="620" width="900" height="280" fill="url(#floor)" opacity=".4"/>
+
+  <!-- isometric cube -->
+  <g transform="translate(1110 470)">
+    <ellipse cx="0" cy="235" rx="230" ry="38" fill="#2fd3b4" opacity=".14"/>
+    <path d="M0 -210 L200 -95 L0 20 L-200 -95 Z" fill="url(#faceT)"/>
+    <path d="M-200 -95 L0 20 L0 250 L-200 135 Z" fill="url(#faceL)"/>
+    <path d="M200 -95 L0 20 L0 250 L200 135 Z" fill="url(#faceR)"/>
+    <g fill="none" stroke="#9ffbe6" stroke-opacity=".55" stroke-width="2">
+      <path d="M0 -210 L200 -95 L200 135 L0 250 L-200 135 L-200 -95 Z M-200 -95 L0 20 L200 -95 M0 20 L0 250"/>
+    </g>
+    <g stroke="#07100f" stroke-opacity=".35" stroke-width="2">
+      <path d="M-133 -57 L-133 173 M-67 -18 L-67 212 M67 -18 L67 212 M133 -57 L133 173"/>
+    </g>
+  </g>
+
+  <!-- floating code card -->
+  <g transform="translate(1290 190)">
+    <rect width="250" height="150" fill="#0b1615" fill-opacity=".9" stroke="#2fd3b4" stroke-opacity=".35"/>
+    <rect x="18" y="22" width="60" height="9" fill="#5ff0d0"/><rect x="86" y="22" width="110" height="9" fill="#3d5a55"/>
+    <rect x="34" y="46" width="130" height="9" fill="#3d5a55"/><rect x="34" y="70" width="90" height="9" fill="#ff6436"/>
+    <rect x="132" y="70" width="80" height="9" fill="#3d5a55"/><rect x="34" y="94" width="150" height="9" fill="#3d5a55"/>
+    <rect x="18" y="118" width="40" height="9" fill="#5ff0d0"/>
+  </g>
+
+  <!-- bottom stat cards (content placeholders) -->
+  <g fill="#0b1615" stroke="#2fd3b4" stroke-opacity=".2">
+    <rect x="80" y="770" width="180" height="80"/><rect x="276" y="770" width="180" height="80"/><rect x="472" y="770" width="180" height="80"/>
+  </g>
+  <g fill="#3d5a55">
+    <rect x="100" y="792" width="80" height="10"/><rect x="100" y="816" width="130" height="10"/>
+    <rect x="296" y="792" width="80" height="10"/><rect x="296" y="816" width="130" height="10"/>
+    <rect x="492" y="792" width="80" height="10"/><rect x="492" y="816" width="130" height="10"/>
+  </g>
+</svg>

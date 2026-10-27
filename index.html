@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CUBE — Web Development &amp; Infrastructure</title>
+  <meta name="description" content="CUBE builds full-stack web applications and runs the infrastructure behind them: Python, Django and PHP development, Docker and Cloudflare deployment, security scanning and server management.">
+  <meta name="theme-color" content="#f0f1f3">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CUBE">
+  <meta property="og:title" content="CUBE — Web Development &amp; Infrastructure">
+  <meta property="og:description" content="We build the web and keep it running. Full-stack development, deployment, security and server management.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>document.documentElement.classList.add('js')</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..600&family=Google+Sans+Code:wght@400..500&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.18"></script>
+  <style type="text/tailwindcss">
+    /* Mirrors theme.css — the browser build of Tailwind cannot import external @theme files */
+    @theme {
+      --color-canvas: #f0f1f3;
+      --color-surface: #ffffff;
+      --color-ink: #0a0a0a;
+      --color-muted: #7d7f85;
+      --color-body: #696b70;
+      --color-dusty-blue: #8fa5c6;
+      --color-rose-gold: #d9a796;
+
+      --font-sans: 'Google Sans Flex', 'Google Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Google Sans Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      --radius-card: 24px;
+    }
+  </style>
+  <link rel="stylesheet" href="variables.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ============ HEADER / NAVIGATION ============ -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="#overview" class="logo-btn" aria-label="CUBE — back to top">
+        <svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round"><path d="M32 8 52 20v24L32 56 12 44V20z"/><path d="M12 20l20 12 20-12M32 32v24"/></g></svg>
+      </a>
+
+      <div class="menu">
+        <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+          <span class="menu-btn__icon" aria-hidden="true"></span>Menu
+        </button>
+        <nav class="menu__panel" id="site-menu" aria-label="Primary" hidden data-menu>
+          <ul>
+            <li><a href="#overview" data-nav>Overview</a></li>
+            <li><a href="#stack" data-nav>Tech Stack</a></li>
+            <li><a href="#pricing" data-nav>Pricing</a></li>
+            <li><a href="#contact" data-nav>Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <a href="#contact" class="btn btn--primary site-header__cta">Start a Project</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="overview" aria-labelledby="hero-title">
+      <canvas class="particles" data-particles="hero" aria-hidden="true"></canvas>
+
+      <div class="container-cube hero__inner">
+        <p class="badge" data-hero-step><span class="badge__dot" aria-hidden="true"></span><span data-config-text="availability">Available for new projects</span></p>
+        <h1 id="hero-title" class="hero__title" data-hero-step>We build the web <span>and keep it running.</span></h1>
+        <p class="hero__lead" data-hero-step>CUBE is a web development and infrastructure studio. We write the code, deploy it on containers and the edge, and keep your servers patched, monitored and secure.</p>
+        <div class="hero__actions" data-hero-step>
+          <a href="#contact" class="btn btn--primary btn--lg">Start a Project</a>
+          <a href="#stack" class="hero__note">Explore the stack <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TECH STACK ============ -->
+    <section class="section" id="stack" aria-labelledby="stack-title">
+      <div class="container-cube">
+        <header class="section-head section-head--left reveal">
+          <h2 id="stack-title" class="h-section">From first commit to production.</h2>
+          <p class="section-lead">Four disciplines, one accountable team. We build your application and run everything underneath it.</p>
+        </header>
+
+        <div class="service-grid">
+          <!-- Full-stack: floating code editors -->
+          <article class="service reveal">
+            <div class="art" aria-hidden="true">
+              <div class="art__stage">
+                <div class="win win--models float">
+                  <div class="win__bar">
+                    <span class="win__dots"><i></i><i></i><i></i></span>
+                    <span class="win__tab is-active">models.py</span>
+                    <span class="win__tab">views.py</span>
+                  </div>
+                  <div class="code">
+                    <span><span class="tk">from</span> django.db <span class="tk">import</span> models</span>
+                    <span> </span>
+                    <span><span class="tk">class</span> <span class="tf">Project</span>(models.Model):</span>
+                    <span>    name = models.CharField(max_length=<span class="tn">120</span>)</span>
+                    <span>    live = models.BooleanField(default=<span class="tk">True</span>)</span>
+                    <span>    created = models.DateTimeField(auto_now_add=<span class="tk">True</span>)</span>
+                  </div>
+                </div>
+                <div class="win win--php float float--late">
+                  <div class="win__bar">
+                    <span class="win__dots"><i></i><i></i><i></i></span>
+                    <span class="win__tab is-active">api.php</span>
+                  </div>
+                  <div class="code">
+                    <span><span class="tk">&lt;?php</span></span>
+                    <span>$stmt = $pdo-&gt;<span class="tf">prepare</span>(</span>
+                    <span>    <span class="ts">'SELECT * FROM projects WHERE live = 1'</span></span>
+                    <span>);</span>
+                    <span>$stmt-&gt;<span class="tf">execute</span>();</span>
+                    <span><span class="tk">echo</span> <span class="tf">json_encode</span>($stmt-&gt;<span class="tf">fetchAll</span>());</span>
+                  </div>
+                </div>
+                <span class="art-chip float float--late" style="--x:80%;--y:13%">
+                  <svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>42 tests passed
+                </span>
+              </div>
+            </div>
+            <div class="service__body">
+              <p class="service__label">Python · Django · PHP · MySQL</p>
+              <h3 class="service__title">Full-Stack Development</h3>
+              <p class="service__text">Custom web applications in Python, Django and PHP, with clean data models, solid APIs and code your team can maintain.</p>
+              <a href="#contact" class="link-arrow" data-select-type="Full-stack development">Start a project <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <!-- Infrastructure: deployment architecture -->
+          <article class="service reveal">
+            <div class="art" aria-hidden="true">
+              <div class="art__stage">
+                <svg class="art__wires" viewBox="0 0 500 300">
+                  <path d="M250 48V144"/>
+                  <path d="M250 144C250 200 95 190 95 246"/>
+                  <path d="M250 144V246"/>
+                  <path d="M250 144C250 200 405 190 405 246"/>
+                </svg>
+                <div class="node" style="--x:50%;--y:16%">
+                  <span class="node__icon"><svg viewBox="0 0 24 24"><path d="M7 18.5h10.2a4.3 4.3 0 0 0 .5-8.57A6 6 0 0 0 6.2 9.6 4.5 4.5 0 0 0 7 18.5z"/></svg></span>
+                  <span><strong>Cloudflare Pages</strong><small>frontend · edge</small></span>
+                </div>
+                <div class="node" style="--x:50%;--y:48%">
+                  <span class="node__icon"><svg viewBox="0 0 24 24"><path d="M12 3.5 3.5 8 12 12.5 20.5 8z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5"/><path d="m3.5 16.5 8.5 4.5 8.5-4.5"/></svg></span>
+                  <span><strong>Docker Swarm</strong><small>manager · 3 nodes</small></span>
+                </div>
+                <div class="node node--worker" style="--x:19%;--y:82%">
+                  <small>worker-01</small>
+                  <span class="node__row"><strong>web</strong><span class="pods"><i></i><i></i><i></i></span></span>
+                </div>
+                <div class="node node--worker" style="--x:50%;--y:82%">
+                  <small>worker-02</small>
+                  <span class="node__row"><strong>api</strong><span class="pods"><i></i><i></i></span></span>
+                </div>
+                <div class="node node--worker" style="--x:81%;--y:82%">
+                  <small>worker-03</small>
+                  <span class="node__row"><strong>mysql</strong><span class="pods pods--data"><i></i></span></span>
+                </div>
+                <span class="art-chip art-chip--muted float" style="--x:16%;--y:48%">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M3 12h5.5M15.5 12H21"/></svg>git push main
+                </span>
+                <span class="art-chip float float--late" style="--x:84%;--y:48%">
+                  <i class="art-chip__dot"></i>Live in 38s
+                </span>
+              </div>
+            </div>
+            <div class="service__body">
+              <p class="service__label">Docker · Swarm · Cloudflare Pages · CI/CD</p>
+              <h3 class="service__title">Infrastructure &amp; Deployment</h3>
+              <p class="service__text">Containerised with Docker, orchestrated on Swarm and shipped to Cloudflare Pages, so every deploy is repeatable and fast.</p>
+              <a href="#contact" class="link-arrow" data-select-type="Infrastructure &amp; deployment">Start a project <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <!-- Security: threat-detection dashboard -->
+          <article class="service reveal">
+            <div class="art" aria-hidden="true">
+              <div class="art__stage">
+                <div class="win win--dash">
+                  <div class="win__bar">
+                    <span class="win__title">Threat detection</span>
+                    <span class="live"><i></i>Live</span>
+                  </div>
+                  <div class="dash">
+                    <div class="dash__stat">
+                      <span class="dash__label">Threats blocked</span>
+                      <span class="dash__value">1,284</span>
+                      <span class="dash__period">Last 24 hours</span>
+                    </div>
+                    <div class="dash__bars">
+                      <i style="--h:28%"></i><i style="--h:36%"></i><i style="--h:30%"></i><i style="--h:44%"></i>
+                      <i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:41%"></i><i style="--h:35%"></i>
+                      <i style="--h:48%"></i><i style="--h:60%"></i><i style="--h:46%"></i><i style="--h:39%"></i>
+                      <i style="--h:43%"></i><i style="--h:55%"></i><i style="--h:63%"></i><i style="--h:50%"></i>
+                      <i style="--h:42%"></i><i style="--h:47%"></i><i style="--h:58%"></i><i style="--h:69%"></i>
+                      <i style="--h:54%"></i><i style="--h:49%"></i><i style="--h:61%"></i><i style="--h:78%"></i>
+                    </div>
+                  </div>
+                  <ul class="findings">
+                    <li><span class="sev sev--critical">Critical</span><span class="findings__name">SQL injection attempt</span><span class="findings__out">Blocked</span></li>
+                    <li><span class="sev sev--high">High</span><span class="findings__name">openssl 3.0.2 out of date</span><span class="findings__out">Patched</span></li>
+                    <li><span class="sev sev--low">Low</span><span class="findings__name">TLS 1.0 handshake</span><span class="findings__out">Rejected</span></li>
+                  </ul>
+                </div>
+                <span class="art-chip float" style="--x:74%;--y:90%">
+                  <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.3 3 8 7 9.5 4-1.5 7-5.2 7-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>Scan complete · 0 open issues
+                </span>
+              </div>
+            </div>
+            <div class="service__body">
+              <p class="service__label">Automated scans · Threat detection · Patching</p>
+              <h3 class="service__title">Security &amp; Vulnerability Scanning</h3>
+              <p class="service__text">Automated scans, dependency audits and threat detection that flag issues before they turn into incidents.</p>
+              <a href="#contact" class="link-arrow" data-select-type="Security &amp; vulnerability scanning">Start a project <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <!-- Server management: terminal + config files -->
+          <article class="service reveal">
+            <div class="art" aria-hidden="true">
+              <div class="art__stage">
+                <div class="win win--term float">
+                  <div class="win__bar">
+                    <span class="win__dots"><i></i><i></i><i></i></span>
+                    <span class="win__tab is-active">nginx — app.conf</span>
+                  </div>
+                  <div class="code">
+                    <span><span class="tp">$</span> sudo nginx -t</span>
+                    <span class="tg">nginx: configuration file test is successful</span>
+                    <span><span class="tk">server</span> {</span>
+                    <span>    <span class="tk">listen</span> <span class="tn">443</span> ssl;</span>
+                    <span>    <span class="tk">http2</span> on;</span>
+                    <span>    <span class="tk">server_name</span> example.com;</span>
+                    <span>    <span class="tk">location</span> / {</span>
+                    <span>        <span class="tk">proxy_pass</span> <span class="ts">http://127.0.0.1:8080</span>;</span>
+                    <span>    }</span>
+                    <span>}</span>
+                  </div>
+                </div>
+                <div class="win win--apache float float--late">
+                  <div class="win__bar">
+                    <span class="win__dots"><i></i><i></i><i></i></span>
+                    <span class="win__tab is-active">apache2 — app.conf</span>
+                  </div>
+                  <div class="code">
+                    <span><span class="tk">&lt;VirtualHost</span> *:<span class="tn">8080</span><span class="tk">&gt;</span></span>
+                    <span>  <span class="tk">ServerName</span> example.com</span>
+                    <span>  <span class="tk">DocumentRoot</span> <span class="ts">/var/www/app</span></span>
+                    <span><span class="tk">&lt;/VirtualHost&gt;</span></span>
+                  </div>
+                  <div class="win__foot"><i class="art-chip__dot"></i>configtest · Syntax OK</div>
+                </div>
+              </div>
+            </div>
+            <div class="service__body">
+              <p class="service__label">Nginx · Apache · Linux · SSL</p>
+              <h3 class="service__title">Server Management</h3>
+              <p class="service__text">Apache and Nginx configured, tuned and hardened, with updates, monitoring and backups handled for you.</p>
+              <a href="#contact" class="link-arrow" data-select-type="Server management">Start a project <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRICING ============ -->
+    <!-- To edit plans: change the name in data-package (and the matching data-select-package),
+         the price and the list items. The enquiry form's plan dropdown is built from these cards. -->
+    <section class="section section--ribbons" id="pricing" aria-labelledby="pricing-title">
+      <canvas class="particles" data-particles="corners" aria-hidden="true"></canvas>
+      <div class="container-cube">
+        <header class="section-head reveal">
+          <h2 id="pricing-title" class="h-section">Simple, transparent pricing.</h2>
+          <p class="section-lead">Every project starts with a discovery call and a fixed, written quote. Prices below are starting points.</p>
+        </header>
+
+        <div class="price-grid">
+          <article class="card price reveal" data-package="Static Deployments">
+            <h3 class="price__name">Static Deployments</h3>
+            <p class="price__desc">Fast, secure frontends for sites that don't need a server.</p>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">25,000</span></p>
+            <p class="price__note">One-time, starting at</p>
+            <ul class="price__list">
+              <li>Responsive frontend in HTML, CSS &amp; JavaScript</li>
+              <li>Custom domain with SSL</li>
+              <li>Basic hosting on Cloudflare Pages</li>
+              <li>Contact form &amp; basic SEO</li>
+            </ul>
+            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Static Deployments">Get Started</a>
+          </article>
+
+          <article class="card price reveal" data-package="Dynamic Applications">
+            <h3 class="price__name">Dynamic Applications</h3>
+            <p class="price__desc">Full-stack apps with a database, user accounts and an API.</p>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">100,000</span></p>
+            <p class="price__note">One-time, starting at</p>
+            <ul class="price__list">
+              <li>Backend in Python/Django or PHP</li>
+              <li>MySQL database design &amp; migrations</li>
+              <li>Backend routing &amp; REST APIs</li>
+              <li>Authentication &amp; admin dashboard</li>
+              <li>Docker-based staging &amp; production</li>
+            </ul>
+            <a href="#contact" class="btn btn--primary btn--lg btn--block" data-select-package="Dynamic Applications">Get Started</a>
+          </article>
+
+          <article class="card price reveal" data-package="Enterprise Retainer">
+            <h3 class="price__name">Enterprise Retainer</h3>
+            <p class="price__desc">Your infrastructure, security and support, fully handled.</p>
+            <p class="price__price"><span class="price__amount">Custom</span></p>
+            <p class="price__note">Monthly retainer</p>
+            <ul class="price__list">
+              <li>Full infrastructure on Docker Swarm, Nginx &amp; Apache</li>
+              <li>Automated security &amp; vulnerability scanning</li>
+              <li>Monitoring, backups &amp; patch management</li>
+              <li>Priority support</li>
+            </ul>
+            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Enterprise Retainer">Get Started</a>
+          </article>
+        </div>
+        <p class="fine-print reveal">Prices in Sri Lankan rupees. Domain, hosting and third-party fees are billed by their providers.</p>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="section section--ribbons section--cta" id="contact" aria-labelledby="contact-title">
+      <canvas class="particles" data-particles="corners" aria-hidden="true"></canvas>
+      <div class="container-cube">
+        <!-- Decorative: a fanned stack of project files -->
+        <div class="fan reveal" aria-hidden="true">
+          <div class="fan__card" style="--r:-11deg;--y:44px">
+            <div class="fan__thumb fan__thumb--folder">
+              <svg viewBox="0 0 64 52"><path d="M4 9a5 5 0 0 1 5-5h13.5l6 6H55a5 5 0 0 1 5 5v28a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/></svg>
+            </div>
+            <p class="fan__cap"><span class="fan__ico" style="--c:#8fa5c6"></span><span>client-site<small>Folder</small></span></p>
+          </div>
+          <div class="fan__card" style="--r:-5deg;--y:10px">
+            <div class="fan__thumb fan__thumb--code">
+              <i style="--w:46%;--c:#5b78a6"></i><i style="--w:72%"></i><i style="--w:58%"></i><i style="--w:30%;--c:#b0664f"></i><i style="--w:66%"></i><i style="--w:40%;--c:#5b78a6"></i><i style="--w:54%"></i>
+            </div>
+            <p class="fan__cap"><span class="fan__ico" style="--c:#5b78a6"></span><span>views.py<small>Python</small></span></p>
+          </div>
+          <div class="fan__card" style="--r:0deg;--y:0px">
+            <div class="fan__thumb fan__thumb--term">
+              <i style="--w:38%;--c:#8fa5c6"></i><i style="--w:70%;--c:#9cc3a8"></i><i style="--w:52%"></i><i style="--w:64%"></i><i style="--w:44%;--c:#e6b9a8"></i><i style="--w:58%"></i>
+            </div>
+            <p class="fan__cap"><span class="fan__ico" style="--c:#171717"></span><span>nginx.conf<small>Config</small></span></p>
+          </div>
+          <div class="fan__card" style="--r:5deg;--y:10px">
+            <div class="fan__thumb fan__thumb--chart">
+              <b>1,284</b>
+              <span class="fan__bars"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:44%"></i><i style="--h:60%"></i><i style="--h:48%"></i><i style="--h:66%"></i><i style="--h:56%"></i><i style="--h:82%"></i></span>
+            </div>
+            <p class="fan__cap"><span class="fan__ico" style="--c:#4f7a61"></span><span>scan-report<small>Security</small></span></p>
+          </div>
+          <div class="fan__card" style="--r:11deg;--y:44px">
+            <div class="fan__thumb fan__thumb--doc">
+              <i style="--w:58%;--c:#171717"></i><i style="--w:86%"></i><i style="--w:78%"></i><i style="--w:82%"></i><i style="--w:50%"></i><i style="--w:72%"></i>
+            </div>
+            <p class="fan__cap"><span class="fan__ico" style="--c:#d9a796"></span><span>proposal.pdf<small>Document</small></span></p>
+          </div>
+        </div>
+
+        <header class="section-head reveal">
+          <h2 id="contact-title" class="h-section">Start a project.</h2>
+          <p class="section-lead">Tell us what you're building and we'll reply with questions or a proposal. No obligation.</p>
+        </header>
+
+        <form class="card enquiry reveal" id="enquiry-form" novalidate data-enquiry-form>
+          <div class="enquiry__grid">
+            <div class="field">
+              <label for="f-name">Name <span aria-hidden="true">*</span></label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="100" aria-describedby="f-name-err">
+              <p class="field__error" id="f-name-err"></p>
+            </div>
+            <div class="field">
+              <label for="f-email">Email <span aria-hidden="true">*</span></label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="150" aria-describedby="f-email-err">
+              <p class="field__error" id="f-email-err"></p>
+            </div>
+            <div class="field">
+              <label for="f-business">Company <span class="field__opt">Optional</span></label>
+              <input id="f-business" name="business" type="text" autocomplete="organization" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="f-type">Service <span aria-hidden="true">*</span></label>
+              <select id="f-type" name="project_type" required aria-describedby="f-type-err">
+                <option value="">Select a service</option>
+                <option>Full-stack development</option>
+                <option>Infrastructure &amp; deployment</option>
+                <option>Security &amp; vulnerability scanning</option>
+                <option>Server management</option>
+                <option>Not sure yet</option>
+              </select>
+              <p class="field__error" id="f-type-err"></p>
+            </div>
+            <div class="field">
+              <label for="f-package">Plan <span class="field__opt">Optional</span></label>
+              <select id="f-package" name="package" data-package-select>
+                <option value="">Not sure yet</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-budget">Budget (LKR) <span class="field__opt">Optional</span></label>
+              <select id="f-budget" name="budget">
+                <option value="">Prefer not to say</option>
+                <option>Under 25,000</option>
+                <option>25,000 – 50,000</option>
+                <option>50,000 – 100,000</option>
+                <option>100,000 – 200,000</option>
+                <option>200,000+</option>
+              </select>
+            </div>
+            <div class="field field--full">
+              <label for="f-message">Project description <span aria-hidden="true">*</span></label>
+              <textarea id="f-message" name="message" rows="5" required minlength="20" maxlength="3000" aria-describedby="f-message-hint f-message-err" placeholder="What are you building, what should it do, and do you have a deadline?"></textarea>
+              <p class="field__hint" id="f-message-hint"><span data-char-count>0</span> / 3000 · minimum 20 characters</p>
+              <p class="field__error" id="f-message-err"></p>
+            </div>
+            <!-- Spam trap: real visitors never see or fill this -->
+            <div class="hp" aria-hidden="true">
+              <label for="f-website">Leave this empty</label>
+              <input id="f-website" name="botcheck" type="text" tabindex="-1" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="enquiry__footer">
+            <p class="field__hint"><span aria-hidden="true">*</span> Required fields</p>
+            <button type="submit" class="btn btn--primary btn--lg" data-submit>
+              <span data-submit-label>Send enquiry</span> <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <div class="form-status" role="status" aria-live="polite" tabindex="-1" hidden data-form-status></div>
+        </form>
+
+        <ul class="contact-list reveal" data-contact-list>
+          <li data-config-item="contact.email"><span>Email</span><a href="#" data-config-link="contact.email"></a></li>
+          <li data-config-item="contact.phone"><span>Phone</span><a href="#" data-config-link="contact.phone"></a></li>
+          <li data-config-item="contact.whatsapp"><span>WhatsApp</span><a href="#" data-config-link="contact.whatsapp" target="_blank" rel="noopener"></a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container-cube footer__inner">
+      <div class="footer__brand">
+        <a href="#overview" class="logo-btn" aria-label="CUBE — back to top">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="5.5" stroke-linejoin="round"><path d="M32 8 52 20v24L32 56 12 44V20z"/><path d="M12 20l20 12 20-12M32 32v24"/></g></svg>
+        </a>
+        <p class="footer__tagline">Web development and infrastructure studio.</p>
+        <a href="#contact" class="btn btn--primary">Start a Project</a>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer">
+        <div class="footer__col">
+          <h2 class="footer__h">Navigate</h2>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#stack">Tech Stack</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h2 class="footer__h">Services</h2>
+          <ul>
+            <li><a href="#contact" data-select-type="Full-stack development">Full-Stack Development</a></li>
+            <li><a href="#contact" data-select-type="Infrastructure &amp; deployment">Infrastructure &amp; Deployment</a></li>
+            <li><a href="#contact" data-select-type="Security &amp; vulnerability scanning">Security &amp; Scanning</a></li>
+            <li><a href="#contact" data-select-type="Server management">Server Management</a></li>
+          </ul>
+        </div>
+        <!-- Shown only when a social URL is set in script.js -->
+        <div class="footer__col" data-social-block>
+          <h2 class="footer__h">Social</h2>
+          <ul>
+            <li data-config-item="social.github"><a href="#" data-config-link="social.github" target="_blank" rel="noopener">GitHub</a></li>
+            <li data-config-item="social.linkedin"><a href="#" data-config-link="social.linkedin" target="_blank" rel="noopener">LinkedIn</a></li>
+            <li data-config-item="social.instagram"><a href="#" data-config-link="social.instagram" target="_blank" rel="noopener">Instagram</a></li>
+            <li data-config-item="social.facebook"><a href="#" data-config-link="social.facebook" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <p class="footer__copy">© <span data-year>2026</span> CUBE. All rights reserved.</p>
+    </div>
+    <p class="footer__word" aria-hidden="true">CUBE</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

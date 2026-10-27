@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560">
+<rect x="0" y="0" width="800" height="560" fill="#f8f8f8" />
+<rect x="0" y="0" width="800" height="34" fill="#f1f1f1" />
+<circle cx="20" cy="17" r="5" fill="#c9c7cc"/><circle cx="36" cy="17" r="5" fill="#c9c7cc"/><circle cx="52" cy="17" r="5" fill="#c9c7cc"/>
+<rect x="260" y="9" width="280" height="16" fill="#ffffff" />
+<text x="400" y="21" font-family="monospace" font-size="9" fill="#a2a2a2" text-anchor="middle" letter-spacing="1">BUSINESS.COM</text>
+<text x="40" y="72" font-family="Arial, sans-serif" font-weight="700" font-size="15" letter-spacing="2" fill="#3c3a3e">NORTHLINE</text>
+<rect x="470" y="63" width="50" height="8" fill="#c9c7cc" /><rect x="536" y="63" width="50" height="8" fill="#c9c7cc" /><rect x="602" y="63" width="50" height="8" fill="#c9c7cc" />
+<rect x="672" y="55" width="90" height="26" rx="13" fill="#3c3a3e" />
+<text x="40" y="160" font-family="Arial, sans-serif" font-weight="700" font-size="44" fill="#3c3a3e" letter-spacing="-1.5">Trusted advice</text>
+<text x="40" y="208" font-family="Arial, sans-serif" font-weight="700" font-size="44" fill="#3c3a3e" letter-spacing="-1.5">for growing teams.</text>
+<rect x="40" y="236" width="300" height="9" fill="#c9c7cc" /><rect x="40" y="254" width="260" height="9" fill="#c9c7cc" />
+<rect x="40" y="284" width="120" height="26" rx="13" fill="#3c3a3e" /><rect x="170" y="284" width="110" height="26" rx="13" fill="none" stroke="#c9c7cc"/>
+<rect x="430" y="110" width="330" height="210" fill="#d6d4d8" /><path d="M430 320 L555.4 210.8 L628 261.2 L687.4000000000001 227.60000000000002 L760 320 Z" fill="#a2a2a2" opacity=".55"/><circle cx="677.5" cy="168.8" r="16.8" fill="#ffffff" opacity=".8"/>
+<rect x="40" y="350" width="720" height="1" fill="#c9c7cc" />
+<rect x="40" y="372" width="230" height="150" fill="#ffffff" stroke="#c9c7cc"/><rect x="58" y="392" width="28" height="28" fill="#f1f1f1" /><circle cx="72" cy="406" r="5" fill="#ff6436"/><rect x="58" y="438" width="140" height="8" fill="#c9c7cc" /><rect x="58" y="454" width="180" height="8" fill="#c9c7cc" /><rect x="58" y="470" width="120" height="8" fill="#c9c7cc" /><rect x="285" y="372" width="230" height="150" fill="#ffffff" stroke="#c9c7cc"/><rect x="303" y="392" width="28" height="28" fill="#f1f1f1" /><circle cx="317" cy="406" r="5" fill="#ff6436"/><rect x="303" y="438" width="140" height="8" fill="#c9c7cc" /><rect x="303" y="454" width="180" height="8" fill="#c9c7cc" /><rect x="303" y="470" width="120" height="8" fill="#c9c7cc" /><rect x="530" y="372" width="230" height="150" fill="#ffffff" stroke="#c9c7cc"/><rect x="548" y="392" width="28" height="28" fill="#f1f1f1" /><circle cx="562" cy="406" r="5" fill="#ff6436"/><rect x="548" y="438" width="140" height="8" fill="#c9c7cc" /><rect x="548" y="454" width="180" height="8" fill="#c9c7cc" /><rect x="548" y="470" width="120" height="8" fill="#c9c7cc" /></svg>

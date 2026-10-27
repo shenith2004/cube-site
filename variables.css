@@ -1,0 +1,46 @@
+/* =========================================================================
+   CUBE — design tokens
+   Soft-grey canvas, white floating surfaces, ink type in Google Sans Flex,
+   with dusty blue + rose gold kept for the particle ribbons and accents.
+   ========================================================================= */
+
+:root {
+  /* Colors */
+  --color-canvas: #f0f1f3;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f7f8fa;
+  --color-ink: #0a0a0a;            /* headings, primary buttons */
+  --color-muted: #7d7f85;          /* second line of display headings */
+  --color-body: #696b70;           /* paragraphs, footer links */
+  --color-subtle: #9a9ca1;         /* captions inside illustrations */
+  --color-black-hover: #262626;
+  --color-line: rgba(10, 10, 10, 0.08);
+
+  --color-dusty-blue: #8fa5c6;
+  --color-dusty-blue-deep: #5b78a6;
+  --color-rose-gold: #d9a796;
+  --color-rose-gold-deep: #b0664f;
+
+  /* Status (illustrations and form feedback only) */
+  --color-good: #4f7a61;
+  --color-danger: #b4533f;
+
+  /* Typography */
+  --font-sans: 'Google Sans Flex', 'Google Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Google Sans Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --tracking-tight: -0.03em;
+
+  /* Shape */
+  --radius-card: 24px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03), 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+  --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px -6px rgba(0, 0, 0, 0.14);
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 18px -6px rgba(0, 0, 0, 0.35);
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --header-h: 72px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
