@@ -55,6 +55,7 @@
         <nav class="menu__panel" id="site-menu" aria-label="Primary" hidden data-menu>
           <ul>
             <li><a href="#overview" data-nav>Overview</a></li>
+            <li><a href="#work" data-nav>Our Work</a></li>
             <li><a href="#stack" data-nav>Tech Stack</a></li>
             <li><a href="#pricing" data-nav>Pricing</a></li>
             <li><a href="#contact" data-nav>Contact</a></li>
@@ -82,197 +83,80 @@
       </div>
     </section>
 
-    <!-- ============ TECH STACK ============ -->
-    <section class="section" id="stack" aria-labelledby="stack-title">
+    <!-- ============ OUR WORK ============ -->
+    <!-- Drop 16:9 clips into assets/work/ using the filenames below. Until a clip exists, the poster image shows. -->
+    <section class="section work" id="work" aria-labelledby="work-title">
       <div class="container-cube">
-        <header class="section-head section-head--left reveal">
-          <h2 id="stack-title" class="h-section">From first commit to production.</h2>
-          <p class="section-lead">Four disciplines, one accountable team. We build your application and run everything underneath it.</p>
+        <header class="section-head reveal">
+          <h2 id="work-title" class="h-section">Our work.</h2>
+          <p class="section-lead">Websites we design, build and deploy for creatives, restaurants and local businesses. Fast, responsive and live on your own domain.</p>
         </header>
 
-        <div class="service-grid">
-          <!-- Full-stack: floating code editors -->
-          <article class="service reveal">
-            <div class="art" aria-hidden="true">
-              <div class="art__stage">
-                <div class="win win--models float">
-                  <div class="win__bar">
-                    <span class="win__dots"><i></i><i></i><i></i></span>
-                    <span class="win__tab is-active">models.py</span>
-                    <span class="win__tab">views.py</span>
-                  </div>
-                  <div class="code">
-                    <span><span class="tk">from</span> django.db <span class="tk">import</span> models</span>
-                    <span> </span>
-                    <span><span class="tk">class</span> <span class="tf">Project</span>(models.Model):</span>
-                    <span>    name = models.CharField(max_length=<span class="tn">120</span>)</span>
-                    <span>    live = models.BooleanField(default=<span class="tk">True</span>)</span>
-                    <span>    created = models.DateTimeField(auto_now_add=<span class="tk">True</span>)</span>
-                  </div>
-                </div>
-                <div class="win win--php float float--late">
-                  <div class="win__bar">
-                    <span class="win__dots"><i></i><i></i><i></i></span>
-                    <span class="win__tab is-active">api.php</span>
-                  </div>
-                  <div class="code">
-                    <span><span class="tk">&lt;?php</span></span>
-                    <span>$stmt = $pdo-&gt;<span class="tf">prepare</span>(</span>
-                    <span>    <span class="ts">'SELECT * FROM projects WHERE live = 1'</span></span>
-                    <span>);</span>
-                    <span>$stmt-&gt;<span class="tf">execute</span>();</span>
-                    <span><span class="tk">echo</span> <span class="tf">json_encode</span>($stmt-&gt;<span class="tf">fetchAll</span>());</span>
-                  </div>
-                </div>
-                <span class="art-chip float float--late" style="--x:80%;--y:13%">
-                  <svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>42 tests passed
-                </span>
-              </div>
-            </div>
-            <div class="service__body">
-              <p class="service__label">Python · Django · PHP · MySQL</p>
-              <h3 class="service__title">Full-Stack Development</h3>
-              <p class="service__text">Custom web applications in Python, Django and PHP, with clean data models, solid APIs and code your team can maintain.</p>
-              <a href="#contact" class="link-arrow" data-select-type="Full-stack development">Start a project <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
+        <!-- Each card links to the enquiry form with a matching plan preselected.
+             On desktop the tags show at rest and swap to the description on hover. -->
+        <div class="card-container reveal">
+          <a href="#contact" class="work-card" data-select-package="Static Deployments">
+            <span class="work-card__media">
+              <video autoplay loop muted playsinline poster="assets/templates/portfolio.svg" aria-hidden="true" data-work-video>
+                <source src="assets/work/portfolios.mp4" type="video/mp4">
+              </video>
+            </span>
+            <span class="work-card__body">
+              <span class="work-card__head">
+                <span class="work-card__title">Portfolios</span>
+                <span class="work-card__arrow" aria-hidden="true">→</span>
+              </span>
+              <span class="work-card__swap">
+                <span class="work-card__text">Personal branding and resume sites built for creatives and professionals.</span>
+                <span class="work-card__tags">HTML · CSS · JavaScript · Cloudflare Pages</span>
+              </span>
+              <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
+            </span>
+          </a>
 
-          <!-- Infrastructure: deployment architecture -->
-          <article class="service reveal">
-            <div class="art" aria-hidden="true">
-              <div class="art__stage">
-                <svg class="art__wires" viewBox="0 0 500 300">
-                  <path d="M250 48V144"/>
-                  <path d="M250 144C250 200 95 190 95 246"/>
-                  <path d="M250 144V246"/>
-                  <path d="M250 144C250 200 405 190 405 246"/>
-                </svg>
-                <div class="node" style="--x:50%;--y:16%">
-                  <span class="node__icon"><svg viewBox="0 0 24 24"><path d="M7 18.5h10.2a4.3 4.3 0 0 0 .5-8.57A6 6 0 0 0 6.2 9.6 4.5 4.5 0 0 0 7 18.5z"/></svg></span>
-                  <span><strong>Cloudflare Pages</strong><small>frontend · edge</small></span>
-                </div>
-                <div class="node" style="--x:50%;--y:48%">
-                  <span class="node__icon"><svg viewBox="0 0 24 24"><path d="M12 3.5 3.5 8 12 12.5 20.5 8z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5"/><path d="m3.5 16.5 8.5 4.5 8.5-4.5"/></svg></span>
-                  <span><strong>Docker Swarm</strong><small>manager · 3 nodes</small></span>
-                </div>
-                <div class="node node--worker" style="--x:19%;--y:82%">
-                  <small>worker-01</small>
-                  <span class="node__row"><strong>web</strong><span class="pods"><i></i><i></i><i></i></span></span>
-                </div>
-                <div class="node node--worker" style="--x:50%;--y:82%">
-                  <small>worker-02</small>
-                  <span class="node__row"><strong>api</strong><span class="pods"><i></i><i></i></span></span>
-                </div>
-                <div class="node node--worker" style="--x:81%;--y:82%">
-                  <small>worker-03</small>
-                  <span class="node__row"><strong>mysql</strong><span class="pods pods--data"><i></i></span></span>
-                </div>
-                <span class="art-chip art-chip--muted float" style="--x:16%;--y:48%">
-                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M3 12h5.5M15.5 12H21"/></svg>git push main
-                </span>
-                <span class="art-chip float float--late" style="--x:84%;--y:48%">
-                  <i class="art-chip__dot"></i>Live in 38s
-                </span>
-              </div>
-            </div>
-            <div class="service__body">
-              <p class="service__label">Docker · Swarm · Cloudflare Pages · CI/CD</p>
-              <h3 class="service__title">Infrastructure &amp; Deployment</h3>
-              <p class="service__text">Containerised with Docker, orchestrated on Swarm and shipped to Cloudflare Pages, so every deploy is repeatable and fast.</p>
-              <a href="#contact" class="link-arrow" data-select-type="Infrastructure &amp; deployment">Start a project <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
+          <a href="#contact" class="work-card" data-select-package="Dynamic Applications">
+            <span class="work-card__media">
+              <video autoplay loop muted playsinline poster="assets/templates/restaurant.svg" aria-hidden="true" data-work-video>
+                <source src="assets/work/restaurants.mp4" type="video/mp4">
+              </video>
+            </span>
+            <span class="work-card__body">
+              <span class="work-card__head">
+                <span class="work-card__title">Restaurants</span>
+                <span class="work-card__arrow" aria-hidden="true">→</span>
+              </span>
+              <span class="work-card__swap">
+                <span class="work-card__text">Menu showcases and booking platforms for cafes, pubs, and dining venues.</span>
+                <span class="work-card__tags">Django · MySQL · Online menus · Table booking</span>
+              </span>
+              <span class="work-card__meta"><span>Dynamic Applications</span><span>From LKR 100,000</span></span>
+            </span>
+          </a>
 
-          <!-- Security: threat-detection dashboard -->
-          <article class="service reveal">
-            <div class="art" aria-hidden="true">
-              <div class="art__stage">
-                <div class="win win--dash">
-                  <div class="win__bar">
-                    <span class="win__title">Threat detection</span>
-                    <span class="live"><i></i>Live</span>
-                  </div>
-                  <div class="dash">
-                    <div class="dash__stat">
-                      <span class="dash__label">Threats blocked</span>
-                      <span class="dash__value">1,284</span>
-                      <span class="dash__period">Last 24 hours</span>
-                    </div>
-                    <div class="dash__bars">
-                      <i style="--h:28%"></i><i style="--h:36%"></i><i style="--h:30%"></i><i style="--h:44%"></i>
-                      <i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:41%"></i><i style="--h:35%"></i>
-                      <i style="--h:48%"></i><i style="--h:60%"></i><i style="--h:46%"></i><i style="--h:39%"></i>
-                      <i style="--h:43%"></i><i style="--h:55%"></i><i style="--h:63%"></i><i style="--h:50%"></i>
-                      <i style="--h:42%"></i><i style="--h:47%"></i><i style="--h:58%"></i><i style="--h:69%"></i>
-                      <i style="--h:54%"></i><i style="--h:49%"></i><i style="--h:61%"></i><i style="--h:78%"></i>
-                    </div>
-                  </div>
-                  <ul class="findings">
-                    <li><span class="sev sev--critical">Critical</span><span class="findings__name">SQL injection attempt</span><span class="findings__out">Blocked</span></li>
-                    <li><span class="sev sev--high">High</span><span class="findings__name">openssl 3.0.2 out of date</span><span class="findings__out">Patched</span></li>
-                    <li><span class="sev sev--low">Low</span><span class="findings__name">TLS 1.0 handshake</span><span class="findings__out">Rejected</span></li>
-                  </ul>
-                </div>
-                <span class="art-chip float" style="--x:74%;--y:90%">
-                  <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.3 3 8 7 9.5 4-1.5 7-5.2 7-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>Scan complete · 0 open issues
-                </span>
-              </div>
-            </div>
-            <div class="service__body">
-              <p class="service__label">Automated scans · Threat detection · Patching</p>
-              <h3 class="service__title">Security &amp; Vulnerability Scanning</h3>
-              <p class="service__text">Automated scans, dependency audits and threat detection that flag issues before they turn into incidents.</p>
-              <a href="#contact" class="link-arrow" data-select-type="Security &amp; vulnerability scanning">Start a project <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
-
-          <!-- Server management: terminal + config files -->
-          <article class="service reveal">
-            <div class="art" aria-hidden="true">
-              <div class="art__stage">
-                <div class="win win--term float">
-                  <div class="win__bar">
-                    <span class="win__dots"><i></i><i></i><i></i></span>
-                    <span class="win__tab is-active">nginx — app.conf</span>
-                  </div>
-                  <div class="code">
-                    <span><span class="tp">$</span> sudo nginx -t</span>
-                    <span class="tg">nginx: configuration file test is successful</span>
-                    <span><span class="tk">server</span> {</span>
-                    <span>    <span class="tk">listen</span> <span class="tn">443</span> ssl;</span>
-                    <span>    <span class="tk">http2</span> on;</span>
-                    <span>    <span class="tk">server_name</span> example.com;</span>
-                    <span>    <span class="tk">location</span> / {</span>
-                    <span>        <span class="tk">proxy_pass</span> <span class="ts">http://127.0.0.1:8080</span>;</span>
-                    <span>    }</span>
-                    <span>}</span>
-                  </div>
-                </div>
-                <div class="win win--apache float float--late">
-                  <div class="win__bar">
-                    <span class="win__dots"><i></i><i></i><i></i></span>
-                    <span class="win__tab is-active">apache2 — app.conf</span>
-                  </div>
-                  <div class="code">
-                    <span><span class="tk">&lt;VirtualHost</span> *:<span class="tn">8080</span><span class="tk">&gt;</span></span>
-                    <span>  <span class="tk">ServerName</span> example.com</span>
-                    <span>  <span class="tk">DocumentRoot</span> <span class="ts">/var/www/app</span></span>
-                    <span><span class="tk">&lt;/VirtualHost&gt;</span></span>
-                  </div>
-                  <div class="win__foot"><i class="art-chip__dot"></i>configtest · Syntax OK</div>
-                </div>
-              </div>
-            </div>
-            <div class="service__body">
-              <p class="service__label">Nginx · Apache · Linux · SSL</p>
-              <h3 class="service__title">Server Management</h3>
-              <p class="service__text">Apache and Nginx configured, tuned and hardened, with updates, monitoring and backups handled for you.</p>
-              <a href="#contact" class="link-arrow" data-select-type="Server management">Start a project <span aria-hidden="true">→</span></a>
-            </div>
-          </article>
+          <a href="#contact" class="work-card" data-select-package="Static Deployments">
+            <span class="work-card__media">
+              <video autoplay loop muted playsinline poster="assets/templates/business.svg" aria-hidden="true" data-work-video>
+                <source src="assets/work/small-business.mp4" type="video/mp4">
+              </video>
+            </span>
+            <span class="work-card__body">
+              <span class="work-card__head">
+                <span class="work-card__title">Small Business</span>
+                <span class="work-card__arrow" aria-hidden="true">→</span>
+              </span>
+              <span class="work-card__swap">
+                <span class="work-card__text">Static commercial websites and booking pages, like the deployment for LS Nails Studio (lsnails.lk).</span>
+                <span class="work-card__tags">Static site · Booking page · Custom domain &amp; SSL</span>
+              </span>
+              <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
+            </span>
+          </a>
         </div>
       </div>
     </section>
+
+   
+         
 
     <!-- ============ PRICING ============ -->
     <!-- To edit plans: change the name in data-package (and the matching data-select-package),
@@ -289,7 +173,7 @@
           <article class="card price reveal" data-package="Static Deployments">
             <h3 class="price__name">Static Deployments</h3>
             <p class="price__desc">Fast, secure frontends for sites that don't need a server.</p>
-            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">25,000</span></p>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">45,000+</span></p>
             <p class="price__note">One-time, starting at</p>
             <ul class="price__list">
               <li>Responsive frontend in HTML, CSS &amp; JavaScript</li>
@@ -303,7 +187,7 @@
           <article class="card price reveal" data-package="Dynamic Applications">
             <h3 class="price__name">Dynamic Applications</h3>
             <p class="price__desc">Full-stack apps with a database, user accounts and an API.</p>
-            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">100,000</span></p>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">120,000+</span></p>
             <p class="price__note">One-time, starting at</p>
             <ul class="price__list">
               <li>Backend in Python/Django or PHP</li>
@@ -469,6 +353,7 @@
           <h2 class="footer__h">Navigate</h2>
           <ul>
             <li><a href="#overview">Overview</a></li>
+            <li><a href="#work">Our Work</a></li>
             <li><a href="#stack">Tech Stack</a></li>
             <li><a href="#pricing">Pricing</a></li>
             <li><a href="#contact">Contact</a></li>

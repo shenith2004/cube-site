@@ -167,6 +167,17 @@ const CUBE_CONFIG = {
     reveals.forEach((el) => observer.observe(el));
   }
 
+  /* ---------- Our Work videos: stay still for reduced motion ---------- */
+  function initWorkVideos() {
+    const videos = $$('[data-work-video]');
+    const sync = () => videos.forEach((v) => {
+      if (reduceMotion.matches) v.pause();
+      else v.play().catch(() => {});
+    });
+    sync();
+    reduceMotion.addEventListener('change', sync);
+  }
+
   /* ---------- Particle ribbons (hero, pricing, contact) ---------- */
   // Each ribbon is a smooth curve through `path` (fractions of the canvas
   // width and height), filled with fine strands of dots that drift along it.
@@ -592,6 +603,7 @@ const CUBE_CONFIG = {
   initActiveNav();
   initMenu();
   initMotion();
+  initWorkVideos();
   initParticles();
   initSelections();
   initForm();

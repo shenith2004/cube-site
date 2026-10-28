@@ -8,8 +8,7 @@
   /* Colors */
   --color-canvas: #f0f1f3;
   --color-surface: #ffffff;
-  --color-surface-soft: #f7f8fa;
-  --color-ink: #0a0a0a;            /* headings, primary buttons */
+  --color-surface-soft: #f7f8fa;  --color-ink: #0a0a0a;            /* headings, primary buttons */
   --color-muted: #7d7f85;          /* second line of display headings */
   --color-body: #696b70;           /* paragraphs, footer links */
   --color-subtle: #9a9ca1;         /* captions inside illustrations */
@@ -34,6 +33,8 @@
   --radius-card: 24px;
   --radius-pill: 999px;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03), 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+  --shadow-soft: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+  --shadow-soft-hover: 0 30px 60px -12px rgba(0, 0, 0, 0.1);
   --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px -6px rgba(0, 0, 0, 0.14);
   --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 18px -6px rgba(0, 0, 0, 0.35);
 

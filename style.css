@@ -343,6 +343,139 @@
     box-shadow: var(--shadow-card);
   }
 
+  /* ---------- Our Work: 16:9 video cards ---------- */
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+  }
+  .work-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .work-card__media {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-canvas);
+  }
+  .work-card__media video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .work-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 26px 30px 24px;
+  }
+  .work-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .work-card__title {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+  }
+  .work-card__arrow {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--color-line);
+    font-size: 15px;
+    color: var(--color-ink);
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .work-card__swap {
+    display: grid;
+    flex: 1;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .work-card__text {
+    font-size: 14px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+  .work-card__tags {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--color-subtle);
+  }
+  .work-card__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-line);
+    font-size: 13px;
+  }
+  .work-card__meta span:last-child { font-weight: 500; color: var(--color-ink); }
+
+  @media (min-width: 900px) {
+    .card-container { flex-direction: row; }
+    .work-card { flex: 1 1 0; min-width: 0; }
+  }
+
+  /* Focus state: hovered card scales up over its neighbours; siblings shrink, dim and
+     drift away from it. Only with a real pointer and room for the three cards in a row. */
+  @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+    /* Tags and description share one grid cell, sized by the taller, so the swap never shifts the layout */
+    .work-card__swap > * {
+      grid-area: 1 / 1;
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .work-card__text {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .work-card:is(:hover, :focus-visible) {
+      z-index: 2;
+      transform: scale(1.15);
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2);
+    }
+    .work-card:is(:hover, :focus-visible) .work-card__text { opacity: 1; transform: none; }
+    .work-card:is(:hover, :focus-visible) .work-card__tags { opacity: 0; transform: translateY(-6px); }
+    .work-card:is(:hover, :focus-visible) .work-card__arrow {
+      background: var(--color-ink);
+      box-shadow: none;
+      color: #fff;
+      transform: rotate(-45deg);
+    }
+
+    .card-container:has(.work-card:is(:hover, :focus-visible)) .work-card:not(:hover, :focus-visible) {
+      opacity: 0.6;
+      transform: scale(0.95);
+    }
+    /* Cards before the focused one drift left, cards after it drift right */
+    .card-container .work-card:not(:hover, :focus-visible):has(~ .work-card:is(:hover, :focus-visible)) {
+      transform: translateX(-16px) scale(0.95);
+    }
+    .card-container .work-card:is(:hover, :focus-visible) ~ .work-card:not(:hover, :focus-visible) {
+      transform: translateX(16px) scale(0.95);
+    }
+  }
+
   /* ---------- Tech stack cards ---------- */
   .service-grid { display: grid; gap: 16px; }
   @media (min-width: 768px) {
