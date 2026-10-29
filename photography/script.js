@@ -211,7 +211,9 @@ function initCursor() {
   const cursorFollower = document.getElementById('cursorFollower');
   const cursorBadge = document.getElementById('cursorBadge');
 
+  // Touch screens and pens get the native cursor only
   if (!cursorDot || !cursorFollower) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
   let currentX = window.innerWidth / 2;
   let currentY = window.innerHeight / 2;
@@ -225,6 +227,15 @@ function initCursor() {
     currentY = e.clientY;
     cursorDot.style.left = `${currentX}px`;
     cursorDot.style.top = `${currentY}px`;
+    if (!document.body.classList.contains('cursor-ready')) {
+      // Jump the follower to the pointer instead of sliding in from the centre
+      followerX = currentX;
+      followerY = currentY;
+      document.body.classList.add('cursor-ready');
+    }
+  });
+  document.documentElement.addEventListener('mouseleave', () => {
+    document.body.classList.remove('cursor-ready');
   });
 
   // Smooth lerp loop
@@ -239,17 +250,20 @@ function initCursor() {
 
   // Hover badge text (delegated, so elements built later by JS are covered too)
   const hoverSelector = '[data-cursor-text], a, button, .spotlight-card, .tilt-card';
+  const interactiveSelector = 'a, button, [onclick], [role="button"], input, select, textarea, label';
   let hoverTarget = null;
 
   function setHoverTarget(el) {
     if (el === hoverTarget) return;
     hoverTarget = el;
     if (el) {
+      const isInteractive = el.matches(interactiveSelector);
       document.body.classList.add('cursor-hover');
-      cursorBadge.textContent = el.getAttribute('data-cursor-text') || 'EXPLORE';
+      document.body.classList.toggle('cursor-passive', !isInteractive);
+      cursorBadge.textContent = el.getAttribute('data-cursor-text') || (isInteractive ? 'OPEN' : '');
       playSoftHoverSound();
     } else {
-      document.body.classList.remove('cursor-hover');
+      document.body.classList.remove('cursor-hover', 'cursor-passive');
       cursorBadge.textContent = '';
     }
   }
@@ -303,13 +317,7 @@ function initDeckSlider() {
 
     // Update Dots
     navDots.forEach((dot, idx) => {
-      if (idx === targetIndex) {
-        dot.classList.add('bg-white', 'scale-125');
-        dot.classList.remove('bg-white/30');
-      } else {
-        dot.classList.remove('bg-white', 'scale-125');
-        dot.classList.add('bg-white/30');
-      }
+      dot.setAttribute('aria-current', idx === targetIndex ? 'true' : 'false');
     });
 
     // Play synthesized sound
@@ -369,9 +377,15 @@ function initViewModes() {
   const deckContainer = document.getElementById('slideDeckContainer');
   const scrollContainer = document.getElementById('continuousScrollContainer');
   const deckControls = document.getElementById('deckControlsBar');
+  // The deck is a desktop presentation; on smaller screens the slides can't fit
+  // a single viewport, so those visitors always get the scroll story
+  const deckAllowed = window.matchMedia('(min-width: 1024px)');
 
   function setMode(mode, { silent = false } = {}) {
+    if (mode === 'deck' && !deckAllowed.matches) mode = 'scroll';
     state.viewMode = mode;
+    modeDeckBtn?.setAttribute('aria-pressed', String(mode === 'deck'));
+    modeScrollBtn?.setAttribute('aria-pressed', String(mode === 'scroll'));
     document.body.classList.toggle('mode-deck', mode === 'deck');
     document.body.classList.toggle('mode-scroll', mode === 'scroll');
     document.getElementById('siteHeader')?.classList.remove('is-hidden', 'is-scrolled');
@@ -430,6 +444,11 @@ function initViewModes() {
   if (modeDeckBtn) modeDeckBtn.addEventListener('click', () => setMode('deck'));
   if (modeScrollBtn) modeScrollBtn.addEventListener('click', () => setMode('scroll'));
   window.switchMode = setMode;
+  window.isDeckAllowed = () => deckAllowed.matches;
+
+  deckAllowed.addEventListener('change', (e) => {
+    if (!e.matches && state.viewMode === 'deck') setMode('scroll', { silent: true });
+  });
 
   setMode(state.viewMode, { silent: true });
 }
@@ -439,7 +458,6 @@ function initViewModes() {
    ========================================================================== */
 function initWebAudio() {
   const soundToggleBtn = document.getElementById('soundToggleBtn');
-  const soundIcon = document.getElementById('soundIcon');
   const soundStatusText = document.getElementById('soundStatusText');
 
   function getAudioCtx() {
@@ -515,19 +533,26 @@ function initWebAudio() {
   if (soundToggleBtn) {
     soundToggleBtn.addEventListener('click', () => {
       state.isAudioEnabled = !state.isAudioEnabled;
+      soundToggleBtn.setAttribute('aria-pressed', String(state.isAudioEnabled));
+      setIcon(soundToggleBtn, state.isAudioEnabled ? 'volume-2' : 'volume-x');
+      if (soundStatusText) soundStatusText.textContent = state.isAudioEnabled ? 'SOUND ON' : 'SOUND OFF';
       if (state.isAudioEnabled) {
         getAudioCtx();
-        if (soundStatusText) soundStatusText.textContent = "AUDIO ON";
-        soundToggleBtn.classList.add('border-white', 'text-white');
-        soundToggleBtn.classList.remove('border-white/20', 'text-white/60');
         playClickSound();
-      } else {
-        if (soundStatusText) soundStatusText.textContent = "AUDIO OFF";
-        soundToggleBtn.classList.remove('border-white', 'text-white');
-        soundToggleBtn.classList.add('border-white/20', 'text-white/60');
       }
     });
   }
+}
+
+// Swap the Lucide icon inside a button (Lucide replaces <i> with <svg> once rendered)
+function setIcon(container, name) {
+  const current = container.querySelector('svg, i');
+  if (!current || !window.lucide) return;
+  const icon = document.createElement('i');
+  icon.setAttribute('data-lucide', name);
+  icon.setAttribute('class', 'w-3.5 h-3.5');
+  current.replaceWith(icon);
+  lucide.createIcons();
 }
 
 /* ==========================================================================
@@ -636,7 +661,9 @@ function initSmartwatchClock() {
   if (watchToggleBtn) {
     watchToggleBtn.addEventListener('click', () => {
       state.isLiveTimeMode = !state.isLiveTimeMode;
-      watchToggleBtn.textContent = state.isLiveTimeMode ? "LIVE TIME ON" : "ICONIC 11:36";
+      // Label names the action the button will take next
+      watchToggleBtn.textContent = state.isLiveTimeMode ? 'SHOW ICONIC 11:36' : 'SHOW LIVE TIME';
+      watchToggleBtn.setAttribute('aria-pressed', String(state.isLiveTimeMode));
       updateClock();
       playClickSound();
     });
@@ -647,12 +674,64 @@ function initSmartwatchClock() {
 }
 
 /* ==========================================================================
-   8. Detail Lightbox Modal & Deck Overview Grid
+   8. Dialogs: Detail Lightbox, Index Grid & Inquiry Form
    ========================================================================== */
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+let modalReturnFocus = null;
+
+function getOpenModal() {
+  return document.querySelector('.modal.flex');
+}
+
+function getFocusable(root) {
+  return [...root.querySelectorAll(FOCUSABLE)].filter(el => el.getClientRects().length > 0);
+}
+
+// Everything outside the dialog becomes inert so screen readers and Tab stay inside
+function setBackgroundInert(isInert) {
+  [...document.body.children].forEach(el => {
+    if (el.classList.contains('modal') || el.tagName === 'SCRIPT') return;
+    el.inert = isInert;
+  });
+}
+
+function openModal(modal, focusTarget) {
+  if (!modal) return;
+  const current = getOpenModal();
+  if (current === modal) return;
+  if (current) {
+    current.classList.add('hidden');
+    current.classList.remove('flex');
+  } else {
+    modalReturnFocus = document.activeElement;
+  }
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.documentElement.classList.add('modal-open');
+  setBackgroundInert(true);
+  (focusTarget || getFocusable(modal)[0])?.focus({ preventScroll: true });
+  playClickSound();
+}
+
+function closeModal(modal) {
+  if (!modal || modal.classList.contains('hidden')) return;
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  if (getOpenModal()) return;
+  document.documentElement.classList.remove('modal-open');
+  setBackgroundInert(false);
+  if (modalReturnFocus && document.contains(modalReturnFocus)) {
+    modalReturnFocus.focus({ preventScroll: true });
+  }
+  modalReturnFocus = null;
+}
+
 function initModalAndGrid() {
-  // Detail Modal Elements
   const detailModal = document.getElementById('detailModal');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const overviewModal = document.getElementById('overviewModal');
+  const inquiryModal = document.getElementById('inquiryModal');
+  const detailScroller = detailModal?.querySelector('.overflow-y-auto');
+
   const modalNumber = document.getElementById('modalNumber');
   const modalTag = document.getElementById('modalTag');
   const modalTitle = document.getElementById('modalTitle');
@@ -660,168 +739,256 @@ function initModalAndGrid() {
   const modalDesc = document.getElementById('modalDesc');
   const modalImage = document.getElementById('modalImage');
   const modalStatsList = document.getElementById('modalStatsList');
-  const modalScopeList = document.getElementById('modalScopeList');
-
-  // Deck Overview Grid Elements
-  const overviewModal = document.getElementById('overviewModal');
-  const openOverviewBtn = document.getElementById('openOverviewBtn');
-  const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+  const modalExtra = document.getElementById('modalExtra');
   const overviewGridContainer = document.getElementById('overviewGridContainer');
 
-  // Open Detail Modal
+  let detailIndex = 0;
+
+  // Leadership gets their quote, rosters get their people, projects get their scope
+  function renderExtra(details = {}) {
+    const label = (text) => `<div class="text-[11px] font-mono tracking-widest text-neutral-400 uppercase mb-3">${text}</div>`;
+
+    if (details.members) {
+      return label('The team') + `
+        <ul class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          ${details.members.map(m => `
+            <li class="flex items-center gap-3">
+              <img src="${m.img}" alt="" loading="lazy" class="w-10 h-10 rounded-full object-cover grayscale border border-white/15">
+              <span>
+                <span class="block text-sm font-syne font-bold text-white leading-tight">${m.name}</span>
+                <span class="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider">${m.role}</span>
+              </span>
+            </li>`).join('')}
+        </ul>`;
+    }
+    if (details.quote) {
+      return label('In their words') + `
+        <blockquote class="pl-4 border-l border-white/30 text-lg md:text-xl font-italiana text-white/90 leading-snug">“${details.quote}”</blockquote>
+        <div class="mt-3 text-[11px] font-mono tracking-widest text-neutral-400 uppercase">${[details.role, details.tenure].filter(Boolean).join(' · ')}</div>`;
+    }
+    if (details.scope) {
+      return label('Scope of practice') + `
+        <ul class="space-y-1.5">
+          ${details.scope.map(item => `
+            <li class="flex items-center gap-2 text-sm text-white/80">
+              <span class="w-1.5 h-1.5 bg-white rounded-full shrink-0"></span>
+              <span>${item}</span>
+            </li>`).join('')}
+        </ul>`;
+    }
+    return '';
+  }
+
   window.openDetailModal = function(slideIndex) {
-    const data = slideData[slideIndex] || slideData[0];
     if (!detailModal) return;
+    const total = slideData.length;
+    detailIndex = ((slideIndex % total) + total) % total;
+    const data = slideData[detailIndex];
+    const details = data.details || {};
 
-    if (modalNumber) modalNumber.textContent = data.number;
-    if (modalTag) modalTag.textContent = data.tag;
-    if (modalTitle) modalTitle.textContent = data.title;
-    if (modalSubtitle) modalSubtitle.textContent = data.subtitle;
-    if (modalDesc) modalDesc.textContent = data.desc;
-    if (modalImage) modalImage.src = data.image;
+    modalNumber.textContent = data.number;
+    modalTag.textContent = data.tag;
+    modalTitle.textContent = data.title;
+    modalSubtitle.textContent = data.subtitle;
+    modalDesc.textContent = data.desc;
+    modalImage.src = data.image;
 
-    // Populate Stats
-    if (modalStatsList && data.details && data.details.stats) {
-      modalStatsList.innerHTML = Object.entries(data.details.stats).map(([k, v]) => `
-        <div class="p-3 bg-white/[0.03] border border-white/10 rounded">
-          <div class="text-xl font-bold font-syne text-white">${v}</div>
-          <div class="text-[10px] text-white/50 tracking-wider uppercase mt-1">${k}</div>
-        </div>
-      `).join('');
-    }
+    modalStatsList.innerHTML = Object.entries(details.stats || {}).map(([k, v]) => `
+      <div class="p-3 bg-white/[0.03] border border-white/10 rounded flex sm:block items-baseline justify-between gap-3">
+        <div class="text-lg md:text-xl font-bold font-syne text-white leading-tight">${v}</div>
+        <div class="text-[10px] text-white/60 tracking-wider uppercase sm:mt-1">${k}</div>
+      </div>
+    `).join('');
 
-    // Populate Scope
-    if (modalScopeList && data.details && data.details.scope) {
-      modalScopeList.innerHTML = data.details.scope.map(item => `
-        <li class="flex items-center gap-2 text-sm text-white/80">
-          <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
-          <span>${item}</span>
-        </li>
-      `).join('');
-    }
+    const extra = renderExtra(details);
+    modalExtra.innerHTML = extra;
+    modalExtra.hidden = !extra;
 
-    detailModal.classList.remove('hidden');
-    detailModal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-    playClickSound();
+    if (detailScroller) detailScroller.scrollTop = 0;
+    openModal(detailModal);
   };
 
-  // Close Detail Modal
-  window.closeDetailModal = function() {
-    if (!detailModal) return;
-    detailModal.classList.add('hidden');
-    detailModal.classList.remove('flex');
-    document.body.style.overflow = '';
-  };
+  window.closeDetailModal = () => closeModal(detailModal);
 
-  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeDetailModal);
-  if (detailModal) {
-    detailModal.addEventListener('click', (e) => {
-      if (e.target === detailModal) closeDetailModal();
+  document.getElementById('modalCloseBtn')?.addEventListener('click', closeDetailModal);
+  document.getElementById('modalPrevBtn')?.addEventListener('click', () => openDetailModal(detailIndex - 1));
+  document.getElementById('modalNextBtn')?.addEventListener('click', () => openDetailModal(detailIndex + 1));
+
+  // Clicking the dimmed backdrop closes any dialog
+  [detailModal, overviewModal, inquiryModal].forEach(modal => {
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal(modal);
+    });
+  });
+
+  // Index grid
+  if (overviewGridContainer) {
+    overviewGridContainer.innerHTML = slideData.map((item, idx) => `
+      <button type="button" data-index="${idx}" style="--i:${idx}"
+           class="overview-card group relative text-left bg-[#121216] border border-white/10 hover:border-white/40 rounded-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+        <span class="block aspect-[16/9] w-full overflow-hidden bg-black relative">
+          <img src="${item.image}" alt="" loading="lazy" class="w-full h-full object-cover grayscale opacity-75 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
+          <span class="absolute top-2 left-2 px-2 py-0.5 bg-black/80 backdrop-blur text-[10px] font-mono tracking-wider text-white border border-white/20">${item.number}</span>
+        </span>
+        <span class="block p-3 md:p-4">
+          <span class="block text-[11px] text-white/60 font-mono tracking-wider uppercase mb-1">${item.tag}</span>
+          <span class="block text-sm font-syne font-bold text-white truncate" title="${item.title}">${item.title}</span>
+        </span>
+      </button>
+    `).join('');
+
+    overviewGridContainer.addEventListener('click', (e) => {
+      const card = e.target.closest('[data-index]');
+      if (!card) return;
+      closeOverviewModal();
+      navigateTo(parseInt(card.dataset.index, 10));
     });
   }
 
-  // Populate Deck Overview Grid
-  if (overviewGridContainer) {
-    overviewGridContainer.innerHTML = slideData.map((item, idx) => `
-      <div onclick="closeOverviewModal(); navigateTo(${idx});" style="--i:${idx}"
-           class="group relative bg-[#121216] border border-white/10 hover:border-white/40 rounded-lg overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-        <div class="aspect-[16/9] w-full overflow-hidden bg-black relative">
-          <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover grayscale opacity-75 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500">
-          <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/80 backdrop-blur text-[10px] font-mono tracking-wider text-white border border-white/20">
-            SLIDE ${item.number}
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="text-xs text-white/40 font-mono tracking-wider uppercase mb-1">${item.tag}</div>
-          <h4 class="text-sm font-syne font-bold text-white group-hover:text-white transition-colors truncate">${item.title}</h4>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // Open & Close Overview Modal
   window.openOverviewModal = function() {
     if (!overviewModal) return;
-    overviewModal.classList.remove('hidden');
-    overviewModal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-    playClickSound();
+    // Mark (and focus) where the visitor currently is
+    let currentCard = null;
+    overviewGridContainer?.querySelectorAll('[data-index]').forEach(card => {
+      const isCurrent = parseInt(card.dataset.index, 10) === state.currentSlide;
+      card.setAttribute('aria-current', isCurrent ? 'true' : 'false');
+      if (isCurrent) currentCard = card;
+    });
+    openModal(overviewModal, currentCard);
   };
 
-  window.closeOverviewModal = function() {
-    if (!overviewModal) return;
-    overviewModal.classList.add('hidden');
-    overviewModal.classList.remove('flex');
-    document.body.style.overflow = '';
-  };
+  window.closeOverviewModal = () => closeModal(overviewModal);
 
-  if (openOverviewBtn) openOverviewBtn.addEventListener('click', openOverviewModal);
-  if (closeOverviewBtn) closeOverviewBtn.addEventListener('click', closeOverviewModal);
+  document.getElementById('openOverviewBtn')?.addEventListener('click', openOverviewModal);
+  document.getElementById('closeOverviewBtn')?.addEventListener('click', closeOverviewModal);
 
-  // Inquiry Drawer
-  const inquiryModal = document.getElementById('inquiryModal');
-  const openInquiryBtn = document.getElementById('openInquiryBtn');
-  const closeInquiryBtn = document.getElementById('closeInquiryBtn');
+  // Inquiry form
   const inquiryForm = document.getElementById('inquiryForm');
+  const inquiryStatus = document.getElementById('inquiryStatus');
 
   window.openInquiryModal = function() {
     if (!inquiryModal) return;
-    inquiryModal.classList.remove('hidden');
-    inquiryModal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-    playClickSound();
+    // Don't pop the on-screen keyboard on touch devices
+    const firstField = window.matchMedia('(pointer: fine)').matches ? document.getElementById('inqName') : null;
+    openModal(inquiryModal, firstField);
   };
 
-  window.closeInquiryModal = function() {
-    if (!inquiryModal) return;
-    inquiryModal.classList.add('hidden');
-    inquiryModal.classList.remove('flex');
-    document.body.style.overflow = '';
-  };
+  window.closeInquiryModal = () => closeModal(inquiryModal);
 
-  if (openInquiryBtn) openInquiryBtn.addEventListener('click', openInquiryModal);
-  if (closeInquiryBtn) closeInquiryBtn.addEventListener('click', closeInquiryModal);
-  if (inquiryModal) {
-    inquiryModal.addEventListener('click', (e) => {
-      if (e.target === inquiryModal) closeInquiryModal();
-    });
-  }
+  document.getElementById('openInquiryBtn')?.addEventListener('click', openInquiryModal);
+  document.getElementById('closeInquiryBtn')?.addEventListener('click', closeInquiryModal);
 
   if (inquiryForm) {
+    const fields = [...inquiryForm.querySelectorAll('[required]')];
+
+    const validate = (field) => {
+      const valid = field.value.trim() !== '' && field.checkValidity();
+      field.setAttribute('aria-invalid', valid ? 'false' : 'true');
+      const error = document.getElementById(`${field.id}Error`);
+      if (error) field.setAttribute('aria-describedby', error.id);
+      return valid;
+    };
+
+    // Only re-check while typing once a field has already been flagged
+    fields.forEach(field => {
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true') validate(field);
+      });
+      field.addEventListener('blur', () => {
+        if (field.value.trim() !== '') validate(field);
+      });
+    });
+
     inquiryForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      const invalid = fields.filter(field => !validate(field));
+      if (invalid.length) {
+        invalid[0].focus();
+        inquiryStatus.textContent = 'Please fix the highlighted fields.';
+        return;
+      }
+
       const submitBtn = inquiryForm.querySelector('button[type="submit"]');
-      if (submitBtn) {
-        submitBtn.innerHTML = `✓ TRANSMISSION CONFIRMED`;
-        submitBtn.classList.add('bg-white', 'text-black');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      inquiryStatus.textContent = '';
+
+      setTimeout(() => {
+        submitBtn.textContent = '✓ Inquiry sent';
+        inquiryStatus.textContent = "Thank you — we'll be in touch shortly.";
+        playClickSound();
         setTimeout(() => {
           closeInquiryModal();
-          submitBtn.innerHTML = `TRANSMIT INQUIRY`;
           inquiryForm.reset();
-        }, 1500);
-      }
+          fields.forEach(field => field.removeAttribute('aria-invalid'));
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send inquiry';
+          inquiryStatus.textContent = '';
+        }, 2200);
+      }, 700);
     });
   }
+
+  // Keep Tab cycling inside the open dialog
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab') return;
+    const modal = getOpenModal();
+    if (!modal) return;
+    const focusable = getFocusable(modal);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!modal.contains(document.activeElement)) {
+      e.preventDefault();
+      first.focus();
+    } else if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
 }
 
 /* ==========================================================================
-   9. Keyboard Navigation (Arrows, Space, G, M, ESC)
+   9. Keyboard Navigation (Arrows, Space, G, M, V, ESC)
    ========================================================================== */
 function initKeyboardNav() {
   window.addEventListener('keydown', (e) => {
-    // If typing inside an input or textarea, ignore shortcuts
-    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+    // Leave browser/OS shortcuts (Ctrl+G, Cmd+M…) alone
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
+
+    const openDialog = getOpenModal();
+    if (e.key === 'Escape') {
+      if (openDialog) closeModal(openDialog);
+      return;
+    }
+
+    // Typing in a field never triggers shortcuts
+    if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+
+    if (openDialog) {
+      if (openDialog.id === 'overviewModal' && (e.key === 'g' || e.key === 'G')) closeOverviewModal();
+      if (openDialog.id === 'detailModal' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+        e.preventDefault();
+        document.getElementById(e.key === 'ArrowRight' ? 'modalNextBtn' : 'modalPrevBtn')?.click();
+      }
+      return;
+    }
 
     // In the scroll story, Space/PageUp/PageDown keep their native scrolling;
     // Left/Right arrows still jump between sections
     const isDeck = state.viewMode === 'deck';
+    // Space on a focused button should press that button, not change slide
+    const onControl = e.target.closest?.('button, a');
 
     switch (e.key) {
       case 'ArrowRight':
       case 'PageDown':
       case ' ':
         if (!isDeck && e.key !== 'ArrowRight') break;
+        if (e.key === ' ' && onControl) break;
         e.preventDefault();
         navigateTo(state.currentSlide + 1);
         break;
@@ -834,27 +1001,15 @@ function initKeyboardNav() {
       case 'g':
       case 'G':
         e.preventDefault();
-        const overviewModal = document.getElementById('overviewModal');
-        if (overviewModal && overviewModal.classList.contains('hidden')) {
-          openOverviewModal();
-        } else {
-          closeOverviewModal();
-        }
+        openOverviewModal();
         break;
       case 'm':
       case 'M':
-        const soundBtn = document.getElementById('soundToggleBtn');
-        if (soundBtn) soundBtn.click();
+        document.getElementById('soundToggleBtn')?.click();
         break;
       case 'v':
       case 'V':
-        const nextMode = state.viewMode === 'deck' ? 'scroll' : 'deck';
-        switchMode(nextMode);
-        break;
-      case 'Escape':
-        closeOverviewModal();
-        closeDetailModal();
-        closeInquiryModal();
+        if (isDeckAllowed()) switchMode(isDeck ? 'scroll' : 'deck');
         break;
     }
   });
@@ -867,25 +1022,27 @@ function initAutoPlay() {
   const autoPlayBtn = document.getElementById('autoPlayBtn');
   const autoPlayStatus = document.getElementById('autoPlayStatus');
 
+  function setAutoPlayUi(isOn) {
+    if (autoPlayStatus) autoPlayStatus.textContent = isOn ? 'AUTO ON' : 'AUTO';
+    if (autoPlayBtn) {
+      autoPlayBtn.setAttribute('aria-pressed', String(isOn));
+      setIcon(autoPlayBtn, isOn ? 'pause' : 'play');
+    }
+  }
+
   function startAutoPlay() {
     state.isAutoPlay = true;
-    if (autoPlayStatus) autoPlayStatus.textContent = "AUTOPLAY ON";
-    if (autoPlayBtn) {
-      autoPlayBtn.classList.add('border-white', 'text-white');
-      autoPlayBtn.classList.remove('border-white/20', 'text-white/60');
-    }
+    setAutoPlayUi(true);
     state.autoPlayTimer = setInterval(() => {
+      // Hold still while the visitor is reading a dialog
+      if (getOpenModal()) return;
       navigateTo(state.currentSlide + 1);
     }, state.autoPlayDuration);
   }
 
   function stopAutoPlay() {
     state.isAutoPlay = false;
-    if (autoPlayStatus) autoPlayStatus.textContent = "AUTOPLAY OFF";
-    if (autoPlayBtn) {
-      autoPlayBtn.classList.remove('border-white', 'text-white');
-      autoPlayBtn.classList.add('border-white/20', 'text-white/60');
-    }
+    setAutoPlayUi(false);
     clearInterval(state.autoPlayTimer);
   }
 
@@ -1086,7 +1243,11 @@ function initStoryNav() {
       if (!entry.isIntersecting || state.viewMode !== 'scroll') return;
       const index = parseInt(entry.target.dataset.section, 10);
       state.currentSlide = index;
-      items.forEach((btn, i) => btn.classList.toggle('is-active', i === index));
+      items.forEach((btn, i) => {
+        btn.classList.toggle('is-active', i === index);
+        if (i === index) btn.setAttribute('aria-current', 'true');
+        else btn.removeAttribute('aria-current');
+      });
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
 
@@ -1144,14 +1305,16 @@ function initScrollEffects() {
   window.addEventListener('load', layout);
   layout();
 
-  function updateChrome(y, delta, vh) {
+  function updateChrome(y, delta, vh, galleryPinned) {
     const max = document.documentElement.scrollHeight - vh;
     const progress = max > 0 ? clamp(y / max) : 0;
 
     if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
     if (backToTopRing) backToTopRing.style.strokeDashoffset = RING_LENGTH * (1 - progress);
-    if (backToTop) backToTop.classList.toggle('is-visible', y > vh * 0.8);
-    if (storyNav) storyNav.classList.toggle('is-visible', y > vh * 0.6);
+    // Step aside at the very bottom, where the footer has its own "Back to top"
+    if (backToTop) backToTop.classList.toggle('is-visible', y > vh * 0.8 && y < max - 140);
+    // The side nav would sit on top of the full-width archive cards
+    if (storyNav) storyNav.classList.toggle('is-visible', y > vh * 0.6 && !galleryPinned);
 
     if (header) {
       header.classList.toggle('is-scrolled', y > 40);
@@ -1219,10 +1382,11 @@ function initScrollEffects() {
     });
   }
 
+  // Returns true while the gallery is pinned and filling the viewport
   function updateHorizontalGallery(vh) {
-    if (!hscroll || !hscrollTrack) return;
+    if (!hscroll || !hscrollTrack) return false;
     const rect = hscroll.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > vh) return;
+    if (rect.bottom < 0 || rect.top > vh) return false;
 
     const p = clamp(-rect.top / Math.max(1, rect.height - vh));
     const skew = prefersReducedMotion ? 0 : clamp(-scroll.velocity * 0.08, -4, 4);
@@ -1244,6 +1408,7 @@ function initScrollEffects() {
         img.style.translate = `${offset.toFixed(1)}px 0`;
       });
     }
+    return rect.top <= vh * 0.1 && rect.bottom >= vh * 0.9;
   }
 
   function tick() {
@@ -1257,8 +1422,8 @@ function initScrollEffects() {
     scroll.velocity += (delta - scroll.velocity) * 0.12;
     if (Math.abs(delta) > 0.5) scroll.direction = Math.sign(delta);
 
-    updateChrome(y, delta, vh);
-    updateHorizontalGallery(vh);
+    const galleryPinned = updateHorizontalGallery(vh);
+    updateChrome(y, delta, vh, galleryPinned);
 
     if (prefersReducedMotion) return;
     updateHero(y, vh);

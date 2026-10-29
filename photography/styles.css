@@ -40,6 +40,38 @@ body {
   overflow-x: clip;
 }
 
+/* html is the scroller here, so the lock has to go on html, not body */
+html.modal-open {
+  overflow: hidden;
+}
+
+/* Keyboard focus: the browser default ring is near-black and invisible on this palette */
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.form-field:focus-visible {
+  outline: none;
+}
+
+kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  padding: 0 0.3em;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+/* Headings that must never be wider than their column. --fit is the em-width
+   of the heading's longest word, so 96cqi / --fit is the largest size that fits */
+.fit-col {
+  container-type: inline-size;
+}
+h1.fit-title,
+h2.fit-title {
+  font-size: min(var(--fit-max, 3.75rem), calc(96cqi / var(--fit, 9)));
+}
+
 /* Typography Classes */
 .font-syne {
   font-family: 'Syne', sans-serif;
@@ -119,6 +151,23 @@ body {
   transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
 }
 
+/* Custom cursor only for mouse users, and only once the pointer is on the page
+   (otherwise it parks in the middle of the screen) */
+.custom-cursor,
+.custom-cursor-follower {
+  visibility: hidden;
+}
+body.cursor-ready .custom-cursor,
+body.cursor-ready .custom-cursor-follower {
+  visibility: visible;
+}
+@media (hover: none), (pointer: coarse) {
+  .custom-cursor,
+  .custom-cursor-follower {
+    display: none !important;
+  }
+}
+
 .custom-cursor-follower {
   position: fixed;
   top: 0;
@@ -166,6 +215,18 @@ body.cursor-hover .custom-cursor-follower {
 
 body.cursor-hover .cursor-badge {
   opacity: 1;
+}
+
+/* Labels over things that aren't clickable get a hollow ring, so the solid
+   "button" state keeps meaning "you can click this" */
+body.cursor-hover.cursor-passive .custom-cursor-follower {
+  width: 64px;
+  height: 64px;
+  background-color: rgba(8, 8, 10, 0.35);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+body.cursor-hover.cursor-passive .cursor-badge {
+  color: #fff;
 }
 
 body.cursor-click .custom-cursor-follower {
@@ -355,20 +416,83 @@ body.cursor-click .custom-cursor-follower {
   transition: height 0.1s ease;
 }
 
-/* Touch and Responsive helpers */
-@media (max-width: 1024px) {
-  .slide-deck-container {
-    height: auto;
-    min-height: 100vh;
-  }
-  .deck-slide {
-    position: relative;
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
-    transform: none;
-    min-height: 100vh;
-  }
+/* Deck mode is desktop-only (script.js falls back to the scroll story below
+   1024px). Keep every slide clear of the fixed header and the controls bar,
+   and let a slide scroll rather than clip if the window is very short. */
+.slide-deck-container .deck-slide {
+  padding-top: 5.75rem;
+  padding-bottom: 5.75rem;
+  overflow-y: auto;
+  align-items: safe center;
+  scrollbar-width: none;
+}
+.slide-deck-container .deck-slide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Pagination dots: small dot, comfortable hit area */
+.deck-nav-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 26px;
+}
+.deck-nav-dot span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: background-color 0.3s ease, transform 0.3s var(--ease-out, ease);
+}
+.deck-nav-dot:hover span {
+  background: rgba(255, 255, 255, 0.7);
+}
+.deck-nav-dot[aria-current="true"] span {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+/* Index grid: show which chapter you're on */
+.overview-card[aria-current="true"] {
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+/* Header toggles: make on/off obvious, not just a label change */
+.header-toggle[aria-pressed="true"] {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Inquiry form */
+.form-field {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 0.25rem;
+  font-size: 0.95rem;
+  color: #fff;
+  transition: border-color 0.2s ease;
+}
+.form-field::placeholder {
+  color: #737373;
+}
+.form-field:focus {
+  outline: none;
+  border-color: #fff;
+}
+.form-field[aria-invalid="true"] {
+  border-color: #f87171;
+}
+.field-error {
+  display: none;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: #fca5a5;
+}
+.form-field[aria-invalid="true"] + .field-error {
+  display: block;
 }
 
 /* ==========================================================================
@@ -1019,6 +1143,14 @@ html.is-loaded .hero-fade {
   translate: 0 0;
   pointer-events: auto;
 }
+@media (max-width: 767px) {
+  .back-to-top {
+    right: 1rem;
+    bottom: 1rem;
+    width: 46px;
+    height: 46px;
+  }
+}
 .back-to-top:hover {
   background: #fff;
   color: #000;
@@ -1050,7 +1182,7 @@ html.is-loaded .hero-fade {
   from { opacity: 0; translate: 0 32px; }
   to { opacity: 1; translate: 0 0; }
 }
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
   .deck-slide.active-slide > div > * {
     animation: deckChildIn 1s var(--ease-out) both;
   }
