@@ -1,5 +1,5 @@
 /* =========================================================================
-   CUBE — site behaviour (vanilla JS, no build step)
+   Supercub — site behaviour (vanilla JS, no build step)
    ========================================================================= */
 
 /* -------------------------------------------------------------------------
@@ -31,7 +31,7 @@ const CUBE_CONFIG = {
   form: {
     web3formsKey: '',
     formspreeEndpoint: '',
-    subject: 'New project enquiry — CUBE website'
+    subject: 'New project enquiry — Supercub website'
   }
 };
 
@@ -522,7 +522,7 @@ const CUBE_CONFIG = {
           res = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ access_key: web3formsKey.trim(), subject, from_name: 'CUBE website', replyto: data.email, ...data }),
+            body: JSON.stringify({ access_key: web3formsKey.trim(), subject, from_name: 'Supercub website', replyto: data.email, ...data }),
             signal: controller.signal
           });
         } else {
@@ -572,7 +572,7 @@ const CUBE_CONFIG = {
           showStatus('info', 'Your email app should now open with your enquiry filled in.',
             'It has not been sent yet — please press Send in your email app to deliver it.');
         } else {
-          console.warn('[CUBE] Enquiry form is not connected. Set CUBE_CONFIG.form.web3formsKey or formspreeEndpoint in script.js.');
+          console.warn('[Supercub] Enquiry form is not connected. Set CUBE_CONFIG.form.web3formsKey or formspreeEndpoint in script.js.');
           showStatus('error', 'Online enquiries are not connected yet.',
             CUBE_CONFIG.contact.phone.trim() || CUBE_CONFIG.contact.whatsapp.trim()
               ? 'Your message was not sent. Please contact us directly using the details on this page.'
@@ -589,7 +589,7 @@ const CUBE_CONFIG = {
           `We'll reply to ${data.email} as soon as possible.`);
         resetForm();
       } catch (err) {
-        console.error('[CUBE] Enquiry failed:', err);
+        console.error('[Supercub] Enquiry failed:', err);
         showStatus('error', 'Sorry, your enquiry could not be sent.',
           emailFallbackNodes('Please try again in a moment, or email us directly at'));
       } finally {

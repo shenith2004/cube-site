@@ -1,5 +1,5 @@
 /* =========================================================================
-   CUBE — component styles
+   Supercub — component styles
    Tokens come from variables.css. Everything lives in the `components`
    layer so Tailwind utilities (hidden, md:block …) win.
    ========================================================================= */
@@ -139,7 +139,7 @@
     color: var(--color-ink);
     box-shadow: var(--shadow-pill);
   }
-  .logo-btn svg { width: 19px; height: 19px; }
+  .logo-btn img { width: 26px; height: 26px; }
 
   .menu { position: relative; grid-column: 2; }
   .menu-btn {
@@ -474,6 +474,115 @@
     .card-container .work-card:is(:hover, :focus-visible) ~ .work-card:not(:hover, :focus-visible) {
       transform: translateX(16px) scale(0.95);
     }
+  }
+
+  .work__more {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(32px, 4vw, 48px);
+  }
+
+  /* ---------- Our Work page (work.html): one card per live site ---------- */
+  .hero--page {
+    min-height: 0;
+    padding-bottom: clamp(64px, 8vw, 112px);
+  }
+
+  .showcase { padding-top: 0; }
+  .showcase__list { display: grid; gap: clamp(24px, 3vw, 40px); }
+
+  .project {
+    display: grid;
+    padding: 10px;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Screenshot in a browser-window frame; the whole frame opens the site */
+  .project__media {
+    display: block;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--color-canvas);
+    box-shadow: 0 0 0 1px var(--color-line);
+  }
+  .project__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 34px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-surface-soft);
+    font-size: 12px;
+  }
+  .project__tab {
+    min-width: 0;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    color: var(--color-subtle);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .project__shot {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .project__media:hover .project__shot { transform: scale(1.03); }
+
+  .project__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 18px 18px;
+  }
+  .project__label { font-size: 13px; }
+  .project__title {
+    margin-top: 4px;
+    font-size: clamp(26px, 3vw, 34px);
+    line-height: 1.1;
+  }
+  .project__text {
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .project__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  .project__tags {
+    margin-top: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--color-subtle);
+  }
+  .project__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 24px;
+    margin-top: 28px;
+  }
+
+  @media (min-width: 900px) {
+    .project {
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      align-items: center;
+    }
+    .project__body { padding: 32px 36px; }
+    /* Alternate the screenshot from side to side down the page */
+    .project:nth-child(even) .project__media { order: 2; }
   }
 
   /* ---------- Tech stack cards ---------- */
@@ -820,8 +929,10 @@
     margin: 32px 0 36px;
     font-size: 14px;
   }
-  .price__list li { position: relative; padding-left: 26px; line-height: 1.5; }
-  .price__list li::before {
+  .price__list li,
+  .project__list li { position: relative; padding-left: 26px; line-height: 1.5; }
+  .price__list li::before,
+  .project__list li::before {
     content: '';
     position: absolute;
     left: 0;
@@ -1072,6 +1183,7 @@
     align-items: flex-start;
     gap: 18px;
   }
+  .footer__logo img { display: block; width: 104px; height: auto; }
   .footer__tagline { font-size: 14px; }
   .footer__brand .btn { margin-top: 10px; }
 
@@ -1090,16 +1202,17 @@
   .footer__col a:hover { color: var(--color-ink); }
   .footer__copy { grid-column: 1 / -1; padding-top: 24px; font-size: 13px; }
 
-  /* Oversized wordmark fading into the page */
+  /* Oversized wordmark fading into the page. Lowercase letters start about a quarter
+     of the way down the line, so the fade starts there too. */
   .footer__word {
     margin: clamp(24px, 4vw, 48px) 0 -0.16em;
-    font-size: clamp(120px, 30vw, 440px);
+    font-size: clamp(80px, 22vw, 360px);
     font-weight: 500;
     line-height: 0.8;
     letter-spacing: -0.05em;
     text-align: center;
     color: transparent;
-    background: linear-gradient(180deg, #d9dce1 0%, rgba(217, 220, 225, 0) 88%);
+    background: linear-gradient(180deg, #d9dce1 25%, rgba(217, 220, 225, 0) 90%);
     -webkit-background-clip: text;
     background-clip: text;
     user-select: none;

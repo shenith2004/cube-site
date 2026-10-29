@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Our Work — Supercub</title>
+  <meta name="description" content="Live demo sites built by Supercub: a product showcase, a wood-fired pizzeria, an online clothing store and a photography collective. Open each one and click around.">
+  <meta name="theme-color" content="#f0f1f3">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Supercub">
+  <meta property="og:title" content="Our Work — Supercub">
+  <meta property="og:description" content="Live demo sites built by Supercub: a product showcase, a restaurant, an online store and a photography collective.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>document.documentElement.classList.add('js')</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..600&family=Google+Sans+Code:wght@400..500&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.18"></script>
+  <style type="text/tailwindcss">
+    /* Mirrors theme.css — the browser build of Tailwind cannot import external @theme files */
+    @theme {
+      --color-canvas: #f0f1f3;
+      --color-surface: #ffffff;
+      --color-ink: #0a0a0a;
+      --color-muted: #7d7f85;
+      --color-body: #696b70;
+      --color-dusty-blue: #8fa5c6;
+      --color-rose-gold: #d9a796;
+
+      --font-sans: 'Google Sans Flex', 'Google Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Google Sans Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      --radius-card: 24px;
+    }
+  </style>
+  <link rel="stylesheet" href="variables.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- ============ HEADER / NAVIGATION ============ -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="index.html" class="logo-btn" aria-label="Supercub — home">
+        <img src="assets/logo-mark.svg" alt="" width="26" height="26">
+      </a>
+
+      <div class="menu">
+        <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+          <span class="menu-btn__icon" aria-hidden="true"></span>Menu
+        </button>
+        <nav class="menu__panel" id="site-menu" aria-label="Primary" hidden data-menu>
+          <ul>
+            <li><a href="index.html#overview">Overview</a></li>
+            <li><a href="work.html" class="is-active" aria-current="page">Our Work</a></li>
+            <li><a href="index.html#stack">Tech Stack</a></li>
+            <li><a href="index.html#pricing">Pricing</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <a href="index.html#contact" class="btn btn--primary site-header__cta">Start a Project</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ PAGE HEADER ============ -->
+    <section class="hero hero--page" aria-labelledby="page-title">
+      <canvas class="particles" data-particles="hero" aria-hidden="true"></canvas>
+
+      <div class="container-cube hero__inner">
+        <p class="badge" data-hero-step><span class="badge__dot" aria-hidden="true"></span>4 live demos</p>
+        <h1 id="page-title" class="hero__title" data-hero-step>Our work. <span>Open one and click around.</span></h1>
+        <p class="hero__lead" data-hero-step>Four sites we designed and built: a product showcase, a restaurant, an online store and a photography collective. Each one is live, so try the menus, carts and booking forms for yourself.</p>
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <!-- To add a site: copy an <article>, point both links at its folder, and put a 1600×900 screenshot in assets/work/.
+         "Start a similar project" opens the enquiry form on the homepage with that plan preselected. -->
+    <section class="section showcase" aria-label="Projects">
+      <div class="container-cube showcase__list">
+        <article class="project reveal" aria-labelledby="project-vela">
+          <a href="veloa%20one/Vela%20One.html" target="_blank" rel="noopener" class="project__media" tabindex="-1" aria-hidden="true">
+            <span class="project__bar"><span class="win__dots"><i></i><i></i><i></i></span><span class="project__tab">Vela One</span></span>
+            <img class="project__shot" src="assets/work/vela-one.webp" alt="" width="1600" height="900" loading="lazy">
+          </a>
+          <div class="project__body">
+            <p class="project__label">Portfolio</p>
+            <h2 id="project-vela" class="project__title">Vela One</h2>
+            <p class="project__text">A launch page for a pair of titanium headphones. The story unfolds as you scroll: the ear cups swivel, the driver separates into its layers and the frequency curve draws itself.</p>
+            <ul class="project__list">
+              <li>Scroll-driven scenes built with GSAP and ScrollTrigger</li>
+              <li>Exploded view of the ear cup and full tech specs</li>
+              <li>Pre-order bag that updates as you add items</li>
+            </ul>
+            <p class="project__tags">HTML · CSS · JavaScript · GSAP</p>
+            <div class="project__actions">
+              <a href="veloa%20one/Vela%20One.html" target="_blank" rel="noopener" class="btn btn--primary btn--lg">View live site <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <a href="index.html?package=Static%20Deployments#contact" class="link-arrow">Start a similar project <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project reveal" aria-labelledby="project-pizza">
+          <a href="pizza/index.html" target="_blank" rel="noopener" class="project__media" tabindex="-1" aria-hidden="true">
+            <span class="project__bar"><span class="win__dots"><i></i><i></i><i></i></span><span class="project__tab">Forno Nero — Wood-Fired Pizzeria</span></span>
+            <img class="project__shot" src="assets/work/forno-nero.webp" alt="" width="1600" height="900" loading="lazy">
+          </a>
+          <div class="project__body">
+            <p class="project__label">Restaurant</p>
+            <h2 id="project-pizza" class="project__title">Forno Nero</h2>
+            <p class="project__text">A wood-fired pizzeria with an online menu, a build-your-own pizza tool and table booking. The opening hours drive the open and closed badges, so the site always knows whether the kitchen is open.</p>
+            <ul class="project__list">
+              <li>Menu with categories and a working cart</li>
+              <li>Pizza builder for size, crust, sauce and toppings</li>
+              <li>Booking form that checks the opening hours</li>
+              <li>Deal countdown, reviews slider and photo gallery</li>
+            </ul>
+            <p class="project__tags">HTML · CSS · JavaScript · WebP images</p>
+            <div class="project__actions">
+              <a href="pizza/index.html" target="_blank" rel="noopener" class="btn btn--primary btn--lg">View live site <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <a href="index.html?package=Dynamic%20Applications#contact" class="link-arrow">Start a similar project <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project reveal" aria-labelledby="project-mute">
+          <a href="hoodie/index.html" target="_blank" rel="noopener" class="project__media" tabindex="-1" aria-hidden="true">
+            <span class="project__bar"><span class="win__dots"><i></i><i></i><i></i></span><span class="project__tab">MUTE — Quiet essentials</span></span>
+            <img class="project__shot" src="assets/work/mute.webp" alt="" width="1600" height="900" loading="lazy">
+          </a>
+          <div class="project__body">
+            <p class="project__label">Small Business</p>
+            <h2 id="project-mute" class="project__title">MUTE</h2>
+            <p class="project__text">An online store for a small clothing label. Shoppers pick a tone in the hero, quick-add from the range and open a full product page with a size guide.</p>
+            <ul class="project__list">
+              <li>Shop-by-fit collections with quick add to bag</li>
+              <li>Product page with gallery, size guide and reviews</li>
+              <li>Lookbook, brand story and newsletter signup</li>
+            </ul>
+            <p class="project__tags">HTML · Tailwind CSS · JavaScript</p>
+            <div class="project__actions">
+              <a href="hoodie/index.html" target="_blank" rel="noopener" class="btn btn--primary btn--lg">View live site <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <a href="index.html?package=Static%20Deployments#contact" class="link-arrow">Start a similar project <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project reveal" aria-labelledby="project-black">
+          <a href="photography/index.html" target="_blank" rel="noopener" class="project__media" tabindex="-1" aria-hidden="true">
+            <span class="project__bar"><span class="win__dots"><i></i><i></i><i></i></span><span class="project__tab">BLACK. — Avant-Garde Minimalist Agency &amp; Editorial Showcase</span></span>
+            <img class="project__shot" src="assets/work/black.webp" alt="" width="1600" height="900" loading="lazy">
+          </a>
+          <div class="project__body">
+            <p class="project__label">Photography</p>
+            <h2 id="project-black" class="project__title">Black.</h2>
+            <p class="project__text">A dark, editorial showcase for a photography and sound collective. Visitors can scroll through it as a cinematic story or flip through the same work as a slide deck.</p>
+            <ul class="project__list">
+              <li>Scroll story with parallax, a pinned gallery and image wipes</li>
+              <li>Slide deck mode with keyboard controls, an index grid and auto-play</li>
+              <li>Project lightboxes and an enquiry form</li>
+              <li>Optional sound effects made with the Web Audio API</li>
+            </ul>
+            <p class="project__tags">HTML · Tailwind CSS · JavaScript · Web Audio</p>
+            <div class="project__actions">
+              <a href="photography/index.html" target="_blank" rel="noopener" class="btn btn--primary btn--lg">View live site <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>
+              <a href="index.html?package=Static%20Deployments#contact" class="link-arrow">Start a similar project <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ CALL TO ACTION ============ -->
+    <section class="section section--ribbons section--cta" aria-labelledby="cta-title">
+      <canvas class="particles" data-particles="corners" aria-hidden="true"></canvas>
+      <div class="container-cube">
+        <header class="section-head reveal">
+          <h2 id="cta-title" class="h-section">Want a site like these?</h2>
+          <p class="section-lead">Tell us about your business and we'll reply with questions or a fixed, written quote. No obligation.</p>
+          <div class="hero__actions">
+            <a href="index.html#contact" class="btn btn--primary btn--lg">Start a Project</a>
+            <a href="index.html#pricing" class="hero__note">See pricing <span aria-hidden="true">→</span></a>
+          </div>
+        </header>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="container-cube footer__inner">
+      <div class="footer__brand">
+        <a href="index.html" class="footer__logo" aria-label="Supercub — home">
+          <img src="assets/logo.svg" alt="" width="104" height="97">
+        </a>
+        <p class="footer__tagline">Web development and infrastructure studio.</p>
+        <a href="index.html#contact" class="btn btn--primary">Start a Project</a>
+      </div>
+
+      <nav class="footer__nav" aria-label="Footer">
+        <div class="footer__col">
+          <h2 class="footer__h">Navigate</h2>
+          <ul>
+            <li><a href="index.html#overview">Overview</a></li>
+            <li><a href="work.html" aria-current="page">Our Work</a></li>
+            <li><a href="index.html#stack">Tech Stack</a></li>
+            <li><a href="index.html#pricing">Pricing</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h2 class="footer__h">Services</h2>
+          <!-- ?type= preselects the service in the homepage enquiry form -->
+          <ul>
+            <li><a href="index.html?type=Full-stack%20development#contact">Full-Stack Development</a></li>
+            <li><a href="index.html?type=Infrastructure%20%26%20deployment#contact">Infrastructure &amp; Deployment</a></li>
+            <li><a href="index.html?type=Security%20%26%20vulnerability%20scanning#contact">Security &amp; Scanning</a></li>
+            <li><a href="index.html?type=Server%20management#contact">Server Management</a></li>
+          </ul>
+        </div>
+        <!-- Shown only when a social URL is set in script.js -->
+        <div class="footer__col" data-social-block>
+          <h2 class="footer__h">Social</h2>
+          <ul>
+            <li data-config-item="social.github"><a href="#" data-config-link="social.github" target="_blank" rel="noopener">GitHub</a></li>
+            <li data-config-item="social.linkedin"><a href="#" data-config-link="social.linkedin" target="_blank" rel="noopener">LinkedIn</a></li>
+            <li data-config-item="social.instagram"><a href="#" data-config-link="social.instagram" target="_blank" rel="noopener">Instagram</a></li>
+            <li data-config-item="social.facebook"><a href="#" data-config-link="social.facebook" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <p class="footer__copy">© <span data-year>2026</span> Supercub. All rights reserved.</p>
+    </div>
+    <p class="footer__word" aria-hidden="true">supercub</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
