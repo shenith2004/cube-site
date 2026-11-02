@@ -1,19 +1,27 @@
 /* =========================================================================
-   Supercub — design tokens
+   CobWebZ — design tokens
    Soft-grey canvas, white floating surfaces and ink type in Geist, one sans
    family throughout; dusty blue + rose gold survive only as small accents.
    ========================================================================= */
 
 :root {
+  color-scheme: light;             /* native controls (selects, scrollbars) match the theme */
+
   /* Colors */
   --color-canvas: #f0f1f3;
   --color-surface: #ffffff;
-  --color-surface-soft: #f7f8fa;  --color-ink: #0a0a0a;            /* headings, primary buttons */
+  --color-surface-soft: #f7f8fa;
+  --color-ink: #0a0a0a;            /* headings, primary buttons */
+  --color-on-ink: #ffffff;         /* text on ink-filled buttons and badges */
   --color-muted: #7d7f85;          /* second line of display headings */
   --color-body: #696b70;           /* paragraphs, footer links */
   --color-subtle: #9a9ca1;         /* captions inside illustrations */
   --color-black-hover: #262626;
   --color-line: rgba(10, 10, 10, 0.08);
+  --color-line-strong: rgba(10, 10, 10, 0.16);
+  --color-nav: #3f4147;            /* header links at rest */
+  --color-word: #d9dce1;           /* the big footer word */
+  --hero-glow: rgba(255, 255, 255, 0.8);
 
   --color-dusty-blue: #8fa5c6;
   --color-dusty-blue-deep: #5b78a6;
@@ -44,4 +52,29 @@
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-canvas: #0c0d10;
+  --color-surface: #16181d;
+  --color-surface-soft: #1e2026;
+  --color-ink: #f0f2f5;
+  --color-on-ink: #0c0d10;
+  --color-muted: #95989f;
+  --color-body: #a2a5ac;
+  --color-subtle: #6c6f76;
+  --color-black-hover: #ffffff;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.18);
+  --color-nav: #b4b7be;
+  --color-word: #1c1f25;
+  --hero-glow: rgba(255, 255, 255, 0.045);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+  --shadow-soft: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  --shadow-soft-hover: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+  --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+  --shadow-button: 0 1px 2px rgba(255, 255, 255, 0.15), 0 8px 18px -6px rgba(255, 255, 255, 0.2);
 }

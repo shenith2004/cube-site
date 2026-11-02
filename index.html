@@ -1,52 +1,105 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Supercub — Web Development &amp; Infrastructure</title>
-  <meta name="description" content="Supercub builds full-stack web applications and runs the infrastructure behind them: Python, Django and PHP development, Docker and Cloudflare deployment, security scanning and server management.">
+  <title>CobWebZ — Web Development &amp; Infrastructure</title>
+  <meta name="description"
+    content="CobWebZ builds full-stack web applications and runs the infrastructure behind them: Python, Django and PHP development, Docker and Cloudflare deployment, security scanning and server management.">
   <meta name="theme-color" content="#f0f1f3">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Supercub">
-  <meta property="og:title" content="Supercub — Web Development &amp; Infrastructure">
-  <meta property="og:description" content="We build the web and keep it running. Full-stack development, deployment, security and server management.">
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <script>document.documentElement.classList.add('js')</script>
+  <meta property="og:site_name" content="CobWebZ">
+  <meta property="og:title" content="CobWebZ — Web Development &amp; Infrastructure">
+  <meta property="og:description"
+    content="We build the web and keep it running. Full-stack development, deployment, security and server management.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <script>
+    document.documentElement.classList.add('js');
+    // Set the theme before the first paint, so dark-mode visitors never see the light page flash
+    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light'; } catch (e) { }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..500&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="variables.css">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
 
   <!-- ============ HEADER / NAVIGATION ============ -->
-  <header class="site-header">
+  <header class="site-header" data-header>
     <div class="site-header__inner">
-      <a href="#overview" class="logo-btn" aria-label="Supercub — back to top">
-        <img src="assets/logo-mark.svg" alt="" width="26" height="26">
+      <a href="#overview" class="site-header__brand" aria-label="CobWebZ — back to top">
+        <img src="assets/logo-mark.png" alt="" class="site-header__brand-logo" width="24" height="24">
+        <span class="site-header__brand-name">CobWebZ</span>
       </a>
 
-      <div class="menu">
-        <button type="button" class="menu-btn" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
-          <span class="menu-btn__icon" aria-hidden="true"></span>Menu
-        </button>
-        <nav class="menu__panel" id="site-menu" aria-label="Primary" hidden data-menu>
-          <ul>
-            <li><a href="#overview" data-nav>Overview</a></li>
-            <li><a href="#about" data-nav>About</a></li>
-            <li><a href="#work" data-nav>Our Work</a></li>
-            <li><a href="#stack" data-nav>Tech Stack</a></li>
-            <li><a href="#pricing" data-nav>Pricing</a></li>
-            <li><a href="#contact" data-nav>Contact</a></li>
-          </ul>
-        </nav>
-      </div>
+      <nav class="site-nav" aria-label="Main navigation">
+        <ul class="site-nav__list">
+          <li><a href="#overview" class="site-nav__link is-active" data-nav>Home</a></li>
+          <li><a href="#about" class="site-nav__link" data-nav>About</a></li>
+          <li><a href="#services" class="site-nav__link" data-nav>Services</a></li>
+          <li><a href="#work" class="site-nav__link" data-nav>Products</a></li>
+          <li><a href="#stack" class="site-nav__link" data-nav>Technology</a></li>
+          <li><a href="#pricing" class="site-nav__link" data-nav>Pricing</a></li>
+          <li><a href="#contact" class="site-nav__link" data-nav>Contact</a></li>
+        </ul>
+      </nav>
 
-      <a href="#contact" class="btn btn--primary site-header__cta" data-magnetic>Start a Project</a>
+      <div class="site-header__actions">
+        <!-- Menu button: always on narrow screens; on wide ones it folds in once the page scrolls -->
+        <div class="menu">
+          <button type="button" class="site-header__icon-btn menu-btn-circle" aria-expanded="false"
+            aria-controls="site-menu" aria-label="Toggle navigation menu" data-menu-toggle>
+            <span class="hamburger-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </button>
+          <nav class="menu__panel" id="site-menu" aria-label="Primary" hidden data-menu>
+            <ul>
+              <li><a href="#overview" data-nav>Home</a></li>
+              <li><a href="#about" data-nav>About</a></li>
+              <li><a href="#services" data-nav>Services</a></li>
+              <li><a href="#work" data-nav>Products</a></li>
+              <li><a href="#stack" data-nav>Technology</a></li>
+              <li><a href="#pricing" data-nav>Pricing</a></li>
+              <li><a href="#contact" data-nav>Contact</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <button type="button" class="site-header__icon-btn theme-btn" aria-label="Toggle color theme" data-theme-toggle>
+          <svg class="theme-icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+          <svg class="theme-icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" hidden>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+
+        <a href="work.html" class="site-header__cta-btn" data-magnetic>
+          <span>Explore More</span>
+          <span class="site-header__cta-arrow" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4.5 11.5L11.5 4.5M11.5 4.5H6.5M11.5 4.5V9.5" />
+            </svg>
+          </span>
+        </a>
+      </div>
     </div>
   </header>
 
@@ -54,15 +107,21 @@
     <!-- ============ HERO ============ -->
     <section class="hero" id="overview" aria-labelledby="hero-title">
       <canvas class="particles" data-particles="hero" aria-hidden="true"></canvas>
+      <!-- Corner cobwebs, built by initCobwebs() in script.js -->
+      <div class="cobweb cobweb--tl" data-cobweb data-reveal aria-hidden="true"></div>
+      <div class="cobweb cobweb--tr" data-cobweb="spider" data-reveal aria-hidden="true"></div>
 
       <div class="container-cube hero__inner">
-        <p class="badge" data-hero-step><span class="badge__dot" aria-hidden="true"></span><span data-config-text="availability">Available for new projects</span></p>
+        <p class="badge" data-hero-step><span class="badge__dot" aria-hidden="true"></span><span
+            data-config-text="availability">Available for new projects</span></p>
         <h1 id="hero-title" class="hero__title">
-          <span class="sr-only">Supercub — </span>
-          <span class="hero__brand" aria-hidden="true" data-split-letters>supercub</span>
-          <span class="hero__tagline" data-split-words>We build the web <span class="accent">and keep it running.</span></span>
+          <span class="sr-only">CobWebZ — </span>
+          <span class="hero__brand" aria-hidden="true" data-split-letters>CobWebZ</span>
+          <span class="hero__tagline" data-split-words>We build the web <span class="accent">and keep it
+              running.</span></span>
         </h1>
-        <p class="hero__lead" data-hero-step>Supercub is a web development and infrastructure studio. We write the code, deploy it on containers and the edge, and keep your servers patched, monitored and secure.</p>
+        <p class="hero__lead" data-hero-step>CobWebZ is a web development and infrastructure studio. We write the code,
+          deploy it on containers and the edge, and keep your servers patched, monitored and secure.</p>
         <div class="hero__actions" data-hero-step>
           <a href="#contact" class="btn btn--primary btn--lg" data-magnetic>Start a Project</a>
           <a href="#stack" class="hero__note">Explore the stack <span aria-hidden="true">→</span></a>
@@ -73,50 +132,193 @@
     </section>
 
     <!-- ============ ABOUT ============ -->
-    <!-- As this section scrolls past, the statement darkens word by word and the logo outline
-         draws itself. Both follow --p, which script.js sets on .about__body. -->
+    <!-- As this section scrolls past, the statement darkens word by word and the spider mark
+         spins its web. Both follow --p, which script.js sets on .about__body. Once it has
+         landed the spider can be dragged (initSpiderMark); its back legs are web threads. -->
     <section class="section about" id="about" aria-labelledby="about-title">
       <div class="container-cube">
         <h2 id="about-title" class="sr-only">About us</h2>
 
         <div class="about__body" data-scrub>
-          <p class="about__statement" data-scrub-words>Super Cub Web Development builds high-performance, secure, and SEO-optimized websites for modern businesses. Based in Negombo, we combine custom web design with advanced network engineering to deliver digital solutions that are fast, scalable, and built to stand out.</p>
-          <svg class="about__mark" viewBox="0 0 1139.6 1137.8" aria-hidden="true"><path pathLength="1" d="M312.2 747.3 297.2 747.7 291.2 746.6 283.2 743.7 276.2 739.4 271.1 734.3 266.1 726.3 262.9 716.3 262.5 709.3 261.5 706.3 259 703.3 160.2 639.6 130.2 617.7 109.2 600.7 83.9 577.3 64 554.3 44.8 527.3 30 500.3 14.9 463.3 8 438.3 2.9 409.3 0.9 381.3 0 283.3 0.8 147.3 2.9 131.3 5.9 117.3 14.8 92.3 23.1 77.3 37.9 56.3 54.2 39.8 65.2 30.9 79.2 21.8 97.2 12.9 117.2 5.9 139.2 0.8 151.2 0.1 224.2 0 665.1 0.3 624.2 25.9 586.2 53.9 168.2 53.8 144.2 55 129.2 59 118.2 63.1 108.2 68.2 96.2 76.1 87.2 84 78.1 94.3 71 104.3 63.9 117.3 59.9 127.3 56.8 138.3 54.4 160.3 53.7 366.3 55.9 394.3 59.8 417.3 65.1 439.3 73 463.3 84.9 487.3 106.9 520.3 120.2 535.8 148.2 562.6 188.2 593.6 297.2 664.7 323.2 678.9 332.6 687.3 337.5 694.3 340.4 701.3 341.7 712.3 340.4 721.3 335.7 731.3 329.8 738.3 322.2 743.7Z"/><path pathLength="1" d="M985.2 1137.3 481.2 1137.8 471.9 1137.3 470.1 1136.3 505.2 1114.5 547.2 1082.6 568.2 1064.7 589.4 1043.3 627.6 998.3 649.6 970.3 667.6 945.3 686.5 915.3 706.7 875.3 708.2 873.7 755.2 890.8 756.7 892.3 740.6 928.3 724.9 954.3 724.2 956.3 725.2 957 929.2 956.7 944.2 953.5 957.2 948.6 968.2 943.3 990.2 929.6 1012.2 912.1 1013.5 913.3 1013.7 922.3 1011.5 941.3 1007.4 955.3 1002.7 965.3 996.5 975.3 988.2 985.3 980.2 992.6 968.2 1000.5 957.2 1005.5 947.2 1008.7 929.2 1010.8 686.2 1011 665.5 1038.3 628 1082.3 628.2 1083.5 984.2 1083.8 998.2 1081.7 1006.2 1079.5 1027.2 1070.6 1038.2 1063.6 1048.2 1055.4 1062.5 1039.3 1069.6 1028.3 1075.7 1016.3 1083.5 992.3 1085.7 974.3 1085.2 785.6 1061.2 804.5 1041.2 817.7 1013.2 833.4 991.2 843.6 970.2 851.5 942.2 859.5 916.2 864.7 888.2 867.7 863.2 868.2 831.2 866.6 805.2 862.7 783.2 857.7 754.2 848.6 730.2 838.6 716.2 831.7 684.2 813.1 683.1 814.3 675.5 839.3 666.5 861.3 657.4 881.3 643.6 906.3 627.6 931.3 612.6 952.3 565.7 1010.3 547.9 1028.3 523.2 1050.6 485.2 1078.6 462.2 1092.7 442.2 1103.5 422.2 1112.6 398.2 1121.4 380.2 1126.6 358.2 1131.5 333.2 1135.6 313.2 1137.7 157.2 1137.7 135.2 1134.7 114.2 1128.7 94.2 1120.4 78.2 1111.6 64.2 1101.7 51.2 1090.5 39.8 1078.3 30 1065.3 20.8 1050.3 11.9 1031.3 5.8 1013.3 1.9 994.3 0.7 984.3 0 960.3 0.1 532.3 1.4 531.3 25.9 568.3 53 603.3 53.8 721.3 57.8 753.3 65.8 784.3 76.1 811.3 86.8 831.3 106 860.3 127.2 883.8 148.2 902.4 173.2 919.7 197.2 932.7 222.2 942.7 250.2 950.6 282.2 955.7 309.2 956.3 337.2 953.6 366.2 947.7 382.2 942.6 406.2 932.7 426.2 922.6 446.2 909.5 466.2 893.7 485.2 875.1 500.5 856.3 515.5 833.3 523.6 818.3 535.6 789.3 540.7 773.3 546.6 745.3 548.7 724.3 548.6 695.3 547.6 680.3 544.5 659.3 540.6 642.3 534.5 622.3 523.4 596.3 516.2 582.3 498.6 556.3 479.6 534.3 470.2 524.8 437.2 498 391.2 465.8 283.2 395.5 275.2 388.9 268.8 381.3 264.9 373.3 261.9 363.3 261 355.3 262.9 341.3 266 333.3 269.1 328.3 274.7 322.3 279.2 319 285.2 316.1 293.2 313.9 307.2 314 317.2 317 324.2 321 332.4 329.3 338.5 340.3 341.5 353.3 341.6 367.3 342.8 369.3 454.2 443.9 478.2 460.9 495.2 474.9 516 494.3 527.6 506.3 541.7 523.3 561.5 553.3 573.6 575.3 584.4 601.3 594.5 634.3 600.6 666.3 603.4 696.3 603.4 725.3 600.6 754.3 595.5 779.3 586.4 809.3 575.3 836.3 561.5 862.3 546.7 884.3 521.3 914.3 501.2 933.7 480.2 950.5 458.2 965.7 435.2 978.4 404.2 991.6 375.2 1000.7 345.2 1006.7 317.2 1009.8 285.2 1009.7 255.2 1006.6 224.2 999.6 195.2 990.7 172.2 980.4 146.2 966.4 122.2 950.6 101.2 933.7 78.8 911.3 56.2 884.9 55.2 884.3 54.5 885.3 54.1 971.3 55.9 989.3 60.9 1008.3 69.2 1027.3 74.8 1036.3 81.9 1045.3 96.2 1058.6 117.2 1071.7 137.2 1079.5 151.2 1082.6 161.2 1083.7 307.2 1083.7 331.2 1081.7 359.2 1076.6 381.2 1070.7 407.2 1060.6 430.2 1049.7 446.2 1040.4 478.2 1017.7 492.2 1005.6 513.6 984.3 541.3 954.3 572.4 916.3 585.4 898.3 599.5 876.3 608.7 859.3 618.5 837.3 629.4 806.3 639.5 765.3 641.7 749.3 644.2 704.3 667.7 729.3 692.2 751.3 712.2 766.6 742.2 784.4 767.2 795.7 794.2 804.7 817.2 809.7 854.2 813.7 879.2 813.7 895.2 812.7 921.2 808.6 945.2 802.7 982.2 788.5 1010.2 773.5 1037.2 754.6 1052.2 742.5 1064.2 731.3 1081.6 711.3 1086.5 702.3 1086.8 695.3 1085.5 689.3 1081.2 682.6 1076.2 678.1 1061.2 669.2 1033.2 653.8 1026.2 651.6 1024.2 652.8 1016.7 662.3 1003.2 676.4 978.2 696.7 954.2 710.7 943.2 715.7 926.2 721.6 896.2 728.6 864.2 730.7 846.2 729.7 830.2 727.6 800.2 719.6 774.2 708.6 755.5 697.3 732.2 679.4 716.8 664.3 696 637.3 685.7 620.3 675.8 598.3 667.8 569.3 664.8 552.3 663 530.3 664.8 498.3 667.8 482.3 672.8 464.3 682.8 438.3 698.8 411.3 709.8 396.3 724.2 379.6 735.2 369 753.2 355 764.2 347.9 779.2 339.9 809.2 328.1 829.2 322.9 843.2 320.9 856.2 319.9 879.2 320.1 898.2 321.8 914.2 325 931.2 329.9 946.2 335.9 974.2 351.1 995.2 366.9 1015.1 386.3 1025.2 397.7 1027.2 398.6 1057.2 382.7 1076.2 371.5 1080.2 368.3 1086.2 359.2 1087.3 351.3 1085.6 346.3 1081.6 339.3 1071.6 326.3 1053.2 308 1030.2 290 1006.2 274.1 986.2 263.9 953.2 250.9 925.2 242.9 902.2 238.8 871.2 237.2 841.2 237.9 813.2 241.8 782.2 250 756.2 259.8 735.2 270 718.2 280.1 687.2 303.1 669.4 319.3 654.8 334.3 637.1 357.3 622.9 379.3 615 393.3 599.8 427.3 589.8 458.3 585.8 477.3 581.2 509.3 580.2 509.7 579.2 508.6 560.5 484.3 534.9 456.3 538.8 439.3 548 408.3 562.8 374.3 580.9 342.3 588.8 330.3 596.8 319.3 617.9 294.3 626.8 284.3 643.2 268.9 656.2 258 682.2 238.9 696.2 230 719.2 217.3 739.2 207.9 757.2 201 776.2 194.9 796.2 190 821.2 185.8 840.2 183.8 891.2 183.8 913.2 185.9 933.2 189 951.2 193.1 973.2 199.9 990.2 205.9 1010.2 214.9 1022.2 220.9 1044.2 233.9 1062.2 246 1085.2 263.5 1085.8 169.3 1084.5 145.3 1081.6 131.3 1075.6 115.3 1068.6 102.3 1059.6 90.3 1045.2 76.8 1027.2 65.8 1004.2 56.9 986.2 53.9 840.2 53.8 817.2 54.9 786.2 58.9 763.2 64.1 743.2 70.1 718.2 79.8 694.2 92 671.2 106.9 647.2 125.9 620.8 152.3 600.9 176.3 576.9 208.3 483.6 343.3 473.2 356.7 419.5 356.3 418.5 353.3 415.6 327.3 411.4 313.3 403.4 295.3 392.5 278.3 382 266.3 365.2 253 349.2 243.8 334.2 237.9 315.2 233.9 302.2 233.4 289.2 233.9 271.2 237.1 255.2 243 241.2 250.8 225.2 262.9 215.2 272.4 203 288.3 191.9 310.3 186.9 328.3 184 352.3 184.9 372.3 187.9 389.3 196.2 414.3 204.8 430.3 218.2 447.1 235.2 462.5 271.2 486.6 383.2 558.1 405.2 574 423.1 589.3 440.5 609.3 446.7 618.3 455.7 634.3 463.5 655.3 470.6 684.3 472.6 699.3 472.7 720.3 470.5 739.3 467.6 752.3 461.5 770.3 453.5 788.3 448.5 797.3 437.6 813.3 426.6 826.3 415.2 837.5 403.2 846.5 387.2 856.6 375.2 862.5 357.2 869.4 340.2 874.5 324.2 877.6 295.2 879.2 284.2 878.6 266.2 875.6 248.2 870.5 228.2 862.7 216.2 856.4 201.2 846.5 191.9 839.3 176.2 824.3 163.9 810.3 156 799.3 149 787.3 142.9 774.3 137.1 758.3 132.9 741.3 130.8 724.3 131.2 716.2 183.2 716.1 189.1 742.3 198.1 764.3 207.8 779.3 223.2 795.5 229.2 800.6 241.2 808.5 263.2 818.6 285.2 823.7 307.2 824.7 329.2 821.5 349.2 815.6 364.2 807.5 380.2 794.4 394.7 778.3 409.6 755.3 415.5 738.3 418.6 719.3 418.7 706.3 417.6 694.3 415.6 683.3 412.6 673.3 406.7 659.3 400.3 647.3 394.6 638.3 386 628.3 376.2 619 358.2 605.9 325.2 584 217.2 515.6 195.2 499.7 181.2 487.1 167.9 472.3 158.8 459.3 147.9 439.3 141.9 425.3 137 410.3 133 392.3 130.9 377.3 129.9 356.3 130.8 340.3 133.9 317.3 140 295.3 151.8 269.3 161.1 254.3 170 242.3 177.2 233.7 191.2 220 209.2 207 228.2 196.3 243.2 189.8 263.2 184.1 282.2 180.9 306.2 179.8 325.2 180.9 341.2 184 357.2 189 377.2 197.9 397.2 209.9 413.2 221.9 427.6 236.3 436.5 247.3 446.7 262.3 457.6 282.3 459.2 283.2 550.8 151.3 573.8 122.3 595.2 98.9 625.2 72.9 657.2 51 689.2 33.9 721.2 20.9 743.2 13.9 772.2 7 791.2 3.9 820.2 0.8 838.2 0.1 964.2 0.1 999.2 0.9 1027.2 6.9 1041.2 11.8 1056.2 19 1076.2 32 1088 42.3 1100.5 55.3 1114.6 74.3 1122.6 88.3 1126.6 97.3 1134.6 122.3 1138.7 146.3 1139.6 169.3 1139.4 345.3 1138.7 362.3 1136.6 373.3 1133.6 382.3 1127.5 394.3 1121.2 403.1 1113.2 410.7 1102.2 418.7 1051.2 447.7 1042.2 451.4 1033.2 453.6 1019.2 453.7 1011.2 452.6 1005.2 450.6 993.2 443.5 986.2 436.7 970.2 417.4 955.2 403.9 940.2 393.9 920.2 384 895.2 376.8 871.2 374.3 851.2 374.9 828.2 378.9 808.2 386.2 785.2 398.9 767.2 413 753.2 427.3 740.8 445.3 730.8 464.3 723.1 485.3 720 498.3 717.9 513.3 717.9 539.3 722 563.3 728.9 583.3 741 606.3 754.9 625.3 764.4 635.3 776.2 645.6 796.2 658.4 817.2 667.4 835.2 672.6 857.2 675.8 882.2 675.6 895.2 673.6 911.2 669.6 935.2 659.7 957.2 645.5 972.2 631.6 994.9 606.3 1000.2 602.2 1013.2 596.8 1025.2 595.6 1038.2 596.8 1050.2 601.2 1106.2 633.8 1121.4 647.3 1126.7 654.3 1131.6 663.3 1136.6 678.3 1138.7 695.3 1138.7 979.3 1135.6 1003.3 1130.5 1023.3 1121.6 1045.3 1108.5 1067.3 1096.7 1082.3 1077.2 1100.6 1057.2 1114.6 1046.2 1120.6 1030.2 1127.6 1010.2 1133.7Z"/><path pathLength="1" d="M873.2 591.3 860.2 591.7 849.2 589.6 836.2 584.3 823.2 575.6 814.9 567.3 807.8 556.3 802.9 544.3 800.8 534.3 800.8 517.3 802.9 506.3 808.2 493.3 814.1 484.3 821.3 476.3 833.2 467.9 843.2 463.1 855.2 459.9 867.2 459.2 882.2 461 895.2 465.8 906.2 472.9 917.5 484.3 924.5 495.3 929.4 507.3 931.6 519.3 931.7 532.3 929.6 543.3 924.4 556.3 916.4 568.3 908.2 576.4 899.2 582.7 886.2 588.6Z"/></svg>
+          <p class="about__statement" data-scrub-words>At CobWebZ, we craft high-performance, secure, and SEO-optimized
+            digital experiences for modern businesses. We pair clean, custom design with flawless frontend architecture
+            to deliver websites that are fast, scalable, and engineered to capture your audience's attention.</p>
+          <div class="about__mark" data-spider>
+            <svg class="spider" viewBox="0 0 775 490" aria-hidden="true">
+              <path class="spider__thread" pathLength="1"
+                d="M30 25 C55 30 84 60 95 100 L172 380 C182 416 200 462 236 462" />
+              <path class="spider__thread" pathLength="1"
+                d="M745 25 C720 30 691 60 680 100 L603 380 C593 416 575 462 539 462" />
+              <path class="spider__thread spider__arm" pathLength="1"
+                d="M236 462 C254 462 268 420 282 362 C288 338 312 306 346 290" />
+              <path class="spider__thread spider__arm" pathLength="1"
+                d="M539 462 C521 462 507 420 493 362 C487 338 463 306 429 290" />
+              <g class="spider__bug">
+                <circle class="spider__hit" cx="387.5" cy="281" r="120" />
+                <path class="spider__leg" pathLength="1" style="--o: 352px 254px; --s: 9deg; --i: 0"
+                  d="M352 254 C322 240 308 205 316 170 C320 155 326 145 332 138" />
+                <path class="spider__leg" pathLength="1" style="--o: 423px 254px; --s: -9deg; --i: 1"
+                  d="M423 254 C453 240 467 205 459 170 C455 155 449 145 443 138" />
+                <path class="spider__leg" pathLength="1" style="--o: 346px 280px; --s: -9deg; --i: 2"
+                  d="M346 280 C315 272 285 255 278 228 C274 212 271 200 270 188" />
+                <path class="spider__leg" pathLength="1" style="--o: 429px 280px; --s: 9deg; --i: 3"
+                  d="M429 280 C460 272 490 255 497 228 C501 212 504 200 505 188" />
+                <path class="spider__leg" pathLength="1" style="--o: 352px 318px; --s: 9deg; --i: 4"
+                  d="M352 318 C335 328 326 345 327 368 C328 388 334 400 342 410" />
+                <path class="spider__leg" pathLength="1" style="--o: 423px 318px; --s: -9deg; --i: 5"
+                  d="M423 318 C440 328 449 345 448 368 C447 388 441 400 433 410" />
+                <path class="spider__body" fill-rule="evenodd"
+                  d="M347 244 A40 40 0 0 1 427 244 L427 318 A40 40 0 0 1 347 318 ZM373 249 A14 20 0 1 0 401 249 A14 20 0 1 0 373 249 ZM374 318 A13 15 0 1 0 400 318 A13 15 0 1 0 374 318 Z" />
+              </g>
+            </svg>
+            <p class="about__hint" aria-hidden="true">Drag the spider</p>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <dl class="about__facts reveal">
-          <div><dt>Studio</dt><dd>Negombo, Sri Lanka</dd></div>
-          <div><dt>Local time</dt><dd><span class="about__live" aria-hidden="true"></span><time data-clock>--:--:--</time> GMT+5:30</dd></div>
-          <div><dt>Approach</dt><dd>Custom web design + network engineering</dd></div>
-        </dl>
+    <!-- ============ OUR SERVICES ============ -->
+    <section class="section services" id="services" aria-labelledby="services-title">
+      <div class="container-cube">
+        <header class="section-head services__head reveal">
+          <p class="badge"><span class="badge__dot" aria-hidden="true"></span>Services</p>
+          <h2 id="services-title" class="h-section" data-split-words>The capabilities you've <span class="accent">been
+              seeking.</span></h2>
+        </header>
+
+        <!-- The four services hang on a web. Scrolling through the section moves from one to the
+             next (on wide screens the section holds still until all four have shown); each change
+             walks the spider round the web to it and shows its panel. Drawn by initServices(). -->
+        <div class="services__stage reveal" data-services>
+          <div class="services__web">
+            <svg class="services__silk" viewBox="-300 -300 600 600" aria-hidden="true" data-services-silk></svg>
+            <p class="services__count" aria-hidden="true"><span data-services-count>01</span></p>
+            <div class="services__nodes" role="tablist" aria-label="Our services">
+              <button type="button" class="services__node is-active" role="tab" id="service-tab-0"
+                aria-controls="service-0" aria-selected="true" data-service-tab style="--a: -60deg">
+                <span class="services__dot" aria-hidden="true"></span>
+                <span class="services__label"><span class="services__num">01</span>Build</span>
+              </button>
+              <button type="button" class="services__node" role="tab" id="service-tab-1" aria-controls="service-1"
+                aria-selected="false" tabindex="-1" data-service-tab style="--a: 30deg">
+                <span class="services__dot" aria-hidden="true"></span>
+                <span class="services__label"><span class="services__num">02</span>Design</span>
+              </button>
+              <button type="button" class="services__node services__node--left" role="tab" id="service-tab-2"
+                aria-controls="service-2" aria-selected="false" tabindex="-1" data-service-tab style="--a: 120deg">
+                <span class="services__dot" aria-hidden="true"></span>
+                <span class="services__label"><span class="services__num">03</span>Optimize</span>
+              </button>
+              <button type="button" class="services__node services__node--left" role="tab" id="service-tab-3"
+                aria-controls="service-3" aria-selected="false" tabindex="-1" data-service-tab style="--a: 210deg">
+                <span class="services__dot" aria-hidden="true"></span>
+                <span class="services__label"><span class="services__num">04</span>Protect</span>
+              </button>
+            </div>
+            <span class="services__spider" aria-hidden="true" data-services-spider></span>
+          </div>
+
+          <div class="services__panels">
+            <article class="services__item is-active" id="service-0" role="tabpanel" aria-labelledby="service-tab-0">
+              <svg class="services__icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path pathLength="1" d="M17 14 7 24l10 10" />
+                <path pathLength="1" d="m31 14 10 10-10 10" />
+                <path pathLength="1" d="M27 9 21 39" />
+              </svg>
+              <p class="services__meta">Engineering</p>
+              <h3 class="services__title">Build</h3>
+              <p class="services__lead">Full-stack &amp; static sites</p>
+              <p class="services__text">We engineer high-performance static websites and dynamic web applications
+                tailored precisely to your business needs.</p>
+              <ul class="services__list">
+                <li>Static sites &amp; landing pages</li>
+                <li>Full-stack apps in Python, Django or PHP</li>
+                <li>REST APIs &amp; admin dashboards</li>
+              </ul>
+            </article>
+            <article class="services__item" id="service-1" role="tabpanel" aria-labelledby="service-tab-1">
+              <svg class="services__icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path pathLength="1" d="M24 6 35 26 24 42 13 26Z" />
+                <path pathLength="1" d="M24 6v17" />
+                <circle pathLength="1" cx="24" cy="27" r="3.5" />
+              </svg>
+              <p class="services__meta">UI / UX</p>
+              <h3 class="services__title">Design</h3>
+              <p class="services__lead">High-contrast, minimal interfaces</p>
+              <p class="services__text">We craft minimalist, high-contrast, and intuitive user interfaces that look
+                stunning on any screen and drive user engagement.</p>
+              <ul class="services__list">
+                <li>Interface design for web &amp; mobile</li>
+                <li>Design systems &amp; clickable prototypes</li>
+                <li>Responsive, accessible layouts</li>
+              </ul>
+            </article>
+            <article class="services__item" id="service-2" role="tabpanel" aria-labelledby="service-tab-2">
+              <svg class="services__icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path pathLength="1" d="M9 34a16 16 0 1 1 30 0" />
+                <path pathLength="1" d="m24 30 9-11" />
+                <path pathLength="1" d="M24 14v3M13.4 18.4l2.1 2.1M34.6 18.4l-2.1 2.1" />
+              </svg>
+              <p class="services__meta">Velocity</p>
+              <h3 class="services__title">Optimize</h3>
+              <p class="services__lead">Maximum Lighthouse scores</p>
+              <p class="services__text">We fine-tune every line of code for maximum speed, seamless user experience, and
+                top-tier search engine visibility.</p>
+              <ul class="services__list">
+                <li>Core Web Vitals &amp; Lighthouse tuning</li>
+                <li>Technical SEO</li>
+                <li>Image &amp; asset optimisation</li>
+              </ul>
+            </article>
+            <article class="services__item" id="service-3" role="tabpanel" aria-labelledby="service-tab-3">
+              <svg class="services__icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path pathLength="1" d="M24 6 38 12v12c0 9-7 15-14 18-7-3-14-9-14-18V12Z" />
+                <path pathLength="1" d="m18 24 4 4 8-8" />
+              </svg>
+              <p class="services__meta">Security</p>
+              <h3 class="services__title">Protect</h3>
+              <p class="services__lead">Zero-breach architecture</p>
+              <p class="services__text">We deploy your digital assets using modern, secure architecture so you never
+                have to worry about downtime or data breaches.</p>
+              <ul class="services__list">
+                <li>Docker &amp; Cloudflare deployment</li>
+                <li>Security &amp; vulnerability scanning</li>
+                <li>Monitoring, backups &amp; patching</li>
+              </ul>
+            </article>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ============ OUR WORK ============ -->
-    <!-- Drop 16:9 clips into assets/work/ using the filenames below. Until a clip exists, the poster (a screenshot of the live site) shows. -->
+    <!-- Each card shows a tall screenshot of the whole site (assets/work/*-scroll.webp); hovering scrolls it top to bottom.
+         --frames on each image is its height in 16:9 card frames, which sets the scroll speed. -->
     <section class="section work" id="work" aria-labelledby="work-title">
       <div class="container-cube">
         <header class="section-head reveal">
           <h2 id="work-title" class="h-section" data-split-words>Our <span class="accent">work.</span></h2>
-          <p class="section-lead">Websites we design, build and deploy for creatives, restaurants and local businesses. Fast, responsive and live on your own domain.</p>
+          <p class="section-lead">Websites we design, build and deploy for creatives, restaurants and local businesses.
+            Fast, responsive and live on your own domain.</p>
         </header>
 
         <!-- Each card opens its live demo site in a new tab. work.html lists the same sites in more detail.
              On desktop the tags show at rest and swap to the description on hover. -->
         <div class="card-container reveal" data-stagger>
           <a href="veloa%20one/Vela%20One.html" target="_blank" rel="noopener" class="work-card" data-cursor="View">
-            <span class="work-card__media">
-              <video autoplay loop muted playsinline poster="assets/work/vela-one.webp" aria-hidden="true" data-work-video>
-                <source src="assets/work/vela-one.mp4" type="video/mp4">
-              </video>
+            <span class="work-card__media" data-preview>
+              <img class="work-card__scroll" src="assets/work/vela-one-scroll.webp" alt="" width="760" height="4497"
+                loading="lazy" decoding="async" style="--frames: 10.52">
             </span>
             <span class="work-card__body">
               <span class="work-card__head">
-                <span class="work-card__title">Vela One<span class="sr-only"> — view the live demo (opens in a new tab)</span></span>
+                <span class="work-card__title">Vela One<span class="sr-only"> — view the live demo (opens in a new
+                    tab)</span></span>
                 <span class="work-card__arrow" aria-hidden="true">→</span>
               </span>
               <span class="work-card__swap">
-                <span class="work-card__text">A launch page for titanium headphones, told through scroll-driven scenes and an exploded product view.</span>
+                <span class="work-card__text">A launch page for titanium headphones, told through scroll-driven scenes
+                  and an exploded product view.</span>
                 <span class="work-card__tags">HTML · CSS · JavaScript · GSAP</span>
               </span>
               <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
@@ -124,18 +326,19 @@
           </a>
 
           <a href="photography/index.html" target="_blank" rel="noopener" class="work-card" data-cursor="View">
-            <span class="work-card__media">
-              <video autoplay loop muted playsinline poster="assets/work/black.webp" aria-hidden="true" data-work-video>
-                <source src="assets/work/black.mp4" type="video/mp4">
-              </video>
+            <span class="work-card__media" data-preview>
+              <img class="work-card__scroll" src="assets/work/black-scroll.webp" alt="" width="760" height="4502"
+                loading="lazy" decoding="async" style="--frames: 10.53">
             </span>
             <span class="work-card__body">
               <span class="work-card__head">
-                <span class="work-card__title">Black.<span class="sr-only"> — view the live demo (opens in a new tab)</span></span>
+                <span class="work-card__title">Black.<span class="sr-only"> — view the live demo (opens in a new
+                    tab)</span></span>
                 <span class="work-card__arrow" aria-hidden="true">→</span>
               </span>
               <span class="work-card__swap">
-                <span class="work-card__text">A dark editorial showcase for a photography collective that works as a scroll story or a slide deck.</span>
+                <span class="work-card__text">A dark editorial showcase for a photography collective that works as a
+                  scroll story or a slide deck.</span>
                 <span class="work-card__tags">HTML · Tailwind CSS · JavaScript · Web Audio</span>
               </span>
               <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
@@ -143,18 +346,19 @@
           </a>
 
           <a href="hoodie/index.html" target="_blank" rel="noopener" class="work-card" data-cursor="View">
-            <span class="work-card__media">
-              <video autoplay loop muted playsinline poster="assets/work/mute.webp" aria-hidden="true" data-work-video>
-                <source src="assets/work/mute.mp4" type="video/mp4">
-              </video>
+            <span class="work-card__media" data-preview>
+              <img class="work-card__scroll" src="assets/work/mute-scroll.webp" alt="" width="760" height="4696"
+                loading="lazy" decoding="async" style="--frames: 10.98">
             </span>
             <span class="work-card__body">
               <span class="work-card__head">
-                <span class="work-card__title">MUTE<span class="sr-only"> — view the live demo (opens in a new tab)</span></span>
+                <span class="work-card__title">MUTE<span class="sr-only"> — view the live demo (opens in a new
+                    tab)</span></span>
                 <span class="work-card__arrow" aria-hidden="true">→</span>
               </span>
               <span class="work-card__swap">
-                <span class="work-card__text">A clothing store with a colour picker, quick add to bag and a product page with a size guide.</span>
+                <span class="work-card__text">A clothing store with a colour picker, quick add to bag and a product page
+                  with a size guide.</span>
                 <span class="work-card__tags">HTML · Tailwind CSS · JavaScript</span>
               </span>
               <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
@@ -162,7 +366,8 @@
           </a>
         </div>
 
-        <p class="work__more reveal"><a href="work.html" class="link-arrow">See all our work <span aria-hidden="true">→</span></a></p>
+        <p class="work__more reveal"><a href="work.html" class="link-arrow">See all our work <span
+              aria-hidden="true">→</span></a></p>
       </div>
     </section>
 
@@ -172,7 +377,8 @@
     <section class="section stack" id="stack" aria-labelledby="stack-title">
       <div class="container-cube">
         <header class="section-head reveal">
-          <h2 id="stack-title" class="h-section" data-split-words>From first commit <span class="accent">to production.</span></h2>
+          <h2 id="stack-title" class="h-section" data-split-words>From first commit <span class="accent">to
+              production.</span></h2>
         </header>
       </div>
 
@@ -212,15 +418,18 @@
     <section class="section" id="pricing" aria-labelledby="pricing-title">
       <div class="container-cube">
         <header class="section-head reveal">
-          <h2 id="pricing-title" class="h-section" data-split-words>Simple, <span class="accent">transparent</span> pricing.</h2>
-          <p class="section-lead">Every project starts with a discovery call and a fixed, written quote. Prices below are starting points.</p>
+          <h2 id="pricing-title" class="h-section" data-split-words>Simple, <span class="accent">transparent</span>
+            pricing.</h2>
+          <p class="section-lead">Every project starts with a discovery call and a fixed, written quote. Prices below
+            are starting points.</p>
         </header>
 
         <div class="price-grid">
           <article class="card price reveal" data-package="Static Deployments">
             <h3 class="price__name">Static Deployments</h3>
             <p class="price__desc">Fast, secure frontends for sites that don't need a server.</p>
-            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">45,000+</span></p>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">45,000+</span>
+            </p>
             <p class="price__note">One-time, starting at</p>
             <ul class="price__list">
               <li>Responsive frontend in HTML, CSS &amp; JavaScript</li>
@@ -228,13 +437,15 @@
               <li>Basic hosting on Cloudflare Pages</li>
               <li>Contact form &amp; basic SEO</li>
             </ul>
-            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Static Deployments">Get Started</a>
+            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Static Deployments">Get
+              Started</a>
           </article>
 
           <article class="card price reveal" data-package="Dynamic Applications">
             <h3 class="price__name">Dynamic Applications</h3>
             <p class="price__desc">Full-stack apps with a database, user accounts and an API.</p>
-            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">120,000+</span></p>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">120,000+</span>
+            </p>
             <p class="price__note">One-time, starting at</p>
             <ul class="price__list">
               <li>Backend in Python/Django or PHP</li>
@@ -243,7 +454,8 @@
               <li>Authentication &amp; admin dashboard</li>
               <li>Docker-based staging &amp; production</li>
             </ul>
-            <a href="#contact" class="btn btn--primary btn--lg btn--block" data-select-package="Dynamic Applications">Get Started</a>
+            <a href="#contact" class="btn btn--primary btn--lg btn--block"
+              data-select-package="Dynamic Applications">Get Started</a>
           </article>
 
           <article class="card price reveal" data-package="Enterprise Retainer">
@@ -257,10 +469,232 @@
               <li>Monitoring, backups &amp; patch management</li>
               <li>Priority support</li>
             </ul>
-            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Enterprise Retainer">Get Started</a>
+            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Enterprise Retainer">Get
+              Started</a>
           </article>
         </div>
-        <p class="fine-print reveal">Prices in Sri Lankan rupees. Domain, hosting and third-party fees are billed by their providers.</p>
+        <p class="fine-print reveal">Prices in Sri Lankan rupees. Domain, hosting and third-party fees are billed by
+          their providers.</p>
+      </div>
+    </section>
+
+    <!-- ============ WHY CHOOSE US ============ -->
+    <section class="section why-us" id="why-us" aria-labelledby="why-us-title">
+      <div class="container-cube">
+        <header class="section-head reveal">
+          <p class="badge"><span class="badge__dot" aria-hidden="true"></span>Why CobWebZ</p>
+          <h2 id="why-us-title" class="h-section" data-split-words>The standard for modern <span class="accent">web
+              excellence.</span></h2>
+          <p class="section-lead">We don't do shortcuts or generic templates. Every system is purpose-built for speed,
+            security, and measurable business growth.</p>
+        </header>
+
+        <div class="why-us__grid reveal" data-stagger data-why-grid>
+          <!-- Card 1: Custom Crafted -->
+          <article class="why-card" data-why-card tabindex="0">
+            <div class="why-card__spotlight" aria-hidden="true"></div>
+            <div class="why-card__inner">
+              <div class="why-card__top">
+                <span class="why-card__index">01</span>
+                <span class="why-card__tag">
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2l2 2-9 9-3 1 1-3 9-9z" />
+                  </svg>
+                  Bespoke Code
+                </span>
+              </div>
+
+              <!-- Interactive Visual: Bézier Vector Canvas -->
+              <div class="why-card__stage why-card__stage--craft" data-craft-stage>
+                <div class="craft-wireframe" aria-hidden="true">
+                  <svg class="craft-svg" viewBox="0 0 280 120" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="craft-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#38bdf8" />
+                        <stop offset="50%" stop-color="#818cf8" />
+                        <stop offset="100%" stop-color="#c084fc" />
+                      </linearGradient>
+                      <linearGradient id="craft-fill" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(56, 189, 248, 0.2)" />
+                        <stop offset="100%" stop-color="rgba(192, 132, 252, 0)" />
+                      </linearGradient>
+                    </defs>
+                    <path class="craft-curve-fill" d="M 10 90 Q 70 20 140 60 T 270 30 L 270 120 L 10 120 Z"
+                      fill="url(#craft-fill)" />
+                    <path class="craft-curve" d="M 10 90 Q 70 20 140 60 T 270 30" fill="none" stroke="url(#craft-grad)"
+                      stroke-width="2.5" stroke-linecap="round" />
+                  </svg>
+                  <div class="craft-node craft-node--1" style="--nx: 10px; --ny: 90px;"><span>P0</span></div>
+                  <div class="craft-node craft-node--2" style="--nx: 70px; --ny: 20px;"><span>P1</span></div>
+                  <div class="craft-node craft-node--3" style="--nx: 140px; --ny: 60px;"><span>P2</span></div>
+                  <div class="craft-node craft-node--4" style="--nx: 270px; --ny: 30px;"><span>P3</span></div>
+                  <div class="craft-cursor" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
+                      <path d="M1 1l4 12 2.5-4.5L12 6 1 1z" />
+                    </svg>
+                    <span class="craft-cursor-pill">0% Template</span>
+                  </div>
+                </div>
+                <div class="craft-specs">
+                  <span class="spec-pill">Handcrafted Architecture</span>
+                  <span class="spec-pill">Zero Bloat</span>
+                </div>
+              </div>
+
+              <div class="why-card__content">
+                <h3 class="why-card__title">Custom Crafted</h3>
+                <p class="why-card__text">100% tailored designs and development. No generic themes.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 2: High Performance -->
+          <article class="why-card" data-why-card tabindex="0">
+            <div class="why-card__spotlight" aria-hidden="true"></div>
+            <div class="why-card__inner">
+              <div class="why-card__top">
+                <span class="why-card__index">02</span>
+                <span class="why-card__tag">
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 1L2 9h6l-1 6 7-8H8l1-6z" />
+                  </svg>
+                  Instant Load
+                </span>
+              </div>
+
+              <!-- Interactive Visual: Supersonic Benchmark Telemetry -->
+              <div class="why-card__stage why-card__stage--speed" data-speed-stage>
+                <div class="speed-telemetry" aria-hidden="true">
+                  <div class="speed-readout">
+                    <div class="speed-dial">
+                      <span class="speed-val" data-speed-val>99</span>
+                      <span class="speed-unit">/100</span>
+                    </div>
+                    <div class="speed-metrics">
+                      <div class="metric-row">
+                        <span class="m-label">TTFB</span>
+                        <span class="m-val" data-ttfb-val>18ms</span>
+                      </div>
+                      <div class="metric-row">
+                        <span class="m-label">FCP</span>
+                        <span class="m-val">0.2s</span>
+                      </div>
+                      <div class="metric-row">
+                        <span class="m-label">CLS</span>
+                        <span class="m-val">0.00</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="speed-bar">
+                    <div class="speed-bar__fill"></div>
+                    <span class="speed-bar__glow"></span>
+                  </div>
+                </div>
+                <button type="button" class="speed-test-btn" data-speed-trigger>
+                  <span class="speed-test-icon">⚡</span>
+                  <span class="speed-test-label">Run Live Benchmark</span>
+                </button>
+              </div>
+
+              <div class="why-card__content">
+                <h3 class="why-card__title">High Performance</h3>
+                <p class="why-card__text">Optimized architecture for instant loading and seamless browsing.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 3: SEO Optimized -->
+          <article class="why-card" data-why-card tabindex="0">
+            <div class="why-card__spotlight" aria-hidden="true"></div>
+            <div class="why-card__inner">
+              <div class="why-card__top">
+                <span class="why-card__index">03</span>
+                <span class="why-card__tag">
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5" />
+                    <path d="M11 11l4 4" />
+                  </svg>
+                  Search Superiority
+                </span>
+              </div>
+
+              <!-- Interactive Visual: SERP & Semantic Crawl Simulator -->
+              <div class="why-card__stage why-card__stage--seo">
+                <div class="seo-serp" aria-hidden="true">
+                  <div class="serp-head">
+                    <span class="serp-badge">#1 Google Rank</span>
+                    <span class="serp-stars">★★★★★ 5.0</span>
+                  </div>
+                  <div class="serp-url">https://cobwebz.agency › showcase</div>
+                  <div class="serp-title">Your Brand — Fastest Modern Experience</div>
+                  <div class="seo-tags">
+                    <span class="seo-chip"><i class="c-dot"></i> JSON-LD Schema</span>
+                    <span class="seo-chip"><i class="c-dot"></i> Semantic HTML5</span>
+                    <span class="seo-chip"><i class="c-dot"></i> OpenGraph v2</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="why-card__content">
+                <h3 class="why-card__title">SEO Optimized</h3>
+                <p class="why-card__text">Built with clean code structures that search engines love.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card 4: Secure & Reliable -->
+          <article class="why-card" data-why-card tabindex="0">
+            <div class="why-card__spotlight" aria-hidden="true"></div>
+            <div class="why-card__inner">
+              <div class="why-card__top">
+                <span class="why-card__index">04</span>
+                <span class="why-card__tag">
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="7" width="10" height="8" rx="1.5" />
+                    <path d="M5 7V4a3 3 0 0 1 6 0v3" />
+                  </svg>
+                  24/7 Defense
+                </span>
+              </div>
+
+              <!-- Interactive Visual: 24/7 Heartbeat Pulse Radar -->
+              <div class="why-card__stage why-card__stage--secure">
+                <div class="uptime-monitor" aria-hidden="true">
+                  <div class="uptime-head">
+                    <div class="uptime-pulse">
+                      <span class="uptime-dot"></span>
+                      <span class="uptime-ring"></span>
+                      <span class="uptime-text">99.99% Guaranteed</span>
+                    </div>
+                    <span class="uptime-badge">SSL · Edge CDN</span>
+                  </div>
+                  <div class="uptime-ecg">
+                    <svg viewBox="0 0 280 44" class="ecg-svg" preserveAspectRatio="none">
+                      <path class="ecg-track"
+                        d="M 0 22 L 70 22 L 80 8 L 90 36 L 100 22 L 180 22 L 190 6 L 200 38 L 210 22 L 280 22" />
+                      <path class="ecg-pulse"
+                        d="M 0 22 L 70 22 L 80 8 L 90 36 L 100 22 L 180 22 L 190 6 L 200 38 L 210 22 L 280 22" />
+                    </svg>
+                  </div>
+                  <div class="uptime-nodes">
+                    <span class="node-pill"><span class="node-status"></span> Singapore</span>
+                    <span class="node-pill"><span class="node-status"></span> Frankfurt</span>
+                    <span class="node-pill"><span class="node-status"></span> New York</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="why-card__content">
+                <h3 class="why-card__title">Secure &amp; Reliable</h3>
+                <p class="why-card__text">Modern deployment practices to keep your site online and protected 24/7.</p>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -272,52 +706,68 @@
         <div class="fan reveal" aria-hidden="true">
           <div class="fan__card" style="--r:-11deg;--y:44px;--k:2">
             <div class="fan__thumb fan__thumb--folder">
-              <svg viewBox="0 0 64 52"><path d="M4 9a5 5 0 0 1 5-5h13.5l6 6H55a5 5 0 0 1 5 5v28a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/></svg>
+              <svg viewBox="0 0 64 52">
+                <path d="M4 9a5 5 0 0 1 5-5h13.5l6 6H55a5 5 0 0 1 5 5v28a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" />
+              </svg>
             </div>
-            <p class="fan__cap"><span class="fan__ico" style="--c:#8fa5c6"></span><span>client-site<small>Folder</small></span></p>
+            <p class="fan__cap"><span class="fan__ico"
+                style="--c:#8fa5c6"></span><span>client-site<small>Folder</small></span></p>
           </div>
           <div class="fan__card" style="--r:-5deg;--y:10px;--k:1">
             <div class="fan__thumb fan__thumb--code">
-              <i style="--w:46%;--c:#5b78a6"></i><i style="--w:72%"></i><i style="--w:58%"></i><i style="--w:30%;--c:#b0664f"></i><i style="--w:66%"></i><i style="--w:40%;--c:#5b78a6"></i><i style="--w:54%"></i>
+              <i style="--w:46%;--c:#5b78a6"></i><i style="--w:72%"></i><i style="--w:58%"></i><i
+                style="--w:30%;--c:#b0664f"></i><i style="--w:66%"></i><i style="--w:40%;--c:#5b78a6"></i><i
+                style="--w:54%"></i>
             </div>
-            <p class="fan__cap"><span class="fan__ico" style="--c:#5b78a6"></span><span>views.py<small>Python</small></span></p>
+            <p class="fan__cap"><span class="fan__ico"
+                style="--c:#5b78a6"></span><span>views.py<small>Python</small></span></p>
           </div>
           <div class="fan__card" style="--r:0deg;--y:0px;--k:0">
             <div class="fan__thumb fan__thumb--term">
-              <i style="--w:38%;--c:#8fa5c6"></i><i style="--w:70%;--c:#9cc3a8"></i><i style="--w:52%"></i><i style="--w:64%"></i><i style="--w:44%;--c:#e6b9a8"></i><i style="--w:58%"></i>
+              <i style="--w:38%;--c:#8fa5c6"></i><i style="--w:70%;--c:#9cc3a8"></i><i style="--w:52%"></i><i
+                style="--w:64%"></i><i style="--w:44%;--c:#e6b9a8"></i><i style="--w:58%"></i>
             </div>
-            <p class="fan__cap"><span class="fan__ico" style="--c:#171717"></span><span>nginx.conf<small>Config</small></span></p>
+            <p class="fan__cap"><span class="fan__ico"
+                style="--c:#171717"></span><span>nginx.conf<small>Config</small></span></p>
           </div>
           <div class="fan__card" style="--r:5deg;--y:10px;--k:-1">
             <div class="fan__thumb fan__thumb--chart">
               <b>1,284</b>
-              <span class="fan__bars"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:44%"></i><i style="--h:60%"></i><i style="--h:48%"></i><i style="--h:66%"></i><i style="--h:56%"></i><i style="--h:82%"></i></span>
+              <span class="fan__bars"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:44%"></i><i
+                  style="--h:60%"></i><i style="--h:48%"></i><i style="--h:66%"></i><i style="--h:56%"></i><i
+                  style="--h:82%"></i></span>
             </div>
-            <p class="fan__cap"><span class="fan__ico" style="--c:#4f7a61"></span><span>scan-report<small>Security</small></span></p>
+            <p class="fan__cap"><span class="fan__ico"
+                style="--c:#4f7a61"></span><span>scan-report<small>Security</small></span></p>
           </div>
           <div class="fan__card" style="--r:11deg;--y:44px;--k:-2">
             <div class="fan__thumb fan__thumb--doc">
-              <i style="--w:58%;--c:#171717"></i><i style="--w:86%"></i><i style="--w:78%"></i><i style="--w:82%"></i><i style="--w:50%"></i><i style="--w:72%"></i>
+              <i style="--w:58%;--c:#171717"></i><i style="--w:86%"></i><i style="--w:78%"></i><i style="--w:82%"></i><i
+                style="--w:50%"></i><i style="--w:72%"></i>
             </div>
-            <p class="fan__cap"><span class="fan__ico" style="--c:#d9a796"></span><span>proposal.pdf<small>Document</small></span></p>
+            <p class="fan__cap"><span class="fan__ico"
+                style="--c:#d9a796"></span><span>proposal.pdf<small>Document</small></span></p>
           </div>
         </div>
 
         <header class="section-head reveal">
           <h2 id="contact-title" class="h-section" data-split-words>Start a <span class="accent">project.</span></h2>
-          <p class="section-lead">Tell us what you're building and we'll reply with questions or a proposal. No obligation.</p>
+          <p class="section-lead">Tell us what you're building and we'll reply with questions or a proposal. No
+            obligation.</p>
         </header>
 
         <form class="card enquiry reveal" id="enquiry-form" novalidate data-enquiry-form>
           <div class="enquiry__grid">
             <div class="field">
               <label for="f-name">Name <span aria-hidden="true">*</span></label>
-              <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="100" aria-describedby="f-name-err">
+              <input id="f-name" name="name" type="text" autocomplete="name" required maxlength="100"
+                aria-describedby="f-name-err">
               <p class="field__error" id="f-name-err"></p>
             </div>
             <div class="field">
               <label for="f-email">Email <span aria-hidden="true">*</span></label>
-              <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="150" aria-describedby="f-email-err">
+              <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="150"
+                aria-describedby="f-email-err">
               <p class="field__error" id="f-email-err"></p>
             </div>
             <div class="field">
@@ -355,8 +805,11 @@
             </div>
             <div class="field field--full">
               <label for="f-message">Project description <span aria-hidden="true">*</span></label>
-              <textarea id="f-message" name="message" rows="5" required minlength="20" maxlength="3000" aria-describedby="f-message-hint f-message-err" placeholder="What are you building, what should it do, and do you have a deadline?"></textarea>
-              <p class="field__hint" id="f-message-hint"><span data-char-count>0</span> / 3000 · minimum 20 characters</p>
+              <textarea id="f-message" name="message" rows="5" required minlength="20" maxlength="3000"
+                aria-describedby="f-message-hint f-message-err"
+                placeholder="What are you building, what should it do, and do you have a deadline?"></textarea>
+              <p class="field__hint" id="f-message-hint"><span data-char-count>0</span> / 3000 · minimum 20 characters
+              </p>
               <p class="field__error" id="f-message-err"></p>
             </div>
             <!-- Spam trap: real visitors never see or fill this -->
@@ -378,7 +831,8 @@
         <ul class="contact-list reveal" data-contact-list>
           <li data-config-item="contact.email"><span>Email</span><a href="#" data-config-link="contact.email"></a></li>
           <li data-config-item="contact.phone"><span>Phone</span><a href="#" data-config-link="contact.phone"></a></li>
-          <li data-config-item="contact.whatsapp"><span>WhatsApp</span><a href="#" data-config-link="contact.whatsapp" target="_blank" rel="noopener"></a></li>
+          <li data-config-item="contact.whatsapp"><span>WhatsApp</span><a href="#" data-config-link="contact.whatsapp"
+              target="_blank" rel="noopener"></a></li>
         </ul>
       </div>
     </section>
@@ -386,10 +840,11 @@
 
   <!-- ============ FOOTER ============ -->
   <footer class="footer">
+    <div class="cobweb cobweb--br" data-cobweb data-reveal aria-hidden="true"></div>
     <div class="container-cube footer__inner">
       <div class="footer__brand">
-        <a href="#overview" class="footer__logo" aria-label="Supercub — back to top">
-          <img src="assets/logo.svg" alt="" width="104" height="97">
+        <a href="#overview" class="footer__logo" aria-label="CobWebZ — back to top">
+          <img src="assets/logo.png" alt="" width="104" height="83">
         </a>
         <p class="footer__tagline">Web development and infrastructure studio.</p>
         <a href="#contact" class="btn btn--primary">Start a Project</a>
@@ -411,8 +866,10 @@
           <h2 class="footer__h">Services</h2>
           <ul>
             <li><a href="#contact" data-select-type="Full-stack development">Full-Stack Development</a></li>
-            <li><a href="#contact" data-select-type="Infrastructure &amp; deployment">Infrastructure &amp; Deployment</a></li>
-            <li><a href="#contact" data-select-type="Security &amp; vulnerability scanning">Security &amp; Scanning</a></li>
+            <li><a href="#contact" data-select-type="Infrastructure &amp; deployment">Infrastructure &amp;
+                Deployment</a></li>
+            <li><a href="#contact" data-select-type="Security &amp; vulnerability scanning">Security &amp; Scanning</a>
+            </li>
             <li><a href="#contact" data-select-type="Server management">Server Management</a></li>
           </ul>
         </div>
@@ -420,19 +877,24 @@
         <div class="footer__col" data-social-block>
           <h2 class="footer__h">Social</h2>
           <ul>
-            <li data-config-item="social.github"><a href="#" data-config-link="social.github" target="_blank" rel="noopener">GitHub</a></li>
-            <li data-config-item="social.linkedin"><a href="#" data-config-link="social.linkedin" target="_blank" rel="noopener">LinkedIn</a></li>
-            <li data-config-item="social.instagram"><a href="#" data-config-link="social.instagram" target="_blank" rel="noopener">Instagram</a></li>
-            <li data-config-item="social.facebook"><a href="#" data-config-link="social.facebook" target="_blank" rel="noopener">Facebook</a></li>
+            <li data-config-item="social.github"><a href="#" data-config-link="social.github" target="_blank"
+                rel="noopener">GitHub</a></li>
+            <li data-config-item="social.linkedin"><a href="#" data-config-link="social.linkedin" target="_blank"
+                rel="noopener">LinkedIn</a></li>
+            <li data-config-item="social.instagram"><a href="#" data-config-link="social.instagram" target="_blank"
+                rel="noopener">Instagram</a></li>
+            <li data-config-item="social.facebook"><a href="#" data-config-link="social.facebook" target="_blank"
+                rel="noopener">Facebook</a></li>
           </ul>
         </div>
       </nav>
 
-      <p class="footer__copy">© <span data-year>2026</span> Supercub. All rights reserved.</p>
+      <p class="footer__copy">© <span data-year>2026</span> CobWebZ. All rights reserved.</p>
     </div>
-    <p class="footer__word" aria-hidden="true" data-split-letters data-reveal>supercub</p>
+    <p class="footer__word" aria-hidden="true" data-split-letters data-reveal>CobWebZ</p>
   </footer>
 
   <script src="script.js"></script>
 </body>
+
 </html>

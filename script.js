@@ -1,5 +1,5 @@
 /* =========================================================================
-   Supercub — site behaviour (vanilla JS, no build step)
+   CobWebZ — site behaviour (vanilla JS, no build step)
    ========================================================================= */
 
 /* -------------------------------------------------------------------------
@@ -31,7 +31,7 @@ const CUBE_CONFIG = {
   form: {
     web3formsKey: '',
     formspreeEndpoint: '',
-    subject: 'New project enquiry — Supercub website'
+    subject: 'New project enquiry — CobWebZ website'
   }
 };
 
@@ -86,23 +86,72 @@ const CUBE_CONFIG = {
   /* ---------- Active nav link ---------- */
   function initActiveNav() {
     const links = $$('[data-nav]');
-    const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
     const sections = $$('main > section[id]');
+    if (!links.length || !sections.length) return;
 
     const setActive = (id) => {
-      if (!byId.has(id)) return;
       links.forEach((a) => {
-        const active = a === byId.get(id);
+        const href = a.getAttribute('href') || '';
+        const targetId = href.includes('#') ? href.split('#')[1] : href;
+        const active = targetId === id;
         a.classList.toggle('is-active', active);
         if (active) a.setAttribute('aria-current', 'true');
         else a.removeAttribute('aria-current');
       });
     };
 
+    setActive('overview');
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.id); });
-    }, { rootMargin: '-45% 0px -50% 0px' });
+    }, { rootMargin: '-30% 0px -50% 0px' });
     sections.forEach((s) => observer.observe(s));
+  }
+
+  /* ---------- Header: tightens up once the page scrolls ---------- */
+  // .is-scrolled also folds the links into the menu button on wide screens (style.css);
+  // --i / --n stagger the links as they go and come back
+  function initHeaderScroll() {
+    const header = $('[data-header]') || $('.site-header');
+    if (!header) return;
+    const items = $$('.site-nav__list > li', header);
+    items.forEach((li, i) => li.style.setProperty('--i', i));
+    header.style.setProperty('--n', items.length);
+    const update = () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 30);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  /* ---------- Theme toggle (Light / Dark mode) ---------- */
+  function initTheme() {
+    const toggle = $('[data-theme-toggle]');
+    if (!toggle) return;
+    const sunIcon = $('.theme-icon-sun', toggle);
+    const moonIcon = $('.theme-icon-moon', toggle);
+
+    const saved = localStorage.getItem('theme');
+    const theme = saved || 'light';
+
+    const meta = $('meta[name="theme-color"]');
+
+    function apply(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      if (sunIcon && moonIcon) {
+        sunIcon.hidden = t === 'dark';
+        moonIcon.hidden = t !== 'dark';
+      }
+      if (meta) meta.setAttribute('content', t === 'dark' ? '#0c0d10' : '#f0f1f3'); // browser UI colour
+      localStorage.setItem('theme', t);
+    }
+
+    apply(theme);
+
+    toggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      apply(current);
+    });
   }
 
   /* ---------- Menu (dropdown under the Menu pill) ---------- */
@@ -141,6 +190,14 @@ const CUBE_CONFIG = {
     root.addEventListener('focusout', (e) => {
       if (e.relatedTarget && !root.contains(e.relatedTarget)) close();
     });
+    // On wide screens the button folds away when you're back at the top; the menu goes with it
+    const header = toggle.closest('.site-header');
+    const wide = window.matchMedia('(min-width: 1100px)'); // the links bar breakpoint in style.css
+    if (header) {
+      new MutationObserver(() => {
+        if (wide.matches && !header.classList.contains('is-scrolled')) close();
+      }).observe(header, { attributes: true, attributeFilter: ['class'] });
+    }
   }
 
   /* ---------- Split text into words or letters ---------- */
@@ -213,8 +270,8 @@ const CUBE_CONFIG = {
   }
 
   /* ---------- Scroll-linked: [data-scrub] ---------- */
-  // Each [data-scrub] element gets --p from 0 (its top reaches 85% down the screen) to
-  // 1 (its bottom passes 45% down); CSS turns that into the effect.
+  // Each [data-scrub] element gets --p from 0 (its top approaches the screen bottom) to
+  // 1 (comfortably centered in view); CSS turns that into the effect.
   function initScrollEffects() {
     const scrubs = $$('[data-scrub]');
     if (!scrubs.length) return;
@@ -226,7 +283,7 @@ const CUBE_CONFIG = {
       scrubs.forEach((el) => {
         const r = el.getBoundingClientRect();
         if (r.bottom < -vh || r.top > vh * 2) return; // far off screen: nothing to update
-        const p = (vh * 0.85 - r.top) / (vh * 0.4 + r.height);
+        const p = (vh * 1.05 - r.top) / (vh * 0.32 + r.height);
         el.style.setProperty('--p', Math.min(1, Math.max(0, p)).toFixed(3));
       });
     }
@@ -240,19 +297,538 @@ const CUBE_CONFIG = {
     update();
   }
 
-  /* ---------- Live studio clock (Negombo) ---------- */
-  function initClock() {
-    const clocks = $$('[data-clock]');
-    if (!clocks.length) return;
-    const format = new Intl.DateTimeFormat('en-GB', {
-      timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23'
+  /* ---------- About: the spider mark you can pull on its web ---------- */
+  // CSS spins the mark in from --p. Once it has landed (--p > .8) the spider leans toward
+  // the pointer, can be dragged (it springs back on release) and hops when tapped. Its
+  // back legs are the W's inner threads, so their ends are re-plotted to stay attached.
+  function initSpiderMark() {
+    const root = $('[data-spider]');
+    if (!root) return;
+    const svg = $('svg', root);
+    const bug = $('.spider__bug', root);
+    const arms = $$('.spider__arm', root);
+    const scrub = root.closest('[data-scrub]');
+    const C = { x: 387.5, y: 281 }; // body centre, in viewBox units
+    // M x y C x y x y x y C x y x y x y → 14 numbers per arm
+    const base = arms.map((arm) => arm.getAttribute('d').match(/-?\d+(?:\.\d+)?/g).map(Number));
+    const REACH = 170; // how far the spider can be pulled before the thread resists
+
+    let x = 0, y = 0, vx = 0, vy = 0, angle = 0; // current pose
+    let tx = 0, ty = 0;                          // where it wants to be
+    let frame = 0;
+    let drag = null;
+
+    const live = () => root.classList.contains('is-live');
+    const toSvg = (e) => new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+
+    function render() {
+      bug.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+      const rad = (angle * Math.PI) / 180;
+      const cos = Math.cos(rad);
+      const sin = Math.sin(rad);
+      // A point on the body, after the body has moved and turned
+      const pin = (px, py) => [
+        C.x + x + (px - C.x) * cos - (py - C.y) * sin,
+        C.y + y + (px - C.x) * sin + (py - C.y) * cos
+      ];
+      // The thread stays anchored at the bottom of the W. Its middle (the join and the two
+      // handles either side of it) moves half as far as the spider, all together so the
+      // curve stays smooth; its last handle and end ride on the body.
+      const r = (n) => n.toFixed(1);
+      const mid = (px, py) => `${r(px + x * 0.5)} ${r(py + y * 0.5)}`;
+      arms.forEach((arm, i) => {
+        const b = base[i];
+        const [c2x, c2y] = pin(b[10], b[11]);
+        const [ex, ey] = pin(b[12], b[13]);
+        arm.setAttribute('d', `M${b[0]} ${b[1]} C${r(b[2] + x * 0.15)} ${r(b[3] + y * 0.15)} ` +
+          `${mid(b[4], b[5])} ${mid(b[6], b[7])} C${mid(b[8], b[9])} ${r(c2x)} ${r(c2y)} ${r(ex)} ${r(ey)}`);
+      });
+    }
+
+    function tick() {
+      if (drag) {
+        const px = x;
+        const py = y;
+        x += (tx - x) * 0.35;
+        y += (ty - y) * 0.35;
+        vx = x - px;
+        vy = y - py;
+      } else {
+        // Springy for everyone else; settles without wobbling for reduced motion
+        const damping = reduceMotion.matches ? 0.55 : 0.86;
+        vx = (vx + (tx - x) * 0.09) * damping;
+        vy = (vy + (ty - y) * 0.09) * damping;
+        x += vx;
+        y += vy;
+      }
+      // Leans into the direction it's being pulled, and swings with its momentum
+      const ta = Math.max(-20, Math.min(20, x * 0.18 + vx * 1.6));
+      angle += (ta - angle) * 0.2;
+      root.classList.toggle('is-scuttling', Math.hypot(vx, vy) > 0.5);
+      render();
+
+      const settled = !drag && Math.abs(tx - x) + Math.abs(ty - y) < 0.05 &&
+        Math.abs(vx) + Math.abs(vy) < 0.05 && Math.abs(ta - angle) < 0.05;
+      frame = settled ? 0 : requestAnimationFrame(tick);
+    }
+    const wake = () => { if (!frame) frame = requestAnimationFrame(tick); };
+
+    // Live only once the scroll animation has finished drawing it
+    function syncLive() {
+      const p = reduceMotion.matches ? 1 : parseFloat(scrub?.style.getPropertyValue('--p') || '1');
+      const on = p > 0.72;
+      if (on === live()) return;
+      root.classList.toggle('is-live', on);
+      if (!on && !drag) { tx = ty = 0; wake(); }
+    }
+    // After initScrollEffects has written this frame's --p
+    window.addEventListener('scroll', () => requestAnimationFrame(syncLive), { passive: true });
+    syncLive();
+
+    // Mouse: it watches the pointer, leaning a little toward it
+    if (finePointer.matches && scrub) {
+      scrub.addEventListener('pointermove', (e) => {
+        if (drag || !live() || reduceMotion.matches) return;
+        const p = toSvg(e);
+        const dx = p.x - C.x;
+        const dy = p.y - C.y;
+        const d = Math.hypot(dx, dy) || 1;
+        const lean = Math.min(26, d * 0.07);
+        tx = (dx / d) * lean;
+        ty = (dy / d) * lean;
+        wake();
+      });
+      scrub.addEventListener('pointerleave', () => {
+        if (drag) return;
+        tx = ty = 0;
+        wake();
+      });
+    }
+
+    bug.addEventListener('pointerdown', (e) => {
+      if (!live() || e.button > 0) return;
+      e.preventDefault();
+      bug.setPointerCapture(e.pointerId);
+      const p = toSvg(e);
+      drag = { id: e.pointerId, gx: p.x - x, gy: p.y - y, sx: p.x, sy: p.y, moved: false };
+      root.classList.add('is-dragging', 'is-touched');
+      wake();
     });
-    const tick = () => {
-      const text = format.format(new Date());
-      clocks.forEach((el) => { el.textContent = text; });
+    bug.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const p = toSvg(e);
+      const nx = p.x - drag.gx;
+      const ny = p.y - drag.gy;
+      // The further it's pulled, the harder the thread pulls back
+      const d = Math.hypot(nx, ny);
+      const k = d ? (REACH * Math.tanh(d / REACH)) / d : 0;
+      tx = nx * k;
+      ty = ny * k;
+      if (Math.hypot(p.x - drag.sx, p.y - drag.sy) > 6) drag.moved = true;
+      wake();
+    });
+    const release = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.moved && !reduceMotion.matches) vy -= 16; // a tap makes it hop
+      drag = null;
+      tx = ty = 0;
+      root.classList.remove('is-dragging');
+      wake();
     };
-    tick();
-    setInterval(tick, 1000);
+    bug.addEventListener('pointerup', release);
+    bug.addEventListener('pointercancel', release);
+  }
+
+  /* ---------- Our Services: the spider walks the web to each service ---------- */
+  // Draws the web into [data-services-silk] (viewBox -300…300, hub at 0 0): 12 spokes and
+  // 8 rings that dip between the spokes. Each service point sits on the ring of radius PATH_R
+  // at its angle --a (CSS places the buttons from the same angle). Scrolling through the
+  // section moves from one service to the next; each change walks the spider round that ring
+  // to it, laying a thread behind it, rolls the number in the hub and shows its panel.
+  function initServices() {
+    const root = $('[data-services]');
+    if (!root) return;
+    const web = $('.services__web', root);
+    const silk = $('[data-services-silk]', root);
+    const spider = $('[data-services-spider]', root);
+    const count = $('[data-services-count]', root);
+    const tabs = $$('[data-service-tab]', root);
+    const panels = tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls')));
+    if (!web || !silk || !spider || !tabs.length) return;
+
+    const SPOKES = 12;
+    const PATH_R = 195;
+    const RINGS = [84, 112, 140, 168, PATH_R, 224, 254, 284];
+    const SAG = 0.955; // how far each span between two spokes dips toward the hub
+    const f = (n) => n.toFixed(1);
+    const at = (r, deg) => [r * Math.cos((deg * Math.PI) / 180), r * Math.sin((deg * Math.PI) / 180)];
+    const ring = (r) => {
+      let d = '';
+      for (let k = 0; k <= SPOKES; k++) {
+        const [x, y] = at(r, (k * 360) / SPOKES);
+        if (!k) { d += `M${f(x)} ${f(y)}`; continue; }
+        const [cx, cy] = at(r * SAG, ((k - 0.5) * 360) / SPOKES);
+        d += `Q${f(cx)} ${f(cy)} ${f(x)} ${f(y)}`;
+      }
+      return d;
+    };
+
+    let svg = '<circle class="s-hub" r="58" pathLength="1"/>';
+    for (let k = 0; k < SPOKES; k++) {
+      const [x1, y1] = at(58, (k * 360) / SPOKES);
+      const [x2, y2] = at(296, (k * 360) / SPOKES);
+      svg += `<path class="s-spoke" pathLength="1" style="--i: ${k}" d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}"/>`;
+    }
+    RINGS.forEach((r, i) => {
+      svg += `<path class="s-ring${r === PATH_R ? ' s-path' : ''}" pathLength="1" style="--i: ${i}" d="${ring(r)}"/>`;
+    });
+    svg += `<path class="services__trail" pathLength="1" d="${ring(PATH_R)}"/>` +
+      '<line class="services__drop is-gone" x1="0" y1="-300" x2="0" y2="-300"/>';
+    silk.innerHTML = svg;
+    const trail = $('.services__trail', silk);
+    const drop = $('.services__drop', silk);
+
+    // The logo's spider: three left legs [path, pivot x, pivot y], mirrored for the right
+    const legs = [
+      ['M352 254C322 240 308 205 316 170C320 155 326 145 332 138', 352, 254],
+      ['M346 280C315 272 285 255 278 228C274 212 271 200 270 188', 346, 280],
+      ['M352 318C335 328 326 345 327 368C328 388 334 400 342 410', 352, 318]
+    ];
+    const mirror = (d) => d.replace(/(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g, (m, x, y) => `${775 - x} ${y}`);
+    spider.innerHTML = '<svg viewBox="255 125 265 300">' +
+      legs.map(([d, x, y], i) => {
+        const swing = i % 2 ? -9 : 9;
+        return `<path class="services__leg" style="--o: ${x}px ${y}px; --s: ${swing}deg" d="${d}"/>` +
+          `<path class="services__leg" style="--o: ${775 - x}px ${y}px; --s: ${-swing}deg" d="${mirror(d)}"/>`;
+      }).join('') +
+      '<path class="services__body" fill-rule="evenodd" d="M347 244A40 40 0 0 1 427 244L427 318A40 40 0 0 1 347 318Z' +
+      'M373 249A14 20 0 1 0 401 249A14 20 0 1 0 373 249ZM374 318A13 15 0 1 0 400 318A13 15 0 1 0 374 318Z"/></svg>';
+
+    // A point on the walked ring, p = 0…1 of the way round from angle 0 (clockwise on screen);
+    // it follows the same curves as the drawn ring, so the spider stays on the thread
+    const ringPoint = (p) => {
+      const u = (((p % 1) + 1) % 1) * SPOKES;
+      const k = Math.floor(u);
+      const t = u - k;
+      const [x0, y0] = at(PATH_R, (k * 360) / SPOKES);
+      const [x1, y1] = at(PATH_R, ((k + 1) * 360) / SPOKES);
+      const [cx, cy] = at(PATH_R * SAG, ((k + 0.5) * 360) / SPOKES);
+      const s = 1 - t;
+      return [s * s * x0 + 2 * s * t * cx + t * t * x1, s * s * y0 + 2 * s * t * cy + t * t * y1];
+    };
+    // Which way the spider faces when heading round the ring in direction dir (±1); 0 = up
+    const facing = (p, dir) => {
+      const [x0, y0] = ringPoint(p);
+      const [x1, y1] = ringPoint(p + dir * 0.002);
+      return (Math.atan2(x1 - x0, -(y1 - y0)) * 180) / Math.PI;
+    };
+    const stops = tabs.map((tab) => (((parseFloat(tab.style.getPropertyValue('--a')) || 0) % 360) + 360) % 360 / 360);
+    const place = (x, y, h) => {
+      spider.style.left = `${50 + (x / 600) * 100}%`;
+      spider.style.top = `${50 + (y / 600) * 100}%`;
+      spider.style.setProperty('--h', `${h.toFixed(1)}deg`);
+    };
+
+    let current = 0;
+    let pos = stops[0];
+    let walk = 0;
+    let landed = false; // until the spider has dropped onto the web
+
+    function walkTo(target, done) {
+      cancelAnimationFrame(walk);
+      let d = target - pos;
+      if (d > 0.5) d -= 1;
+      if (d <= -0.5) d += 1;
+      const dir = d < 0 ? -1 : 1;
+      if (reduceMotion.matches || Math.abs(d) < 1e-4) {
+        pos = target;
+        const [x, y] = ringPoint(pos);
+        place(x, y, facing(pos, dir));
+        done?.();
+        return;
+      }
+      const from = pos;
+      const ms = Math.max(600, Math.abs(d) * 3600); // a quarter of the way round takes 0.9s
+      const t0 = performance.now();
+      spider.classList.add('is-walking');
+      trail.classList.add('is-on');
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / ms);
+        const e = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+        pos = from + d * e;
+        const [x, y] = ringPoint(pos);
+        place(x, y, facing(pos, dir));
+        // The thread it lays, from where it set off to where it is (dashes repeat every lap)
+        const len = Math.abs(pos - from);
+        trail.style.strokeDasharray = `${len.toFixed(4)} ${(1 - len).toFixed(4)}`;
+        trail.style.strokeDashoffset = (-(dir > 0 ? from : pos)).toFixed(4);
+        if (t < 1) {
+          walk = requestAnimationFrame(step);
+          return;
+        }
+        pos = ((target % 1) + 1) % 1;
+        spider.classList.remove('is-walking');
+        trail.classList.remove('is-on'); // the thread fades
+        done?.();
+      };
+      walk = requestAnimationFrame(step);
+    }
+
+    function rollCount(text) {
+      if (!count || count.textContent === text) return;
+      if (reduceMotion.matches) { count.textContent = text; return; }
+      count.classList.add('is-out');
+      setTimeout(() => {
+        count.textContent = text;
+        count.classList.replace('is-out', 'is-in');
+        void count.offsetWidth; // start the roll in from below
+        count.classList.remove('is-in');
+      }, 220);
+    }
+
+    function select(i) {
+      if (i < 0 || i === current) return;
+      current = i;
+      tabs.forEach((tab, j) => {
+        const on = j === i;
+        tab.classList.toggle('is-active', on);
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((panel, j) => {
+        if (!panel) return;
+        panel.classList.toggle('is-active', j === i);
+        if (pinned()) panel.inert = j !== i; // stacked panels all stay readable
+      });
+      rollCount(String(i + 1).padStart(2, '0'));
+      if (landed) walkTo(stops[i]); // before it lands, it simply drops onto the right one
+    }
+
+    // Scrolling picks the service. Wide, tall screens pin the section (.is-pinned, style.css)
+    // and share its scroll out evenly between the services; narrower ones stack the panels
+    // under a sticky web, and the panel passing the lower part of the screen is the one.
+    const section = root.closest('.services') || root;
+    const roomy = window.matchMedia('(min-width: 960px) and (min-height: 620px)');
+    const pinned = () => section.classList.contains('is-pinned');
+    section.style.setProperty('--steps', tabs.length);
+
+    let queued = false;
+    function fromScroll() {
+      queued = false;
+      if (!pinned()) return;
+      const r = section.getBoundingClientRect();
+      const range = r.height - window.innerHeight;
+      if (range <= 0) return;
+      const p = Math.min(0.9999, Math.max(0, -r.top / range));
+      select(Math.floor(p * tabs.length));
+    }
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(fromScroll);
+    };
+    function setMode() {
+      section.classList.toggle('is-pinned', roomy.matches);
+      panels.forEach((panel, j) => { if (panel) panel.inert = pinned() && j !== current; });
+      onScroll();
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    roomy.addEventListener('change', setMode);
+    if ('IntersectionObserver' in window) {
+      const band = new IntersectionObserver((entries) => entries.forEach((entry) => {
+        if (!pinned() && entry.isIntersecting) select(panels.indexOf(entry.target));
+      }), { rootMargin: '-62% 0px -36% 0px' });
+      panels.forEach((panel) => panel && band.observe(panel));
+    }
+    setMode();
+
+    // Choosing a service scrolls to its place, so the page and the web always agree; the
+    // spider walks there as the page goes by
+    function go(i) {
+      const behavior = reduceMotion.matches ? 'auto' : 'smooth';
+      if (pinned()) {
+        const r = section.getBoundingClientRect();
+        const range = r.height - window.innerHeight;
+        window.scrollTo({ top: window.scrollY + r.top + ((i + 0.5) / tabs.length) * range, behavior });
+      } else {
+        panels[i]?.scrollIntoView({ block: 'center', behavior });
+      }
+    }
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => go(i)));
+    $('.services__nodes', root)?.addEventListener('keydown', (e) => {
+      const steps = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+      let next = null;
+      if (e.key in steps) next = (current + steps[e.key] + tabs.length) % tabs.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
+      if (next === null) return;
+      e.preventDefault();
+      go(next);
+      tabs[next].focus({ preventScroll: true });
+    });
+
+    // The web leans toward the pointer, and shivers when a point is touched
+    if (finePointer.matches) {
+      web.addEventListener('pointermove', (e) => {
+        if (reduceMotion.matches) return;
+        const r = web.getBoundingClientRect();
+        web.style.setProperty('--rx', `${(((e.clientY - r.top) / r.height - 0.5) * -8).toFixed(2)}deg`);
+        web.style.setProperty('--ry', `${(((e.clientX - r.left) / r.width - 0.5) * 8).toFixed(2)}deg`);
+      });
+      web.addEventListener('pointerleave', () => {
+        web.style.removeProperty('--rx');
+        web.style.removeProperty('--ry');
+      });
+    }
+    tabs.forEach((tab) => tab.addEventListener('pointerenter', () => {
+      if (reduceMotion.matches || web.getAnimations().some((a) => a.id === 'shiver')) return;
+      web.animate([{ scale: '1' }, { scale: '1.012 0.988' }, { scale: '0.994 1.006' }, { scale: '1' }],
+        { duration: 700, easing: 'ease-out', id: 'shiver' });
+    }));
+
+    // Threads stay about a pixel wide whatever size the web is drawn at
+    const fit = () => silk.style.setProperty('--sw', (600 / (silk.clientWidth || 600)).toFixed(3));
+    fit();
+    window.addEventListener('resize', fit);
+
+    // The first time it's on screen: the web spins (CSS), then the spider drops onto the
+    // service the scroll has reached on a thread, bounces and turns to face along the web
+    let introduced = false;
+    function land(at) {
+      landed = true;
+      pos = at;
+      const [x, y] = ringPoint(pos);
+      place(x, y, facing(pos, 1));
+      spider.classList.add('is-ready');
+      if (stops[current] !== at) walkTo(stops[current]); // scrolled on while it was dropping
+    }
+    function intro() {
+      introduced = true;
+      if (reduceMotion.matches) {
+        land(stops[current]);
+        return;
+      }
+      setTimeout(() => {
+        const at = stops[current];
+        const [x, y] = ringPoint(at);
+        const top = -300; // the web's top edge
+        const t0 = performance.now();
+        drop.setAttribute('x1', f(x));
+        drop.setAttribute('x2', f(x));
+        drop.classList.remove('is-gone');
+        spider.classList.add('is-ready');
+        const step = (now) => {
+          const t = Math.min(1, (now - t0) / 1100);
+          const e = 1 + 2.7 * (t - 1) ** 3 + 1.7 * (t - 1) ** 2; // overshoots a touch, then settles
+          const cy = top + (y - top) * e;
+          place(x, cy, 0);
+          drop.setAttribute('y2', f(cy));
+          if (t < 1) {
+            requestAnimationFrame(step);
+            return;
+          }
+          drop.classList.add('is-gone');
+          land(at);
+        };
+        requestAnimationFrame(step);
+      }, 1500);
+    }
+    if ('IntersectionObserver' in window) {
+      const seen = new IntersectionObserver((entries) => {
+        if (!introduced && entries.some((entry) => entry.isIntersecting)) {
+          seen.disconnect();
+          intro();
+        }
+      }, { threshold: 0.3 });
+      seen.observe(root);
+    } else {
+      intro();
+    }
+  }
+
+  /* ---------- Cobwebs in the page corners ---------- */
+  // Each [data-cobweb] gets a quarter web, drawn for the top-left corner (viewBox 0–100) and
+  // mirrored into place by CSS. [data-reveal] marks it is-visible on screen, which spins it
+  // in. data-cobweb="spider" also hangs the logo's spider, small, on a thread from it.
+  function initCobwebs() {
+    const webs = $$('[data-cobweb]');
+    if (!webs.length) return;
+    const r = (n) => Math.round(n * 10) / 10;
+
+    // The logo's spider: three left legs [path, pivot x, pivot y], mirrored for the right
+    const legs = [
+      ['M352 254C322 240 308 205 316 170C320 155 326 145 332 138', 352, 254],
+      ['M346 280C315 272 285 255 278 228C274 212 271 200 270 188', 346, 280],
+      ['M352 318C335 328 326 345 327 368C328 388 334 400 342 410', 352, 318]
+    ];
+    const mirror = (d) => d.replace(/(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/g, (m, x, y) => `${775 - x} ${y}`);
+    const spider = '<svg class="cobweb__spider" viewBox="255 125 265 300">' +
+      legs.map(([d, x, y], i) => {
+        const swing = i % 2 ? -9 : 9;
+        return `<path class="cobweb__leg" style="--o: ${x}px ${y}px; --s: ${swing}deg" d="${d}"/>` +
+          `<path class="cobweb__leg" style="--o: ${775 - x}px ${y}px; --s: ${-swing}deg" d="${mirror(d)}"/>`;
+      }).join('') +
+      '<path class="cobweb__body" fill-rule="evenodd" d="M347 244A40 40 0 0 1 427 244L427 318A40 40 0 0 1 347 318Z' +
+      'M373 249A14 20 0 1 0 401 249A14 20 0 1 0 373 249ZM374 318A13 15 0 1 0 400 318A13 15 0 1 0 374 318Z"/></svg>';
+
+    webs.forEach((host, w) => {
+      // Seeded jitter: every web is a little different, but the same on every visit
+      let seed = 7 + w * 101;
+      const wobble = (n) => {
+        seed = (seed * 16807) % 2147483647;
+        return (seed / 2147483647 - 0.5) * n;
+      };
+      const at = (radius, a) => [radius * Math.cos(a), radius * Math.sin(a)];
+      const angles = [9, 27, 45, 63, 81].map((deg) => ((deg + wobble(7)) * Math.PI) / 180);
+
+      const spokes = angles.map((a, i) => {
+        const [x, y] = at(97 + wobble(6), a);
+        return `<path class="cobweb__spoke" pathLength="1" style="--i: ${i}" d="M0 0L${r(x)} ${r(y)}"/>`;
+      });
+      // Each ring runs wall to wall through every spoke, each span sagging toward the corner
+      const rings = [18, 33, 49, 65, 82].map((radius, i) => {
+        const pts = [[radius + wobble(4), 0], ...angles.map((a) => at(radius + wobble(4), a)), [0, radius + wobble(4)]];
+        const d = pts.map(([x, y], j) => {
+          if (!j) return `M${r(x)} ${r(y)}`;
+          const [px, py] = pts[j - 1];
+          const sag = 0.84 + wobble(0.06);
+          return `Q${r(((px + x) / 2) * sag)} ${r(((py + y) / 2) * sag)} ${r(x)} ${r(y)}`;
+        }).join('');
+        return `<path class="cobweb__ring" pathLength="1" style="--i: ${i}" d="${d}"/>`;
+      });
+
+      host.style.setProperty('--w', w);
+      host.innerHTML = '<svg class="cobweb__web" viewBox="0 0 100 100">' +
+        '<path class="cobweb__hit" d="M0 0H100A100 100 0 0 1 0 100Z"/>' +
+        `<g class="cobweb__shake"><g class="cobweb__sway">${spokes.join('')}${rings.join('')}</g></g></svg>`;
+
+      if (host.dataset.cobweb === 'spider') {
+        // Hangs from the middle spoke, two thirds of the way out
+        const [x, y] = at(64, angles[2]);
+        const left = host.matches('.cobweb--tr, .cobweb--br') ? 100 - x : x;
+        host.insertAdjacentHTML('beforeend', `<div class="cobweb__drop" style="left: ${r(left)}%; top: ${r(y)}%">` +
+          `<span class="cobweb__silk"></span>${spider}</div>`);
+      }
+
+      // Brushing past a web makes it shiver
+      const shake = $('.cobweb__shake', host);
+      $('.cobweb__hit', host).addEventListener('pointerenter', () => {
+        if (reduceMotion.matches || !host.classList.contains('is-visible') || shake.getAnimations().length) return;
+        shake.animate([
+          { transform: 'scale(1)' },
+          { transform: 'scale(1.035, 0.97)' },
+          { transform: 'scale(0.98, 1.02)' },
+          { transform: 'scale(1.012, 0.99)' },
+          { transform: 'scale(1)' }
+        ], { duration: 1000, easing: 'ease-out' });
+      });
+    });
+
+    // Threads stay about a pixel wide whatever size each web is drawn at
+    const fit = () => webs.forEach((host) => host.style.setProperty('--sw', (100 / (host.offsetWidth || 100)).toFixed(3)));
+    fit();
+    window.addEventListener('resize', fit);
   }
 
   /* ---------- Tech stack rows: drift, follow the scroll, slow under the pointer ---------- */
@@ -393,15 +969,17 @@ const CUBE_CONFIG = {
     });
   }
 
-  /* ---------- Our Work videos: stay still for reduced motion ---------- */
-  function initWorkVideos() {
-    const videos = $$('[data-work-video]');
-    const sync = () => videos.forEach((v) => {
-      if (reduceMotion.matches) v.pause();
-      else v.play().catch(() => {});
-    });
-    sync();
-    reduceMotion.addEventListener('change', sync);
+  /* ---------- Our Work: scroll-down previews ---------- */
+  // Marks each preview frame is-inview while it's on screen; style.css scrolls the home
+  // cards' screenshots then (and the work page's on touch screens), restarting from the
+  // top each time you come back to them.
+  function initWorkPreviews() {
+    const frames = $$('[data-preview]');
+    if (!frames.length || !('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.target.classList.toggle('is-inview', entry.isIntersecting));
+    }, { threshold: 0.4 });
+    frames.forEach((frame) => observer.observe(frame));
   }
 
   /* ---------- Particle ribbon (hero) ---------- */
@@ -784,7 +1362,7 @@ const CUBE_CONFIG = {
           res = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ access_key: web3formsKey.trim(), subject, from_name: 'Supercub website', replyto: data.email, ...data }),
+            body: JSON.stringify({ access_key: web3formsKey.trim(), subject, from_name: 'CobWebZ website', replyto: data.email, ...data }),
             signal: controller.signal
           });
         } else {
@@ -834,7 +1412,7 @@ const CUBE_CONFIG = {
           showStatus('info', 'Your email app should now open with your enquiry filled in.',
             'It has not been sent yet — please press Send in your email app to deliver it.');
         } else {
-          console.warn('[Supercub] Enquiry form is not connected. Set CUBE_CONFIG.form.web3formsKey or formspreeEndpoint in script.js.');
+          console.warn('[CobWebZ] Enquiry form is not connected. Set CUBE_CONFIG.form.web3formsKey or formspreeEndpoint in script.js.');
           showStatus('error', 'Online enquiries are not connected yet.',
             CUBE_CONFIG.contact.phone.trim() || CUBE_CONFIG.contact.whatsapp.trim()
               ? 'Your message was not sent. Please contact us directly using the details on this page.'
@@ -851,7 +1429,7 @@ const CUBE_CONFIG = {
           `We'll reply to ${data.email} as soon as possible.`);
         resetForm();
       } catch (err) {
-        console.error('[Supercub] Enquiry failed:', err);
+        console.error('[CobWebZ] Enquiry failed:', err);
         showStatus('error', 'Sorry, your enquiry could not be sent.',
           emailFallbackNodes('Please try again in a moment, or email us directly at'));
       } finally {
@@ -861,18 +1439,108 @@ const CUBE_CONFIG = {
     });
   }
 
+  /* ---------- Why Choose Us interactive spotlight and telemetry ---------- */
+  function initWhyChooseUs() {
+    const grid = $('[data-why-grid]');
+    if (!grid) return;
+    const cards = $$('[data-why-card]', grid);
+
+    // Dynamic Spotlight following cursor
+    grid.addEventListener('mousemove', (e) => {
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
+
+    // Card 1: Interactive Bézier Wireframe morph on mouse move
+    const craftStage = $('[data-craft-stage]');
+    if (craftStage) {
+      const curve = $('.craft-curve', craftStage);
+      const fill = $('.craft-curve-fill', craftStage);
+      const node2 = $('.craft-node--2', craftStage);
+      craftStage.addEventListener('mousemove', (e) => {
+        const rect = craftStage.getBoundingClientRect();
+        const px = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const py = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+        const cy = Math.round(15 + py * 55);
+        const cx = Math.round(50 + px * 60);
+        if (curve && fill) {
+          const d = `M 10 90 Q ${cx} ${cy} 140 60 T 270 30`;
+          curve.setAttribute('d', d);
+          fill.setAttribute('d', `${d} L 270 120 L 10 120 Z`);
+        }
+        if (node2) {
+          node2.style.setProperty('--nx', `${cx}px`);
+          node2.style.setProperty('--ny', `${cy}px`);
+        }
+      });
+      craftStage.addEventListener('mouseleave', () => {
+        if (curve && fill) {
+          const d = 'M 10 90 Q 70 20 140 60 T 270 30';
+          curve.setAttribute('d', d);
+          fill.setAttribute('d', `${d} L 270 120 L 10 120 Z`);
+        }
+        if (node2) {
+          node2.style.setProperty('--nx', '70px');
+          node2.style.setProperty('--ny', '20px');
+        }
+      });
+    }
+
+    // Card 2: Interactive benchmark telemetry trigger
+    const speedBtn = $('[data-speed-trigger]');
+    const speedVal = $('[data-speed-val]');
+    const ttfbVal = $('[data-ttfb-val]');
+    if (speedBtn && speedVal) {
+      let running = false;
+      speedBtn.addEventListener('click', () => {
+        if (running) return;
+        running = true;
+        speedBtn.classList.add('is-running');
+        speedVal.textContent = '..';
+        if (ttfbVal) ttfbVal.textContent = '...';
+        let count = 20;
+        const timer = setInterval(() => {
+          count += 8;
+          if (count >= 100) {
+            clearInterval(timer);
+            speedVal.textContent = '100';
+            if (ttfbVal) ttfbVal.textContent = '14ms';
+            speedBtn.classList.remove('is-running');
+            speedBtn.classList.add('is-finished');
+            setTimeout(() => {
+              speedBtn.classList.remove('is-finished');
+              running = false;
+            }, 2500);
+          } else {
+            speedVal.textContent = String(count);
+          }
+        }, 30);
+      });
+    }
+  }
+
   applyConfig();
+  initTheme();
   initSplitText(); // before initMotion, so the words exist when the hero starts animating
   initActiveNav();
+  initHeaderScroll();
   initMenu();
+  initCobwebs(); // before initMotion, so the webs exist before they're marked is-visible
   initMotion();
   initScrollEffects();
-  initWorkVideos();
+  initSpiderMark();
+  initServices();
+  initWorkPreviews();
   initParticles();
   initMarquees();
   initCursorBadge();
   initMagnetic();
-  initClock();
   initSelections();
+  initWhyChooseUs();
   initForm();
 })();
