@@ -106,8 +106,7 @@
     <!-- ============ HERO ============ -->
     <section class="hero" id="overview" aria-labelledby="hero-title">
       <canvas class="particles" data-particles="hero" aria-hidden="true"></canvas>
-      <!-- Corner cobwebs, built by initCobwebs() in script.js -->
-      <div class="cobweb cobweb--tl" data-cobweb data-reveal aria-hidden="true"></div>
+      <!-- Corner cobweb, built by initCobwebs() in script.js -->
       <div class="cobweb cobweb--tr" data-cobweb="spider" data-reveal aria-hidden="true"></div>
 
       <div class="container-cube hero__inner">
@@ -133,8 +132,10 @@
     <!-- ============ ABOUT ============ -->
     <!-- As this section scrolls past, the statement darkens word by word and the spider mark
          spins its web. Both follow --p, which script.js sets on .about__body. Once it has
-         landed the spider can be dragged (initSpiderMark); its back legs are web threads. -->
+         landed the spider can be dragged and its web plucked (initSpiderMark); its back legs
+         are web threads. -->
     <section class="section about" id="about" aria-labelledby="about-title">
+      <canvas class="particles" data-particles="about" aria-hidden="true"></canvas>
       <div class="container-cube">
         <h2 id="about-title" class="sr-only">About us</h2>
 
@@ -178,6 +179,9 @@
 
     <!-- ============ OUR SERVICES ============ -->
     <section class="section services" id="services" aria-labelledby="services-title">
+      <div class="particles-pin" aria-hidden="true">
+        <div class="particles-pin__view"><canvas class="particles" data-particles="services"></canvas></div>
+      </div>
       <div class="container-cube">
         <header class="section-head services__head reveal">
           <p class="badge"><span class="badge__dot" aria-hidden="true"></span>Services</p>
@@ -294,6 +298,7 @@
     <!-- Each card shows a tall screenshot of the whole site (assets/work/*-scroll.webp); hovering scrolls it top to bottom.
          --frames on each image is its height in 16:9 card frames, which sets the scroll speed. -->
     <section class="section work" id="work" aria-labelledby="work-title">
+      <canvas class="particles" data-particles="work" aria-hidden="true"></canvas>
       <div class="container-cube">
         <header class="section-head reveal">
           <h2 id="work-title" class="h-section" data-split-words>Our <span class="accent">work.</span></h2>
@@ -301,8 +306,7 @@
             Fast, responsive and live on your own domain.</p>
         </header>
 
-        <!-- Each card opens its live demo site in a new tab. work.html lists the same sites in more detail.
-             On desktop the tags show at rest and swap to the description on hover. -->
+        <!-- Each card opens its live demo site in a new tab. work.html lists the same sites in more detail. -->
         <div class="card-container reveal" data-stagger>
           <a href="veloa%20one/Vela%20One.html" target="_blank" rel="noopener" class="work-card" data-cursor="View">
             <span class="work-card__media" data-preview>
@@ -315,12 +319,8 @@
                     tab)</span></span>
                 <span class="work-card__arrow" aria-hidden="true">→</span>
               </span>
-              <span class="work-card__swap">
-                <span class="work-card__text">A launch page for titanium headphones, told through scroll-driven scenes
-                  and an exploded product view.</span>
-                <span class="work-card__tags">HTML · CSS · JavaScript · GSAP</span>
-              </span>
-              <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
+              <span class="work-card__text">A launch page for titanium headphones, told through scroll-driven scenes
+                and an exploded product view.</span>
             </span>
           </a>
 
@@ -335,12 +335,8 @@
                     tab)</span></span>
                 <span class="work-card__arrow" aria-hidden="true">→</span>
               </span>
-              <span class="work-card__swap">
-                <span class="work-card__text">A dark editorial showcase for a photography collective that works as a
-                  scroll story or a slide deck.</span>
-                <span class="work-card__tags">HTML · Tailwind CSS · JavaScript · Web Audio</span>
-              </span>
-              <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
+              <span class="work-card__text">A dark editorial showcase for a photography collective that works as a
+                scroll story or a slide deck.</span>
             </span>
           </a>
 
@@ -355,12 +351,8 @@
                     tab)</span></span>
                 <span class="work-card__arrow" aria-hidden="true">→</span>
               </span>
-              <span class="work-card__swap">
-                <span class="work-card__text">A clothing store with a colour picker, quick add to bag and a product page
-                  with a size guide.</span>
-                <span class="work-card__tags">HTML · Tailwind CSS · JavaScript</span>
-              </span>
-              <span class="work-card__meta"><span>Static Deployments</span><span>From LKR 25,000</span></span>
+              <span class="work-card__text">A clothing store with a colour picker, quick add to bag and a product page
+                with a size guide.</span>
             </span>
           </a>
         </div>
@@ -374,6 +366,7 @@
     <!-- Two rows that drift in opposite directions and react to scrolling. List each tool once:
          script.js repeats the items to fill the row. -->
     <section class="section stack" id="stack" aria-labelledby="stack-title">
+      <canvas class="particles" data-particles="stack" aria-hidden="true"></canvas>
       <div class="container-cube">
         <header class="section-head reveal">
           <h2 id="stack-title" class="h-section" data-split-words>From first commit <span class="accent">to
@@ -415,6 +408,7 @@
     <!-- To edit plans: change the name in data-package (and the matching data-select-package),
          the price and the list items. The enquiry form's plan dropdown is built from these cards. -->
     <section class="section" id="pricing" aria-labelledby="pricing-title">
+      <canvas class="particles" data-particles="pricing" aria-hidden="true"></canvas>
       <div class="container-cube">
         <header class="section-head reveal">
           <h2 id="pricing-title" class="h-section" data-split-words>Simple, <span class="accent">transparent</span>
@@ -702,6 +696,7 @@
 
     <!-- ============ CONTACT ============ -->
     <section class="section" id="contact" aria-labelledby="contact-title">
+      <canvas class="particles" data-particles="contact" aria-hidden="true"></canvas>
       <div class="container-cube">
         <header class="section-head reveal">
           <h2 id="contact-title" class="h-section" data-split-words>Start a <span class="accent">project.</span></h2>
@@ -793,6 +788,7 @@
 
   <!-- ============ FOOTER ============ -->
   <footer class="footer">
+    <canvas class="particles" data-particles="footer" aria-hidden="true"></canvas>
     <div class="cobweb cobweb--br" data-cobweb data-reveal aria-hidden="true"></div>
     <div class="container-cube footer__inner">
       <div class="footer__brand">

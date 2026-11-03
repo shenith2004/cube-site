@@ -265,23 +265,35 @@
   }
   /* The links need about 1100px to sit clear of the logo and buttons; below that the
      menu button stands in for them. From 1100px up they show at the top of the page, and
-     once it scrolls (.is-scrolled, from script.js) they slide off to the right one after
-     another as the menu button spins in beside the theme button. Scrolling back to the
-     top runs it in reverse. --i is each link's position, --n the count (script.js). */
+     scrolling down (.is-folded, from script.js) slides them off to the right one after
+     another as the menu button spins in beside the theme button. Scrolling back up runs
+     it in reverse, wherever you are, and away from the top the links sit on a pill so
+     they read over the page. --i is each link's position, --n the count (script.js). */
   @media (max-width: 1099px) {
     .site-nav { display: none; }
   }
   @media (min-width: 1100px) {
     .site-nav { transition: visibility 0s; }
+    /* The pill's padding is always there, cancelled by the margin, so nothing moves */
+    .site-nav__list {
+      margin: -7px -22px;
+      padding: 7px 22px;
+      border-radius: var(--radius-pill);
+      transition: background-color 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+    }
+    .site-header.is-scrolled:not(.is-folded) .site-nav__list {
+      background-color: var(--color-surface);
+      box-shadow: var(--shadow-pill);
+    }
     .site-nav__list > li {
       transition: opacity 0.35s var(--ease-out), translate 0.5s var(--ease-out), filter 0.35s var(--ease-out);
       transition-delay: calc(var(--i, 0) * 40ms); /* back in from the left */
     }
-    .site-header.is-scrolled .site-nav {
+    .site-header.is-folded .site-nav {
       visibility: hidden; /* once the links have gone, so they can't be tabbed to */
       transition: visibility 0s 0.6s;
     }
-    .site-header.is-scrolled .site-nav__list > li {
+    .site-header.is-folded .site-nav__list > li {
       opacity: 0;
       translate: 56px 0;
       filter: blur(6px);
@@ -295,7 +307,7 @@
       transform: scale(0.4) rotate(-90deg);
       transition: opacity 0.2s var(--ease-out), transform 0.35s var(--ease-out), visibility 0s 0.35s;
     }
-    .site-header.is-scrolled .menu {
+    .site-header.is-folded .menu {
       opacity: 1;
       visibility: visible;
       transform: none;
@@ -306,7 +318,7 @@
       scale: 0 1;
       transition: transform 0.25s var(--ease-out), opacity 0.2s, scale 0.2s var(--ease-out);
     }
-    .site-header.is-scrolled .menu .hamburger-icon span {
+    .site-header.is-folded .menu .hamburger-icon span {
       scale: 1;
       transition: transform 0.25s var(--ease-out), opacity 0.2s, scale 0.35s var(--ease-out) calc(0.4s + var(--b, 0) * 70ms);
     }
@@ -521,7 +533,8 @@
     70%, 100% { transform: scale(2.6); opacity: 0; }
   }
 
-  /* Particle ribbons, drawn by initParticles() in script.js */
+  /* Particle ribbons, drawn by initParticles() in script.js. It sizes and places each canvas
+     to cover just its ribbons, so these are only the starting box. */
   .particles {
     position: absolute;
     inset: 0;
@@ -529,6 +542,19 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+  }
+  /* Our Services holds still while you scroll through it, so its ribbons do too: their
+     canvas sits in a screen-high box that sticks to the top of the section */
+  .particles-pin {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .particles-pin__view {
+    position: sticky;
+    top: 0;
+    height: min(100svh, 100%);
   }
 
   /* ---------- Hero ---------- */
@@ -846,8 +872,13 @@
     stroke-linecap: round;
   }
   .spider__thread { stroke-width: 27; }
-  .spider__leg { stroke-width: 20; transform-origin: var(--o); }
-  .spider .spider__body { fill: var(--color-ink); stroke: none; transform-origin: 387.5px 281px; }
+  .spider__leg { stroke-width: 20; transform-origin: var(--o); transition: scale 0.3s var(--ease-out); }
+  .spider .spider__body {
+    fill: var(--color-ink);
+    stroke: none;
+    transform-origin: 387.5px 281px;
+    transition: scale 0.3s var(--ease-out);
+  }
   .spider .spider__hit { fill: transparent; pointer-events: all; }
   .spider__bug { transform-origin: 387.5px 281px; }
 
@@ -860,9 +891,14 @@
     transform: scale(clamp(0.3, (var(--p, 0) - 0.40) * 3.5 + 0.3, 1));
   }
 
-  /* Once it has landed, script.js lets the spider be dragged; it springs back on release */
+  /* Once it has landed, script.js lets the spider be dragged (it springs back on release)
+     and the W's outer threads be plucked */
   .about__mark.is-live .spider__bug { cursor: grab; touch-action: none; }
   .about__mark.is-dragging .spider__bug { cursor: grabbing; }
+  .about__mark.is-live .spider__thread:not(.spider__arm) { cursor: pointer; }
+  /* A fast swipe past startles it: it hunches and pulls its legs in */
+  .about__mark.is-startled .spider__leg { scale: 0.7; transition-duration: 0.12s; }
+  .about__mark.is-startled .spider__body { scale: 0.92; transition-duration: 0.12s; }
   .about__mark.is-scuttling .spider__leg {
     animation: spider-scuttle 0.16s ease-in-out infinite alternate;
     animation-delay: calc(var(--i) * -55ms);
@@ -885,7 +921,19 @@
   }
   .js .about__hint { display: block; }
   .js .about__mark.is-live .about__hint { opacity: 1; }
-  .js .about__mark.is-live.is-touched .about__hint { opacity: 0; }
+  .js .about__mark.is-live.is-hint-off .about__hint { opacity: 0; }
+
+  /* Snapping the spider back from far out shakes the web, words included: the tremor runs
+     from the last word (nearest the spider) back to the first; script.js sets --tremor */
+  .about__statement.is-trembling .word {
+    animation: word-tremor 0.55s var(--ease-out) calc((var(--n) - var(--i)) * 12ms);
+  }
+  @keyframes word-tremor {
+    0%, 100% { translate: 0 0; }
+    25% { translate: 0 calc(var(--tremor, 3px) * -1); }
+    55% { translate: 0 calc(var(--tremor, 3px) * 0.5); }
+    80% { translate: 0 calc(var(--tremor, 3px) * -0.2); }
+  }
 
   /* ---------- Our Services: four services hung on a web ---------- */
   /* script.js (initServices) draws the web into .services__silk: 12 spokes, 8 rings, the
@@ -1308,31 +1356,12 @@
     transition-duration: 0.5s;
     transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
   }
-  .work-card__swap {
-    display: grid;
-    flex: 1;
-    gap: 10px;
-    margin-top: 8px;
-  }
   .work-card__text {
+    margin-top: 8px;
     font-size: 14px;
     line-height: 1.55;
     text-wrap: pretty;
   }
-  .work-card__tags {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.6;
-    color: var(--color-subtle);
-  }
-  .work-card__meta {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 22px;
-    font-size: 13px;
-  }
-  .work-card__meta span:last-child { font-weight: 500; color: var(--color-ink); }
 
   @media (min-width: 900px) {
     .card-container { flex-direction: row; }
@@ -1342,23 +1371,11 @@
   /* Focus state: hovered card scales up over its neighbours; siblings shrink, dim and
      drift away from it. Only with a real pointer and room for the three cards in a row. */
   @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
-    /* Tags and description share one grid cell, sized by the taller, so the swap never shifts the layout */
-    .work-card__swap > * {
-      grid-area: 1 / 1;
-      transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-    }
-    .work-card__text {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
     .work-card:is(:hover, :focus-visible) {
       z-index: 2;
       transform: scale(1.15);
       box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2);
     }
-    .work-card:is(:hover, :focus-visible) .work-card__text { opacity: 1; transform: none; }
-    .work-card:is(:hover, :focus-visible) .work-card__tags { opacity: 0; transform: translateY(-6px); }
     .work-card:is(:hover, :focus-visible) .work-card__arrow {
       background: var(--color-ink);
       box-shadow: none;

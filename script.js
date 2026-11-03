@@ -112,8 +112,9 @@ const CUBE_CONFIG = {
   }
 
   /* ---------- Header: tightens up once the page scrolls ---------- */
-  // .is-scrolled also folds the links into the menu button on wide screens (style.css);
-  // --i / --n stagger the links as they go and come back
+  // On wide screens .is-folded tucks the links into the menu button (style.css): scrolling
+  // down folds them away, scrolling back up brings them back on a pill. --i / --n stagger
+  // the links as they go and come back.
   function initHeaderScroll() {
     const header = $('[data-header]') || $('.site-header');
     if (!header) return;
@@ -122,9 +123,19 @@ const CUBE_CONFIG = {
     header.style.setProperty('--n', items.length);
     const darks = $$('[data-dark]'); // sections the ink-coloured brand would vanish against
     let queued = false;
+    let lastY = window.scrollY; // where the scroll last moved far enough to count
+    let folded = lastY > 30;
     const update = () => {
       queued = false;
-      header.classList.toggle('is-scrolled', window.scrollY > 30);
+      const y = window.scrollY;
+      const scrolled = y > 30;
+      header.classList.toggle('is-scrolled', scrolled);
+      // A few pixels of give, so small jitters and momentum bounces don't flick them about
+      if (!scrolled) folded = false;
+      else if (y > lastY + 8) folded = true;
+      else if (y < lastY - 8) folded = false;
+      if (!scrolled || Math.abs(y - lastY) > 8) lastY = y;
+      header.classList.toggle('is-folded', folded);
       const h = header.offsetHeight;
       header.classList.toggle('is-on-dark', darks.some((el) => {
         const r = el.getBoundingClientRect();
@@ -208,12 +219,13 @@ const CUBE_CONFIG = {
     root.addEventListener('focusout', (e) => {
       if (e.relatedTarget && !root.contains(e.relatedTarget)) close();
     });
-    // On wide screens the button folds away when you're back at the top; the menu goes with it
+    // On wide screens the button folds away when the links come back (back at the top, or
+    // on scrolling up); the menu goes with it
     const header = toggle.closest('.site-header');
     const wide = window.matchMedia('(min-width: 1100px)'); // the links bar breakpoint in style.css
     if (header) {
       new MutationObserver(() => {
-        if (wide.matches && !header.classList.contains('is-scrolled')) close();
+        if (wide.matches && !header.classList.contains('is-folded')) close();
       }).observe(header, { attributes: true, attributeFilter: ['class'] });
     }
   }
@@ -316,25 +328,47 @@ const CUBE_CONFIG = {
   }
 
   /* ---------- About: the spider mark you can pull on its web ---------- */
-  // CSS spins the mark in from --p. Once it has landed (--p > .8) the spider leans toward
+  // CSS spins the mark in from --p. Once it has landed (--p > .72) the spider leans toward
   // the pointer, can be dragged (it springs back on release) and hops when tapped. Its
   // back legs are the W's inner threads, so their ends are re-plotted to stay attached.
+  // The W's outer threads bow with the pull and ring when struck: swept across, tapped, or
+  // snapped back by a hard release, which also sends a tremor through the statement.
+  // A fast swipe right past startles it, and left alone it fidgets.
   function initSpiderMark() {
     const root = $('[data-spider]');
     if (!root) return;
     const svg = $('svg', root);
     const bug = $('.spider__bug', root);
     const arms = $$('.spider__arm', root);
+    const legs = $$('.spider__leg', root);
+    const hint = $('.about__hint', root);
     const scrub = root.closest('[data-scrub]');
+    const statement = scrub && $('[data-scrub-words]', scrub);
     const C = { x: 387.5, y: 281 }; // body centre, in viewBox units
+    const nums = (s) => s.match(/-?\d+(?:\.\d+)?/g).map(Number);
     // M x y C x y x y x y C x y x y x y → 14 numbers per arm
-    const base = arms.map((arm) => arm.getAttribute('d').match(/-?\d+(?:\.\d+)?/g).map(Number));
+    const base = arms.map((arm) => nums(arm.getAttribute('d')));
     const REACH = 170; // how far the spider can be pulled before the thread resists
+    // The outer threads are M … C … A L B C …; only the straight run A→B moves, re-plotted
+    // as a curve whose control point sits off its middle along the normal n
+    const threads = $$('.spider__thread:not(.spider__arm)', root).map((el) => {
+      const d = el.getAttribute('d');
+      const [head, tail] = d.split('L');
+      const [ax, ay] = nums(head).slice(-2);
+      const [bx, by] = nums(tail);
+      const len = Math.hypot(bx - ax, by - ay);
+      return { el, d, head, tail, ax, ay, bx, by, len, nx: (ay - by) / len, ny: (bx - ax) / len, a: 0, v: 0, shown: 0 };
+    });
 
     let x = 0, y = 0, vx = 0, vy = 0, angle = 0; // current pose
     let tx = 0, ty = 0;                          // where it wants to be
+    let lean = { x: 0, y: 0 };                   // where watching the pointer puts it
     let frame = 0;
     let drag = null;
+    let hovering = false;
+    let onScreen = !('IntersectionObserver' in window);
+    let startled = 0, calmAt = 0; // flinch timer; no new startle before calmAt
+    let idle = 0, fidgetEnd = 0;  // fidget timers
 
     const live = () => root.classList.contains('is-live');
     const toSvg = (e) => new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
@@ -384,12 +418,159 @@ const CUBE_CONFIG = {
       angle += (ta - angle) * 0.2;
       root.classList.toggle('is-scuttling', Math.hypot(vx, vy) > 0.5);
       render();
+      const ringing = swing();
 
-      const settled = !drag && Math.abs(tx - x) + Math.abs(ty - y) < 0.05 &&
+      const settled = !drag && !ringing && Math.abs(tx - x) + Math.abs(ty - y) < 0.05 &&
         Math.abs(vx) + Math.abs(vy) < 0.05 && Math.abs(ta - angle) < 0.05;
       frame = settled ? 0 : requestAnimationFrame(tick);
     }
     const wake = () => { if (!frame) frame = requestAnimationFrame(tick); };
+
+    // The outer threads bow a little with the pull (rest) and ring around it when struck;
+    // true while any is still moving
+    function swing() {
+      let ringing = false;
+      const damping = reduceMotion.matches ? 0.4 : 0.9;
+      threads.forEach((t) => {
+        const rest = (x * t.nx + y * t.ny) * 0.1;
+        t.v = (t.v + (rest - t.a) * 0.3) * damping;
+        t.a += t.v;
+        if (Math.abs(rest - t.a) + Math.abs(t.v) < 0.05) { t.a = rest; t.v = 0; } else ringing = true;
+        const a = Math.abs(t.a) < 0.05 ? 0 : Math.round(t.a * 10) / 10;
+        if (a === t.shown) return;
+        t.shown = a;
+        // A quadratic's middle sits halfway to its control point, so 2a bows it by a
+        const qx = (t.ax + t.bx) / 2 + t.nx * a * 2;
+        const qy = (t.ay + t.by) / 2 + t.ny * a * 2;
+        t.el.setAttribute('d', a ? `${t.head}Q${qx.toFixed(1)} ${qy.toFixed(1)} ${t.tail}` : t.d);
+      });
+      return ringing;
+    }
+
+    // Strikes thread t at w (0 at A … 1 at B) with a kick along its normal
+    function ring(t, kick, w = 0.5) {
+      if (reduceMotion.matches) return;
+      t.v += kick * Math.sin(Math.PI * Math.min(0.9, Math.max(0.1, w)));
+      wake();
+    }
+    // Plucked by hand: the spider feels it through the web and gives a start
+    function pluck(t, kick, w) {
+      if (reduceMotion.matches) return;
+      ring(t, kick, w);
+      vx += t.nx * kick * 0.15;
+      vy += t.ny * kick * 0.15 + Math.abs(kick) * 0.1;
+      learn('pluck');
+    }
+    // How far point p is off thread t (+ along n), and how far along it (0 at A … 1 at B)
+    const side = (t, p) => (p.x - t.ax) * t.nx + (p.y - t.ay) * t.ny;
+    const along = (t, p) => ((p.x - t.ax) * (t.bx - t.ax) + (p.y - t.ay) * (t.by - t.ay)) / (t.len * t.len);
+
+    // A pointer moving from → to strums any thread it crosses, harder the faster it goes
+    function strum(from, to) {
+      threads.forEach((t) => {
+        const s1 = side(t, from);
+        const s2 = side(t, to);
+        if (s1 * s2 >= 0) return;
+        const u = s1 / (s1 - s2);
+        const w = along(t, { x: from.x + (to.x - from.x) * u, y: from.y + (to.y - from.y) * u });
+        if (w > 0 && w < 1) pluck(t, Math.sign(s2) * Math.min(16, Math.max(4, Math.abs(s2 - s1) * 0.35)), w);
+      });
+    }
+
+    // How close the segment a→b passes to point c
+    function passBy(a, b, c) {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const u = Math.min(1, Math.max(0, ((c.x - a.x) * dx + (c.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+      return Math.hypot(a.x + dx * u - c.x, a.y + dy * u - c.y);
+    }
+
+    // A fast swipe close by makes it duck away and pull its legs in (style.css: .is-startled)
+    function startle(p) {
+      const dx = C.x + x - p.x;
+      const dy = C.y + y - p.y;
+      const d = Math.hypot(dx, dy) || 1;
+      tx = (dx / d) * 32;
+      ty = (dy / d) * 32;
+      root.classList.add('is-startled');
+      clearTimeout(startled);
+      startled = setTimeout(calm, 520);
+      calmAt = performance.now() + 1600;
+      wake();
+    }
+    function calm() {
+      clearTimeout(startled);
+      startled = 0;
+      root.classList.remove('is-startled');
+      if (drag) return;
+      tx = lean.x;
+      ty = lean.y;
+      wake();
+    }
+
+    // A hard snap-back shakes the words too (style.css: .is-trembling); --tremor is how far
+    function tremor(strength) {
+      if (!statement || reduceMotion.matches) return;
+      statement.style.setProperty('--tremor', `${(1.5 + strength * 2.5).toFixed(1)}px`);
+      statement.classList.remove('is-trembling');
+      void statement.offsetWidth; // restart it if it's still going
+      statement.classList.add('is-trembling');
+    }
+
+    // Left alone (on screen, no pointer over the section) it fidgets every few seconds:
+    // waves a front leg, looks about, or tugs on its web
+    function scheduleFidget() {
+      clearTimeout(idle);
+      if (onScreen && !reduceMotion.matches) idle = setTimeout(fidget, 2500 + Math.random() * 3500);
+    }
+    function fidget() {
+      if (live() && !drag && !hovering && !startled && !document.hidden) {
+        const pick = Math.random();
+        const leg = legs[Math.round(Math.random())]; // one of the front pair
+        if (pick < 0.4 && leg && leg.animate) {
+          const s = (parseFloat(leg.style.getPropertyValue('--s')) || 9) * -1.6;
+          leg.animate({ rotate: ['0deg', `${s}deg`, '0deg', `${s}deg`, '0deg'] },
+            { duration: 560, easing: 'ease-in-out' });
+        } else if (pick < 0.75) {
+          tx = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 8);
+          ty = Math.random() * 8 - 5;
+          settleAfter(900 + Math.random() * 700);
+        } else {
+          ty = 14;
+          threads.forEach((t) => ring(t, 3));
+          settleAfter(220);
+        }
+        wake();
+      }
+      scheduleFidget();
+    }
+    function settleAfter(ms) {
+      clearTimeout(fidgetEnd);
+      fidgetEnd = setTimeout(() => {
+        if (drag || hovering) return;
+        tx = ty = 0;
+        wake();
+      }, ms);
+    }
+
+    // The hint teaches one move at a time, then gets out of the way
+    const lessons = { drag: 'Drag the spider' };
+    if (!reduceMotion.matches) lessons.pluck = 'Pluck the web';
+    let hintTimer = 0;
+    function learn(move) {
+      if (!(move in lessons)) return;
+      delete lessons[move];
+      const next = Object.values(lessons)[0];
+      if (!hint || next === hint.textContent) return;
+      root.classList.add('is-hint-off');
+      clearTimeout(hintTimer);
+      if (next) {
+        hintTimer = setTimeout(() => {
+          hint.textContent = next;
+          root.classList.remove('is-hint-off');
+        }, 1400);
+      }
+    }
 
     // Live only once the scroll animation has finished drawing it
     function syncLive() {
@@ -411,33 +592,67 @@ const CUBE_CONFIG = {
     }, { passive: true });
     syncLive();
 
-    // Mouse: it watches the pointer, leaning a little toward it
+    // Mouse: it watches the pointer, leaning a little toward it; sweeping across the W
+    // strums it, and a fast swipe right past the spider startles it
     if (finePointer.matches && scrub) {
+      let last = null; // the previous pointer sample
+      scrub.addEventListener('pointerenter', () => { hovering = true; last = null; });
       scrub.addEventListener('pointermove', (e) => {
-        if (drag || !live() || reduceMotion.matches) return;
+        hovering = true;
+        if (drag || !live() || reduceMotion.matches) { last = null; return; }
         const p = toSvg(e);
+        const now = performance.now();
+        if (last) {
+          strum(last.p, p);
+          const speed = Math.hypot(e.clientX - last.cx, e.clientY - last.cy) / Math.max(4, now - last.t);
+          if (speed > 2 && now > calmAt && passBy(last.p, p, { x: C.x + x, y: C.y + y }) < 130) startle(p);
+        }
+        last = { p, cx: e.clientX, cy: e.clientY, t: now };
         const dx = p.x - C.x;
         const dy = p.y - C.y;
         const d = Math.hypot(dx, dy) || 1;
-        const lean = Math.min(26, d * 0.07);
-        tx = (dx / d) * lean;
-        ty = (dy / d) * lean;
+        const reach = Math.min(26, d * 0.07);
+        lean = { x: (dx / d) * reach, y: (dy / d) * reach };
+        if (!startled) {
+          tx = lean.x;
+          ty = lean.y;
+        }
         wake();
       });
       scrub.addEventListener('pointerleave', () => {
-        if (drag) return;
+        hovering = false;
+        last = null;
+        lean = { x: 0, y: 0 };
+        if (drag || startled) return;
         tx = ty = 0;
         wake();
       });
     }
 
+    // A tap on (or near) one of the W's outer threads plucks it
+    svg.addEventListener('pointerdown', (e) => {
+      if (!live() || e.button > 0 || e.target.closest('.spider__bug')) return;
+      const p = toSvg(e);
+      let hit = null;
+      let gap = 60; // how near a thread counts, in viewBox units
+      threads.forEach((t) => {
+        const off = Math.abs(side(t, p));
+        const w = along(t, p);
+        if (w > 0 && w < 1 && off < gap) { hit = t; gap = off; }
+      });
+      if (hit) pluck(hit, side(hit, p) > 0 ? -12 : 12, along(hit, p));
+    });
+
     bug.addEventListener('pointerdown', (e) => {
       if (!live() || e.button > 0) return;
       e.preventDefault();
       bug.setPointerCapture(e.pointerId);
+      if (startled) calm();
+      clearTimeout(fidgetEnd);
       const p = toSvg(e);
       drag = { id: e.pointerId, gx: p.x - x, gy: p.y - y, sx: p.x, sy: p.y, moved: false };
-      root.classList.add('is-dragging', 'is-touched');
+      root.classList.add('is-dragging');
+      learn('drag');
       wake();
     });
     bug.addEventListener('pointermove', (e) => {
@@ -456,13 +671,30 @@ const CUBE_CONFIG = {
     const release = (e) => {
       if (!drag || e.pointerId !== drag.id) return;
       if (!drag.moved && !reduceMotion.matches) vy -= 16; // a tap makes it hop
+      // Let go from far out, it snaps back: the W twangs and the statement shivers
+      const pulled = Math.hypot(x, y);
+      if (drag.moved && pulled > 60) {
+        threads.forEach((t) => ring(t, -Math.sign(x * t.nx + y * t.ny) * pulled * 0.06));
+        tremor(pulled / REACH);
+      }
       drag = null;
-      tx = ty = 0;
+      tx = lean.x;
+      ty = lean.y;
       root.classList.remove('is-dragging');
       wake();
     };
     bug.addEventListener('pointerup', release);
     bug.addEventListener('pointercancel', release);
+
+    // Fidgets only while it's on screen
+    if (onScreen) scheduleFidget();
+    else {
+      new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        if (onScreen) scheduleFidget();
+        else clearTimeout(idle);
+      }).observe(root);
+    }
   }
 
   /* ---------- Our Services: the spider walks the web to each service ---------- */
@@ -1064,28 +1296,133 @@ const CUBE_CONFIG = {
     frames.forEach((frame) => observer.observe(frame));
   }
 
-  /* ---------- Particle ribbon (hero) ---------- */
-  // Each ribbon is a smooth curve through `path` (fractions of the canvas
-  // width and height), filled with fine strands of dots that drift along it.
-  // `width` is its thickness at the start, middle and end, as a fraction of
-  // the canvas's shorter side; `colors` follow the same three stops.
+  /* ---------- Particle ribbons (hero and the sections below it) ---------- */
+  // Each [data-particles] canvas draws the set of ribbons it names. A ribbon is a smooth
+  // curve through `path` (fractions of its section's width and height), filled with fine
+  // strands of dots that drift along it. `width` is its thickness at the start, middle and
+  // end, as a fraction of the section's shorter side; `colors` follow the same three stops.
+  // `edges` (px) fades a set out toward the top and bottom of its section, so no ribbon stops
+  // on a hard line where two sections meet (the hero's canvas has a CSS mask for that).
+  // `narrow` is an optional path for below 900px, where most sections stack into one column.
+  const GREY = ['#7c8089', '#a3a7ae', '#5f636b'];
+  const PALE = ['#9a9ea6', '#b4b7bd', '#c3c6cb'];
   const RIBBONS = {
-    hero: [
-      {
-        path: [[1.06, -0.04], [0.95, 0.36], [0.84, 0.66], [0.66, 0.9], [0.45, 0.98], [0.22, 0.97], [0.06, 0.86], [-0.06, 0.7]],
-        width: [0.3, 0.12, 0.24],
-        colors: ['#7c8089', '#a3a7ae', '#5f636b'],
-        strands: 60,
-        alpha: 1
-      },
-      {
-        path: [[1.06, 0.18], [0.97, 0.52], [0.86, 0.8], [0.7, 1.04]],
-        width: [0.14, 0.08, 0.05],
-        colors: ['#9a9ea6', '#b4b7bd', '#c3c6cb'],
-        strands: 28,
-        alpha: 0.7
-      }
-    ]
+    hero: {
+      ribbons: [
+        {
+          path: [[1.06, -0.04], [0.95, 0.36], [0.84, 0.66], [0.66, 0.9], [0.45, 0.98], [0.22, 0.97], [0.06, 0.86], [-0.06, 0.7]],
+          width: [0.3, 0.12, 0.24],
+          colors: GREY,
+          strands: 60,
+          alpha: 1
+        },
+        {
+          path: [[1.06, 0.18], [0.97, 0.52], [0.86, 0.8], [0.7, 1.04]],
+          width: [0.14, 0.08, 0.05],
+          colors: PALE,
+          strands: 28,
+          alpha: 0.7
+        }
+      ]
+    },
+    // Under the statement from the left, rising past the spider mark to the right
+    about: {
+      edges: 64,
+      ribbons: [{
+        path: [[-0.06, 0.84], [0.18, 0.89], [0.44, 0.9], [0.66, 0.85], [0.84, 0.76], [1.06, 0.62]],
+        width: [0.1, 0.08, 0.13],
+        colors: GREY,
+        strands: 44,
+        alpha: 0.9
+      }]
+    },
+    // Framing the stage like the hero's: down the right and under the panel, with a thin
+    // one up the left beside the web. The canvas sticks to the screen (.particles-pin)
+    services: {
+      edges: 64,
+      ribbons: [
+        {
+          path: [[1.06, 0.04], [0.97, 0.38], [0.9, 0.7], [0.76, 0.93], [0.56, 1.06]],
+          width: [0.2, 0.1, 0.14],
+          colors: GREY,
+          strands: 48,
+          alpha: 0.9
+        },
+        {
+          path: [[-0.06, 0.3], [0.04, 0.56], [0.08, 0.8], [0.22, 1.06]],
+          width: [0.06, 0.05, 0.08],
+          colors: PALE,
+          strands: 24,
+          alpha: 0.7
+        }
+      ]
+    },
+    // Behind the cards, from the left margin down to the bottom right
+    work: {
+      edges: 64,
+      ribbons: [{
+        path: [[-0.06, 0.3], [0.18, 0.4], [0.46, 0.6], [0.74, 0.78], [1.06, 0.86]],
+        width: [0.14, 0.12, 0.09],
+        colors: GREY,
+        strands: 44,
+        alpha: 0.9
+      }]
+    },
+    // A wave across the drifting rows
+    stack: {
+      edges: 64,
+      ribbons: [{
+        path: [[-0.06, 0.6], [0.2, 0.82], [0.46, 0.7], [0.72, 0.84], [1.06, 0.66]],
+        width: [0.12, 0.16, 0.1],
+        colors: GREY,
+        strands: 40,
+        alpha: 0.85
+      }]
+    },
+    // Behind the cards the other way, from the right margin down to the bottom left
+    pricing: {
+      edges: 64,
+      ribbons: [{
+        path: [[1.06, 0.2], [0.84, 0.36], [0.52, 0.6], [0.22, 0.8], [-0.06, 0.9]],
+        width: [0.12, 0.1, 0.13],
+        colors: GREY,
+        strands: 44,
+        alpha: 0.9
+      }]
+    },
+    // Either side of the form
+    contact: {
+      edges: 64,
+      ribbons: [
+        {
+          path: [[-0.06, 0.16], [0.08, 0.36], [0.13, 0.58], [0.07, 0.8], [-0.06, 0.96]],
+          width: [0.07, 0.1, 0.07],
+          colors: GREY,
+          strands: 36,
+          alpha: 0.85
+        },
+        {
+          path: [[1.06, 0.1], [0.92, 0.3], [0.87, 0.52], [0.93, 0.74], [1.06, 0.9]],
+          width: [0.07, 0.1, 0.07],
+          colors: PALE,
+          strands: 36,
+          alpha: 0.85
+        }
+      ]
+    },
+    // A silk line between the links and the copyright, dropping into the cobweb's corner;
+    // stacked, it comes down the right edge instead, clear of the text
+    footer: {
+      edges: 64,
+      ribbons: [{
+        path: [[-0.06, 0.55], [0.24, 0.53], [0.5, 0.565], [0.74, 0.545], [0.9, 0.64], [1.04, 0.84]],
+        narrow: [[1.06, -0.02], [0.93, 0.22], [0.9, 0.5], [0.93, 0.78], [1.06, 1.0]],
+        width: [0.07, 0.07, 0.1],
+        colors: GREY,
+        strands: 36,
+        alpha: 0.85
+      }]
+    }
   };
 
   function initParticles() {
@@ -1096,10 +1433,11 @@ const CUBE_CONFIG = {
     const SIN = new Float32Array(4096); // lookup table: tens of thousands of dots per frame
     for (let i = 0; i < SIN.length; i++) SIN[i] = Math.sin((i / SIN.length) * Math.PI * 2);
     const SIN_SCALE = SIN.length / (Math.PI * 2);
+    const wide = window.matchMedia('(min-width: 900px)'); // the sections' two-column breakpoint
     const scenes = [];
+    const sceneOf = new Map(); // canvas or section → its scene
     let time = 0;
     let last = 0;
-    let lastDraw = 0;
     let scrollingUntil = 0;
     let frame = 0;
 
@@ -1124,7 +1462,8 @@ const CUBE_CONFIG = {
     }
 
     function buildRibbon(spec, width, height) {
-      const pts = spec.path.map(([x, y]) => [x * width, y * height]);
+      const path = spec.narrow && !wide.matches ? spec.narrow : spec.path;
+      const pts = path.map(([x, y]) => [x * width, y * height]);
       const side = Math.min(width, height);
       const colors = spec.colors.map(rgb);
       const sx = new Float32Array(SAMPLES);
@@ -1179,7 +1518,7 @@ const CUBE_CONFIG = {
     const PUSH = 70;
 
     function draw(scene) {
-      const { buf, width, height } = scene;
+      const { buf, width, height, edges, top, hostHeight } = scene;
       const drift = time * 0.008;
       const { x: px, y: py, power } = scene.pointer;
       const r2 = PUSH_RADIUS * PUSH_RADIUS;
@@ -1212,7 +1551,13 @@ const CUBE_CONFIG = {
               }
             }
             if (x < 0 || y < 0 || x >= width || y >= height) continue;
-            const a = (alpha[k] * fade[j] * 255) | 0;
+            let a = alpha[k] * fade[j];
+            if (edges) {
+              const hy = y + top; // in the section
+              const m = (hy < hostHeight - hy ? hy : hostHeight - hy) / edges;
+              if (m < 1) a *= m;
+            }
+            a = (a * 255) | 0;
             const idx = (y | 0) * width + (x | 0);
             if (a > buf[idx] >>> 24) buf[idx] = (a << 24) | color[j];
           }
@@ -1221,21 +1566,68 @@ const CUBE_CONFIG = {
       scene.ctx.putImageData(scene.image, 0, 0);
     }
 
+    // The canvas covers just its ribbons (and the room the pointer can push them), not the
+    // whole section: one canvas pixel per CSS pixel, so the dots read as fine grain
+    function fit(scene) {
+      const { canvas, host } = scene;
+      const W = host.clientWidth;
+      const H = host.clientHeight;
+      if (!W || !H || (scene.ribbons && W === scene.hostWidth && H === scene.hostHeight)) return;
+      const ribbons = scene.set.ribbons.map((spec) => buildRibbon(spec, W, H));
+      let x0 = W, y0 = H, x1 = 0, y1 = 0;
+      ribbons.forEach(({ sx, sy, half }) => {
+        for (let j = 0; j < SAMPLES; j++) {
+          const r = (half[j] + PUSH) * 1.1;
+          x0 = Math.min(x0, sx[j] - r);
+          x1 = Math.max(x1, sx[j] + r);
+          y0 = Math.min(y0, sy[j] - r);
+          y1 = Math.max(y1, sy[j] + r);
+        }
+      });
+      x0 = Math.max(0, Math.floor(x0));
+      y0 = Math.max(0, Math.floor(y0));
+      x1 = Math.min(W, Math.ceil(x1));
+      y1 = Math.min(H, Math.ceil(y1));
+      if (x1 <= x0 || y1 <= y0) { release(scene); return; }
+      ribbons.forEach(({ sx, sy }) => {
+        for (let j = 0; j < SAMPLES; j++) {
+          sx[j] -= x0;
+          sy[j] -= y0;
+        }
+      });
+      const width = x1 - x0;
+      const height = y1 - y0;
+      Object.assign(canvas.style, { left: `${x0}px`, top: `${y0}px`, width: `${width}px`, height: `${height}px` });
+      canvas.width = width;
+      canvas.height = height;
+      scene.image = scene.ctx.createImageData(width, height);
+      scene.buf = new Uint32Array(scene.image.data.buffer);
+      Object.assign(scene, { ribbons, width, height, top: y0, hostWidth: W, hostHeight: H });
+      draw(scene); // with reduced motion, this static frame is all that's drawn
+    }
+    // Far from the screen, a scene gives its pixels back; fit() makes them again
+    function release(scene) {
+      scene.ribbons = scene.image = scene.buf = null;
+      scene.hostWidth = scene.hostHeight = 0;
+      scene.canvas.width = scene.canvas.height = 0;
+    }
+
     function tick(now) {
       frame = 0;
       const active = scenes.filter((sc) => sc.visible && sc.ribbons);
       if (!active.length || reduceMotion.matches) return;
       frame = requestAnimationFrame(tick);
+      const dt = Math.min(now - (last || now), 100);
+      last = now;
       // Hold still while the page scrolls, so scrolling never competes with drawing
       if (now < scrollingUntil) return;
-      // The drift moves about a pixel per frame at ~15fps, so that's enough at rest;
-      // full rate just after the pointer moves
-      const stirring = active.some((sc) => now - sc.pointer.movedAt < 600);
-      if (now - lastDraw < (stirring ? 15 : 66)) return;
-      time += Math.min(now - (last || now), 100) / 1000;
-      last = now;
-      lastDraw = now;
+      time += dt / 1000;
       active.forEach((sc) => {
+        // The drift moves about a pixel per frame at ~15fps, so that's enough at rest;
+        // full rate just after the pointer moves over it
+        const stirring = now - sc.pointer.movedAt < 600;
+        if (now - sc.drawnAt < (stirring ? 15 : 66)) return;
+        sc.drawnAt = now;
         const p = sc.pointer;
         p.x += (p.tx - p.x) * 0.3;
         p.y += (p.ty - p.y) * 0.3;
@@ -1249,19 +1641,42 @@ const CUBE_CONFIG = {
       frame = requestAnimationFrame(tick);
     }
 
+    // A scene has pixels while its section is within a screen of the viewport, and is
+    // drawn while its canvas is on screen
+    const nearby = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      const scene = sceneOf.get(entry.target);
+      scene.near = entry.isIntersecting;
+      if (!scene.near) { release(scene); return; }
+      fit(scene);
+      start();
+    }), { rootMargin: '100% 0px' });
+    const onScreen = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      const scene = sceneOf.get(entry.target);
+      scene.visible = entry.isIntersecting;
+      if (scene.visible) start();
+    }));
+    const resized = new ResizeObserver((entries) => entries.forEach((entry) => {
+      const scene = sceneOf.get(entry.target);
+      if (scene.near) fit(scene);
+    }));
+
     canvases.forEach((canvas) => {
-      const specs = RIBBONS[canvas.dataset.particles];
+      const set = RIBBONS[canvas.dataset.particles];
       const ctx = canvas.getContext('2d');
-      if (!specs || !ctx) return;
+      if (!set || !ctx) return;
+      const host = canvas.parentElement; // what it's sized to: its section, or a pinned box in it
+      const area = canvas.closest('section, footer') || host; // where the pointer stirs it
       const scene = {
-        ctx, visible: false, width: 0, height: 0, ribbons: null,
+        canvas, host, set, ctx, edges: set.edges || 0, near: false, visible: false, drawnAt: 0,
+        ribbons: null, image: null, buf: null, width: 0, height: 0, top: 0, hostWidth: 0, hostHeight: 0,
         pointer: { x: 0, y: 0, tx: 0, ty: 0, power: 0, inside: false, movedAt: 0 }
       };
       scenes.push(scene);
+      sceneOf.set(canvas, scene);
+      sceneOf.set(host, scene);
 
       // The canvas ignores the pointer, so follow it over the canvas's section instead
-      const host = canvas.parentElement;
-      host.addEventListener('pointermove', (e) => {
+      area.addEventListener('pointermove', (e) => {
         if (e.pointerType === 'touch') return;
         const r = canvas.getBoundingClientRect();
         const p = scene.pointer;
@@ -1275,27 +1690,11 @@ const CUBE_CONFIG = {
         p.movedAt = performance.now();
         start();
       });
-      host.addEventListener('pointerleave', () => { scene.pointer.inside = false; });
+      area.addEventListener('pointerleave', () => { scene.pointer.inside = false; });
 
-      // One canvas pixel per CSS pixel, so the dots read as fine grain
-      new ResizeObserver(() => {
-        const width = Math.round(canvas.clientWidth);
-        const height = Math.round(canvas.clientHeight);
-        if (!width || !height || (width === scene.width && height === scene.height)) return;
-        canvas.width = width;
-        canvas.height = height;
-        scene.width = width;
-        scene.height = height;
-        scene.image = ctx.createImageData(width, height);
-        scene.buf = new Uint32Array(scene.image.data.buffer);
-        scene.ribbons = specs.map((spec) => buildRibbon(spec, width, height));
-        draw(scene); // with reduced motion, this static frame is all that's drawn
-      }).observe(canvas);
-
-      new IntersectionObserver(([entry]) => {
-        scene.visible = entry.isIntersecting;
-        if (scene.visible) start();
-      }).observe(canvas);
+      nearby.observe(host);
+      onScreen.observe(canvas);
+      resized.observe(host);
     });
 
     window.addEventListener('scroll', () => { scrollingUntil = performance.now() + 150; }, { passive: true });
