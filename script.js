@@ -117,8 +117,14 @@ const CUBE_CONFIG = {
     const items = $$('.site-nav__list > li', header);
     items.forEach((li, i) => li.style.setProperty('--i', i));
     header.style.setProperty('--n', items.length);
+    const darks = $$('[data-dark]'); // sections the ink-coloured brand would vanish against
     const update = () => {
       header.classList.toggle('is-scrolled', window.scrollY > 30);
+      const h = header.offsetHeight;
+      header.classList.toggle('is-on-dark', darks.some((el) => {
+        const r = el.getBoundingClientRect();
+        return r.top < h && r.bottom > h / 2;
+      }));
     };
     window.addEventListener('scroll', update, { passive: true });
     update();
@@ -532,10 +538,13 @@ const CUBE_CONFIG = {
     let current = 0;
     let pos = stops[0];
     let walk = 0;
+    let chase = 0;
     let landed = false; // until the spider has dropped onto the web
 
     function walkTo(target, done) {
       cancelAnimationFrame(walk);
+      cancelAnimationFrame(chase);
+      chase = 0;
       let d = target - pos;
       if (d > 0.5) d -= 1;
       if (d <= -0.5) d += 1;
@@ -601,7 +610,50 @@ const CUBE_CONFIG = {
         if (pinned()) panel.inert = j !== i; // stacked panels all stay readable
       });
       rollCount(String(i + 1).padStart(2, '0'));
-      if (landed) walkTo(stops[i]); // before it lands, it simply drops onto the right one
+      // Before it lands, it simply drops onto the right one; pinned, the scroll walks it (scrubTo)
+      if (landed && !pinned()) walkTo(stops[i]);
+    }
+
+    // Pinned, the spider is walked by the scroll itself, so even a short scroll visibly moves
+    // it: it rests on each service for HOLD of the scroll either side, then heads for the
+    // next, and is exactly halfway there when the panel changes. It eases after the point the
+    // scroll sets (aim), laying a thread from the service it left (from).
+    const HOLD = 0.2;
+    const wrap = (d) => d - Math.round(d); // the shorter way round, -0.5…0.5
+    let aim = pos;
+    let from = pos;
+    let heading = 1;
+    function scrubTo(p) {
+      if (!landed || tabs.length < 2) return;
+      cancelAnimationFrame(walk);
+      if (reduceMotion.matches) {
+        pos = stops[current];
+        const [x, y] = ringPoint(pos);
+        place(x, y, facing(pos, 1));
+        return;
+      }
+      const v = Math.min(tabs.length - 1, Math.max(0, p * tabs.length - 0.5));
+      const i = Math.min(tabs.length - 2, Math.floor(v));
+      const k = Math.min(1, Math.max(0, (v - i - HOLD) / (1 - 2 * HOLD)));
+      from = stops[i];
+      aim = from + wrap(stops[i + 1] - from) * k * k * (3 - 2 * k);
+      if (!chase) chase = requestAnimationFrame(follow);
+    }
+    function follow() {
+      const d = wrap(aim - pos);
+      pos += Math.abs(d) < 1e-4 ? d : d * 0.16;
+      if (Math.abs(d) > 1e-5) heading = d < 0 ? -1 : 1;
+      const [x, y] = ringPoint(pos);
+      place(x, y, facing(pos, heading));
+      const len = wrap(pos - from);
+      const on = Math.abs(len) > 0.003;
+      trail.classList.toggle('is-on', on); // off, the last thread fades
+      if (on) {
+        trail.style.strokeDasharray = `${Math.abs(len).toFixed(4)} ${(1 - Math.abs(len)).toFixed(4)}`;
+        trail.style.strokeDashoffset = (-(len > 0 ? from : from + len)).toFixed(4);
+      }
+      spider.classList.toggle('is-walking', Math.abs(d) > 0.0006);
+      chase = Math.abs(d) < 1e-4 ? 0 : requestAnimationFrame(follow);
     }
 
     // Scrolling picks the service. Wide, tall screens pin the section (.is-pinned, style.css)
@@ -621,6 +673,7 @@ const CUBE_CONFIG = {
       if (range <= 0) return;
       const p = Math.min(0.9999, Math.max(0, -r.top / range));
       select(Math.floor(p * tabs.length));
+      scrubTo(p);
     }
     const onScroll = () => {
       if (queued) return;
@@ -701,7 +754,8 @@ const CUBE_CONFIG = {
       const [x, y] = ringPoint(pos);
       place(x, y, facing(pos, 1));
       spider.classList.add('is-ready');
-      if (stops[current] !== at) walkTo(stops[current]); // scrolled on while it was dropping
+      if (pinned()) onScroll(); // the scroll takes over from here
+      else if (stops[current] !== at) walkTo(stops[current]); // scrolled on while it was dropping
     }
     function intro() {
       introduced = true;
@@ -1439,89 +1493,245 @@ const CUBE_CONFIG = {
     });
   }
 
-  /* ---------- Why Choose Us interactive spotlight and telemetry ---------- */
+  /* ---------- Why Choose Us: the web the pointer lights up, and the card demos ---------- */
+  // Draws one big web (viewBox -500…500, hub at 0 0) into both [data-why-web] layers; CSS
+  // shows the first faintly and the second only round the pointer (--mx / --my on the
+  // panel). Cards tilt toward the pointer (--rx / --ry) and light their edge nearest it
+  // (--mouse-x / --mouse-y). Each card's demo starts the first time it comes into view.
   function initWhyChooseUs() {
-    const grid = $('[data-why-grid]');
-    if (!grid) return;
-    const cards = $$('[data-why-card]', grid);
+    const root = $('[data-why]');
+    if (!root) return;
+    const cards = $$('[data-why-card]', root);
+    const f = (n) => n.toFixed(1);
+    const ease = (t) => 1 - (1 - t) ** 3;
+    const onView = (el, fn, threshold) => {
+      if (!el) return;
+      if (!('IntersectionObserver' in window)) { fn(); return; }
+      const seen = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        seen.disconnect();
+        fn();
+      }, { threshold });
+      seen.observe(el);
+    };
 
-    // Dynamic Spotlight following cursor
-    grid.addEventListener('mousemove', (e) => {
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
-      });
+    // The web: 18 spokes, then 9 rings (inner to outer) that dip between the spokes
+    const SPOKES = 18;
+    const at = (r, deg) => [r * Math.cos((deg * Math.PI) / 180), r * Math.sin((deg * Math.PI) / 180)];
+    let web = '';
+    for (let k = 0; k < SPOKES; k++) {
+      const [x1, y1] = at(24, (k * 360) / SPOKES);
+      const [x2, y2] = at(500, (k * 360) / SPOKES);
+      web += `<path pathLength="1" style="--i: ${k % 6}" d="M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}"/>`;
+    }
+    [48, 84, 124, 168, 216, 268, 324, 384, 448].forEach((r, i) => {
+      let d = '';
+      for (let k = 0; k <= SPOKES; k++) {
+        const [x, y] = at(r, (k * 360) / SPOKES);
+        if (!k) { d += `M${f(x)} ${f(y)}`; continue; }
+        const [cx, cy] = at(r * 0.94, ((k - 0.5) * 360) / SPOKES);
+        d += `Q${f(cx)} ${f(cy)} ${f(x)} ${f(y)}`;
+      }
+      web += `<path pathLength="1" style="--i: ${i + 4}" d="${d}"/>`;
     });
+    const webs = $$('[data-why-web]', root);
+    webs.forEach((svg) => { svg.innerHTML = web; });
+    // Threads stay about a pixel wide whatever size the web is drawn at
+    const fit = () => webs.forEach((svg) => svg.style.setProperty('--sw', (1000 / (svg.clientWidth || 1000)).toFixed(3)));
+    fit();
+    window.addEventListener('resize', fit);
 
-    // Card 1: Interactive Bézier Wireframe morph on mouse move
-    const craftStage = $('[data-craft-stage]');
-    if (craftStage) {
-      const curve = $('.craft-curve', craftStage);
-      const fill = $('.craft-curve-fill', craftStage);
-      const node2 = $('.craft-node--2', craftStage);
-      craftStage.addEventListener('mousemove', (e) => {
-        const rect = craftStage.getBoundingClientRect();
-        const px = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-        const py = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-        const cy = Math.round(15 + py * 55);
-        const cx = Math.round(50 + px * 60);
-        if (curve && fill) {
-          const d = `M 10 90 Q ${cx} ${cy} 140 60 T 270 30`;
-          curve.setAttribute('d', d);
-          fill.setAttribute('d', `${d} L 270 120 L 10 120 Z`);
-        }
-        if (node2) {
-          node2.style.setProperty('--nx', `${cx}px`);
-          node2.style.setProperty('--ny', `${cy}px`);
-        }
-      });
-      craftStage.addEventListener('mouseleave', () => {
-        if (curve && fill) {
-          const d = 'M 10 90 Q 70 20 140 60 T 270 30';
-          curve.setAttribute('d', d);
-          fill.setAttribute('d', `${d} L 270 120 L 10 120 Z`);
-        }
-        if (node2) {
-          node2.style.setProperty('--nx', '70px');
-          node2.style.setProperty('--ny', '20px');
-        }
-      });
-    }
-
-    // Card 2: Interactive benchmark telemetry trigger
-    const speedBtn = $('[data-speed-trigger]');
-    const speedVal = $('[data-speed-val]');
-    const ttfbVal = $('[data-ttfb-val]');
-    if (speedBtn && speedVal) {
-      let running = false;
-      speedBtn.addEventListener('click', () => {
-        if (running) return;
-        running = true;
-        speedBtn.classList.add('is-running');
-        speedVal.textContent = '..';
-        if (ttfbVal) ttfbVal.textContent = '...';
-        let count = 20;
-        const timer = setInterval(() => {
-          count += 8;
-          if (count >= 100) {
-            clearInterval(timer);
-            speedVal.textContent = '100';
-            if (ttfbVal) ttfbVal.textContent = '14ms';
-            speedBtn.classList.remove('is-running');
-            speedBtn.classList.add('is-finished');
-            setTimeout(() => {
-              speedBtn.classList.remove('is-finished');
-              running = false;
-            }, 2500);
-          } else {
-            speedVal.textContent = String(count);
+    // The pointer: light, edge glow and tilt, worked out once a frame
+    if (finePointer.matches) {
+      let ev = null;
+      let frame = 0;
+      const track = () => {
+        frame = 0;
+        const r = root.getBoundingClientRect();
+        const mx = ev.clientX - r.left;
+        const my = ev.clientY - r.top;
+        root.style.setProperty('--mx', `${f(mx)}px`);
+        root.style.setProperty('--my', `${f(my)}px`);
+        cards.forEach((card) => {
+          // From the card's untilted box, so the tilt can't feed back into itself
+          const w = card.offsetWidth;
+          const h = card.offsetHeight;
+          let x = mx;
+          let y = my;
+          for (let n = card; n && n !== root; n = n.offsetParent) {
+            x -= n.offsetLeft;
+            y -= n.offsetTop;
           }
-        }, 30);
+          card.style.setProperty('--mouse-x', `${f(x)}px`);
+          card.style.setProperty('--mouse-y', `${f(y)}px`);
+          if (!reduceMotion.matches && x >= 0 && y >= 0 && x <= w && y <= h) {
+            const max = card.classList.contains('why-card--wide') ? 3 : 6; // degrees
+            card.style.setProperty('--rx', `${f((0.5 - y / h) * max * 2)}deg`);
+            card.style.setProperty('--ry', `${f((x / w - 0.5) * max * 2)}deg`);
+          } else {
+            card.style.removeProperty('--rx');
+            card.style.removeProperty('--ry');
+          }
+        });
+      };
+      root.addEventListener('pointermove', (e) => {
+        ev = e;
+        root.classList.add('is-lit');
+        if (!frame) frame = requestAnimationFrame(track);
+      });
+      root.addEventListener('pointerleave', () => {
+        root.classList.remove('is-lit');
+        cards.forEach((card) => {
+          card.style.removeProperty('--rx');
+          card.style.removeProperty('--ry');
+        });
       });
     }
+
+    // Stats count from data-from to the number written in the page
+    const statsList = $('[data-why-stats]', root);
+    const stats = $$('b[data-from]', root);
+    if (stats.length && !reduceMotion.matches) {
+      const runs = stats.map((b) => {
+        const to = parseFloat(b.textContent);
+        const from = parseFloat(b.dataset.from);
+        const dec = parseInt(b.dataset.decimals || '0', 10);
+        const suffix = b.dataset.suffix || '';
+        const show = (v) => { b.textContent = v.toFixed(dec) + suffix; };
+        show(from);
+        return (t) => show(from + (to - from) * ease(t));
+      });
+      onView(statsList, () => {
+        const t0 = performance.now();
+        const step = (now) => {
+          const t = Math.min(1, (now - t0) / 1800);
+          runs.forEach((run) => run(t));
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }, 0.5);
+    }
+
+    // 01 — the pen tool. The middle anchor's two handles mirror each other through it; the
+    // pointer pulls one, and left alone it drifts by itself. Runs only while on screen.
+    const pen = $('[data-why-pen]', root);
+    if (pen) {
+      const svg = $('svg', pen);
+      const curve = $('.pen__curve', pen);
+      const fill = $('.pen__fill', pen);
+      const handle = $('.pen__handle', pen);
+      const knobs = $$('[data-pen-knob]', pen);
+      const cursor = $('[data-pen-cursor]', pen);
+      const code = $('[data-pen-code]', pen);
+      const A = [300, 110];
+      const cur = [220, 60];
+      let goal = null; // where the pointer has the handle; null = drifting
+      let frame = 0;
+
+      const draw = ([hx, hy]) => {
+        const rx = 2 * A[0] - hx;
+        const ry = 2 * A[1] - hy;
+        const d = `M40 170C140 40 ${f(hx)} ${f(hy)} ${A[0]} ${A[1]}S470 210 560 50`;
+        curve.setAttribute('d', d);
+        fill.setAttribute('d', `${d}L560 220L40 220Z`);
+        handle.setAttribute('d', `M${f(hx)} ${f(hy)}L${f(rx)} ${f(ry)}`);
+        knobs[0]?.setAttribute('cx', f(hx));
+        knobs[0]?.setAttribute('cy', f(hy));
+        knobs[1]?.setAttribute('cx', f(rx));
+        knobs[1]?.setAttribute('cy', f(ry));
+        cursor?.setAttribute('transform', `translate(${f(hx + 4)} ${f(hy + 4)})`);
+        if (code) code.textContent = `M40 170 C140 40, ${Math.round(hx)} ${Math.round(hy)}, 300 110`;
+      };
+      const loop = (now) => {
+        const t = now / 1000;
+        const [gx, gy] = goal || [220 + Math.cos(t * 0.8) * 80, 60 + Math.sin(t * 1.25) * 48];
+        cur[0] += (gx - cur[0]) * (goal ? 0.25 : 0.08);
+        cur[1] += (gy - cur[1]) * (goal ? 0.25 : 0.08);
+        draw(cur);
+        frame = requestAnimationFrame(loop);
+      };
+      const start = () => { if (!frame && !reduceMotion.matches) frame = requestAnimationFrame(loop); };
+      const stop = () => { cancelAnimationFrame(frame); frame = 0; };
+      draw(cur);
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => entries.forEach((entry) => {
+          if (entry.isIntersecting) start(); else stop();
+        })).observe(pen);
+      }
+      pen.addEventListener('pointermove', (e) => {
+        const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+        goal = [Math.max(60, Math.min(540, p.x)), Math.max(8, Math.min(212, p.y))];
+        if (reduceMotion.matches) { cur[0] = goal[0]; cur[1] = goal[1]; draw(cur); }
+      });
+      pen.addEventListener('pointerleave', () => { goal = null; });
+    }
+
+    // 02 — the speed gauge: runs once on view, and again from the button. The metrics
+    // improve from data-bad to their real value as the score climbs.
+    const gauge = $('[data-why-gauge]', root);
+    if (gauge) {
+      const ring = $('[data-gauge-ring]', gauge);
+      const score = $('[data-gauge-score]', gauge);
+      const btn = $('[data-gauge-run]', gauge);
+      const label = $('[data-gauge-label]', gauge);
+      const metrics = $$('[data-gauge-metric]', gauge).map((dd) => ({
+        dd,
+        good: parseFloat(dd.dataset.gaugeMetric),
+        bad: parseFloat(dd.dataset.bad),
+        dec: parseInt(dd.dataset.decimals || '0', 10),
+        unit: dd.dataset.unit || ''
+      }));
+      const show = (t) => {
+        ring.style.strokeDashoffset = f(100 - 100 * t);
+        score.textContent = String(Math.round(100 * t));
+        metrics.forEach((m) => { m.dd.textContent = (m.bad + (m.good - m.bad) * t).toFixed(m.dec) + m.unit; });
+      };
+      let running = false;
+      const run = () => {
+        if (running || reduceMotion.matches) return;
+        running = true;
+        btn.disabled = true;
+        btn.classList.remove('is-done');
+        label.textContent = 'Running…';
+        const t0 = performance.now();
+        const step = (now) => {
+          const t = Math.min(1, (now - t0) / 1900);
+          show(ease(t));
+          if (t < 1) { requestAnimationFrame(step); return; }
+          running = false;
+          btn.disabled = false;
+          btn.classList.add('is-done');
+          label.textContent = 'Scored 100 · run again';
+        };
+        requestAnimationFrame(step);
+      };
+      if (!reduceMotion.matches) show(0);
+      btn?.addEventListener('click', run);
+      onView(gauge, run, 0.6);
+    }
+
+    // 03 — the search results: held at the start until in view, then yours climbs to #1;
+    // hovering the card plays it again
+    const serp = $('[data-why-serp]', root);
+    if (serp && !reduceMotion.matches) {
+      let busy = true;
+      serp.classList.add('is-climbing', 'is-held');
+      const you = $('.serp__row--you', serp);
+      you?.addEventListener('animationend', () => { busy = false; });
+      onView(serp, () => serp.classList.remove('is-held'), 0.6);
+      serp.closest('[data-why-card]')?.addEventListener('pointerenter', () => {
+        if (busy) return;
+        busy = true;
+        serp.classList.remove('is-climbing');
+        void serp.offsetWidth; // restart the animations
+        serp.classList.add('is-climbing');
+      });
+    }
+
+    // 04 — the status page's bars, one per day
+    const bars = $('[data-why-bars]', root);
+    if (bars) bars.innerHTML = Array.from({ length: 36 }, (_, i) => `<i style="--i: ${i}"></i>`).join('');
   }
 
   applyConfig();

@@ -479,221 +479,224 @@
     </section>
 
     <!-- ============ WHY CHOOSE US ============ -->
+    <!-- A dark panel that opens out as it scrolls in. initWhyChooseUs() draws a big web into
+         both [data-why-web] layers: the faint one is always there, the lit one only shows
+         around the pointer. Each card tilts toward the pointer and its edge catches the light. -->
     <section class="section why-us" id="why-us" aria-labelledby="why-us-title">
       <div class="container-cube">
-        <header class="section-head reveal">
-          <p class="badge"><span class="badge__dot" aria-hidden="true"></span>Why CobWebZ</p>
-          <h2 id="why-us-title" class="h-section" data-split-words>The standard for modern <span class="accent">web
-              excellence.</span></h2>
-          <p class="section-lead">We don't do shortcuts or generic templates. Every system is purpose-built for speed,
-            security, and measurable business growth.</p>
-        </header>
+        <div class="why-us__panel" data-why data-dark data-reveal>
+          <div class="why-us__web" aria-hidden="true"><svg viewBox="-500 -500 1000 1000" data-why-web></svg></div>
+          <div class="why-us__web why-us__web--lit" aria-hidden="true"><svg viewBox="-500 -500 1000 1000"
+              data-why-web></svg></div>
+          <span class="why-us__glow" aria-hidden="true"></span>
 
-        <div class="why-us__grid reveal" data-stagger data-why-grid>
-          <!-- Card 1: Custom Crafted -->
-          <article class="why-card" data-why-card tabindex="0">
-            <div class="why-card__spotlight" aria-hidden="true"></div>
-            <div class="why-card__inner">
-              <div class="why-card__top">
-                <span class="why-card__index">01</span>
-                <span class="why-card__tag">
-                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M12 2l2 2-9 9-3 1 1-3 9-9z" />
-                  </svg>
-                  Bespoke Code
-                </span>
-              </div>
+          <header class="why-us__head reveal">
+            <div>
+              <p class="why-us__eyebrow"><span class="badge__dot" aria-hidden="true"></span>Why CobWebZ</p>
+              <h2 id="why-us-title" class="why-us__title" data-split-words>The standard for modern <span
+                  class="accent">web excellence.</span></h2>
+            </div>
+            <p class="why-us__lead">We don't do shortcuts or generic templates. Every system is purpose-built for speed,
+              security, and measurable business growth.</p>
+          </header>
 
-              <!-- Interactive Visual: Bézier Vector Canvas -->
-              <div class="why-card__stage why-card__stage--craft" data-craft-stage>
-                <div class="craft-wireframe" aria-hidden="true">
-                  <svg class="craft-svg" viewBox="0 0 280 120" preserveAspectRatio="none">
+          <!-- Numbers count from data-from to their written value when they come into view -->
+          <ul class="why-us__stats reveal" data-why-stats>
+            <li><b data-from="0">100</b><span>Lighthouse target</span></li>
+            <li><b data-from="100" data-suffix="%">0%</b><span>Templates used</span></li>
+            <li><b data-from="90" data-decimals="2" data-suffix="%">99.99%</b><span>Uptime target</span></li>
+            <li><b>24/7</b><span>Monitoring</span></li>
+          </ul>
+
+          <div class="why-us__grid reveal" data-stagger>
+            <!-- 01 Custom Crafted: a pen-tool curve. The pointer pulls the middle handle;
+                 left alone, it moves itself. The path data below the curve updates live. -->
+            <article class="why-card why-card--wide" data-why-card>
+              <span class="why-card__num" aria-hidden="true">01</span>
+              <div class="why-card__inner">
+                <div class="why-card__content">
+                  <span class="why-card__tag">
+                    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 2l2 2-9 9-3 1 1-3 9-9z" />
+                    </svg>
+                    Bespoke Code
+                  </span>
+                  <h3 class="why-card__title">Custom Crafted</h3>
+                  <p class="why-card__text">100% tailored designs and development. No generic themes, no page builders,
+                    no bloat.</p>
+                  <ul class="why-card__pills" aria-label="Highlights">
+                    <li>Handcrafted architecture</li>
+                    <li>Zero bloat</li>
+                  </ul>
+                </div>
+
+                <div class="why-card__stage pen" aria-hidden="true" data-why-pen>
+                  <svg class="pen__svg" viewBox="0 0 600 220">
                     <defs>
-                      <linearGradient id="craft-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#38bdf8" />
-                        <stop offset="50%" stop-color="#818cf8" />
-                        <stop offset="100%" stop-color="#c084fc" />
+                      <linearGradient id="why-pen-stroke" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stop-color="#8fa5c6" />
+                        <stop offset="1" stop-color="#d9a796" />
                       </linearGradient>
-                      <linearGradient id="craft-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="rgba(56, 189, 248, 0.2)" />
-                        <stop offset="100%" stop-color="rgba(192, 132, 252, 0)" />
+                      <linearGradient id="why-pen-fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#8fa5c6" stop-opacity="0.22" />
+                        <stop offset="1" stop-color="#d9a796" stop-opacity="0" />
                       </linearGradient>
                     </defs>
-                    <path class="craft-curve-fill" d="M 10 90 Q 70 20 140 60 T 270 30 L 270 120 L 10 120 Z"
-                      fill="url(#craft-fill)" />
-                    <path class="craft-curve" d="M 10 90 Q 70 20 140 60 T 270 30" fill="none" stroke="url(#craft-grad)"
-                      stroke-width="2.5" stroke-linecap="round" />
+                    <path class="pen__fill" d="" />
+                    <path class="pen__curve" pathLength="1" d="" />
+                    <path class="pen__handle" d="" />
+                    <circle class="pen__knob" r="8" data-pen-knob />
+                    <circle class="pen__knob" r="8" data-pen-knob />
+                    <rect class="pen__anchor" x="32" y="162" width="16" height="16" />
+                    <rect class="pen__anchor pen__anchor--on" x="292" y="102" width="16" height="16" />
+                    <rect class="pen__anchor" x="552" y="42" width="16" height="16" />
+                    <g class="pen__cursor" data-pen-cursor>
+                      <path d="M0 0l8 24 5-10 10-5z" />
+                      <rect x="22" y="22" width="150" height="32" rx="16" />
+                      <text x="97" y="43">0% template</text>
+                    </g>
                   </svg>
-                  <div class="craft-node craft-node--1" style="--nx: 10px; --ny: 90px;"><span>P0</span></div>
-                  <div class="craft-node craft-node--2" style="--nx: 70px; --ny: 20px;"><span>P1</span></div>
-                  <div class="craft-node craft-node--3" style="--nx: 140px; --ny: 60px;"><span>P2</span></div>
-                  <div class="craft-node craft-node--4" style="--nx: 270px; --ny: 30px;"><span>P3</span></div>
-                  <div class="craft-cursor" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
-                      <path d="M1 1l4 12 2.5-4.5L12 6 1 1z" />
+                  <code class="pen__code" data-pen-code>M40 170 C140 40, 220 60, 300 110</code>
+                </div>
+              </div>
+            </article>
+
+            <!-- 02 High Performance: the gauge runs once on view, and again from the button -->
+            <article class="why-card" data-why-card>
+              <span class="why-card__num" aria-hidden="true">02</span>
+              <div class="why-card__inner">
+                <div class="why-card__stage gauge" data-why-gauge>
+                  <div class="gauge__dial" aria-hidden="true">
+                    <svg viewBox="0 0 120 120">
+                      <defs>
+                        <linearGradient id="why-gauge-grad" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0" stop-color="#8fa5c6" />
+                          <stop offset="1" stop-color="#d9a796" />
+                        </linearGradient>
+                      </defs>
+                      <circle class="gauge__track" cx="60" cy="60" r="50" pathLength="100" />
+                      <circle class="gauge__ring" cx="60" cy="60" r="50" pathLength="100" data-gauge-ring />
                     </svg>
-                    <span class="craft-cursor-pill">0% Template</span>
+                    <span class="gauge__score"><b data-gauge-score>100</b><small>/100</small></span>
                   </div>
-                </div>
-                <div class="craft-specs">
-                  <span class="spec-pill">Handcrafted Architecture</span>
-                  <span class="spec-pill">Zero Bloat</span>
-                </div>
-              </div>
-
-              <div class="why-card__content">
-                <h3 class="why-card__title">Custom Crafted</h3>
-                <p class="why-card__text">100% tailored designs and development. No generic themes.</p>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 2: High Performance -->
-          <article class="why-card" data-why-card tabindex="0">
-            <div class="why-card__spotlight" aria-hidden="true"></div>
-            <div class="why-card__inner">
-              <div class="why-card__top">
-                <span class="why-card__index">02</span>
-                <span class="why-card__tag">
-                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M9 1L2 9h6l-1 6 7-8H8l1-6z" />
-                  </svg>
-                  Instant Load
-                </span>
-              </div>
-
-              <!-- Interactive Visual: Supersonic Benchmark Telemetry -->
-              <div class="why-card__stage why-card__stage--speed" data-speed-stage>
-                <div class="speed-telemetry" aria-hidden="true">
-                  <div class="speed-readout">
-                    <div class="speed-dial">
-                      <span class="speed-val" data-speed-val>99</span>
-                      <span class="speed-unit">/100</span>
-                    </div>
-                    <div class="speed-metrics">
-                      <div class="metric-row">
-                        <span class="m-label">TTFB</span>
-                        <span class="m-val" data-ttfb-val>18ms</span>
-                      </div>
-                      <div class="metric-row">
-                        <span class="m-label">FCP</span>
-                        <span class="m-val">0.2s</span>
-                      </div>
-                      <div class="metric-row">
-                        <span class="m-label">CLS</span>
-                        <span class="m-val">0.00</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="speed-bar">
-                    <div class="speed-bar__fill"></div>
-                    <span class="speed-bar__glow"></span>
-                  </div>
-                </div>
-                <button type="button" class="speed-test-btn" data-speed-trigger>
-                  <span class="speed-test-icon">⚡</span>
-                  <span class="speed-test-label">Run Live Benchmark</span>
-                </button>
-              </div>
-
-              <div class="why-card__content">
-                <h3 class="why-card__title">High Performance</h3>
-                <p class="why-card__text">Optimized architecture for instant loading and seamless browsing.</p>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 3: SEO Optimized -->
-          <article class="why-card" data-why-card tabindex="0">
-            <div class="why-card__spotlight" aria-hidden="true"></div>
-            <div class="why-card__inner">
-              <div class="why-card__top">
-                <span class="why-card__index">03</span>
-                <span class="why-card__tag">
-                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="7" cy="7" r="5" />
-                    <path d="M11 11l4 4" />
-                  </svg>
-                  Search Superiority
-                </span>
-              </div>
-
-              <!-- Interactive Visual: SERP & Semantic Crawl Simulator -->
-              <div class="why-card__stage why-card__stage--seo">
-                <div class="seo-serp" aria-hidden="true">
-                  <div class="serp-head">
-                    <span class="serp-badge">#1 Google Rank</span>
-                    <span class="serp-stars">★★★★★ 5.0</span>
-                  </div>
-                  <div class="serp-url">https://cobwebz.agency › showcase</div>
-                  <div class="serp-title">Your Brand — Fastest Modern Experience</div>
-                  <div class="seo-tags">
-                    <span class="seo-chip"><i class="c-dot"></i> JSON-LD Schema</span>
-                    <span class="seo-chip"><i class="c-dot"></i> Semantic HTML5</span>
-                    <span class="seo-chip"><i class="c-dot"></i> OpenGraph v2</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="why-card__content">
-                <h3 class="why-card__title">SEO Optimized</h3>
-                <p class="why-card__text">Built with clean code structures that search engines love.</p>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 4: Secure & Reliable -->
-          <article class="why-card" data-why-card tabindex="0">
-            <div class="why-card__spotlight" aria-hidden="true"></div>
-            <div class="why-card__inner">
-              <div class="why-card__top">
-                <span class="why-card__index">04</span>
-                <span class="why-card__tag">
-                  <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="7" width="10" height="8" rx="1.5" />
-                    <path d="M5 7V4a3 3 0 0 1 6 0v3" />
-                  </svg>
-                  24/7 Defense
-                </span>
-              </div>
-
-              <!-- Interactive Visual: 24/7 Heartbeat Pulse Radar -->
-              <div class="why-card__stage why-card__stage--secure">
-                <div class="uptime-monitor" aria-hidden="true">
-                  <div class="uptime-head">
-                    <div class="uptime-pulse">
-                      <span class="uptime-dot"></span>
-                      <span class="uptime-ring"></span>
-                      <span class="uptime-text">99.99% Guaranteed</span>
-                    </div>
-                    <span class="uptime-badge">SSL · Edge CDN</span>
-                  </div>
-                  <div class="uptime-ecg">
-                    <svg viewBox="0 0 280 44" class="ecg-svg" preserveAspectRatio="none">
-                      <path class="ecg-track"
-                        d="M 0 22 L 70 22 L 80 8 L 90 36 L 100 22 L 180 22 L 190 6 L 200 38 L 210 22 L 280 22" />
-                      <path class="ecg-pulse"
-                        d="M 0 22 L 70 22 L 80 8 L 90 36 L 100 22 L 180 22 L 190 6 L 200 38 L 210 22 L 280 22" />
+                  <dl class="gauge__metrics" aria-hidden="true">
+                    <div><dt>TTFB</dt><dd data-gauge-metric="18" data-bad="640" data-unit="ms">18ms</dd></div>
+                    <div><dt>FCP</dt><dd data-gauge-metric="0.2" data-bad="3.4" data-unit="s" data-decimals="1">0.2s</dd></div>
+                    <div><dt>CLS</dt><dd data-gauge-metric="0" data-bad="0.31" data-decimals="2">0.00</dd></div>
+                  </dl>
+                  <button type="button" class="gauge__btn" data-gauge-run>
+                    <svg viewBox="0 0 16 16" width="11" height="11" fill="currentColor" aria-hidden="true">
+                      <path d="M9 1L2 9h6l-1 6 7-8H8l1-6z" />
                     </svg>
+                    <span data-gauge-label>Run benchmark</span>
+                  </button>
+                </div>
+                <div class="why-card__content">
+                  <span class="why-card__tag">
+                    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M9 1L2 9h6l-1 6 7-8H8l1-6z" />
+                    </svg>
+                    Instant Load
+                  </span>
+                  <h3 class="why-card__title">High Performance</h3>
+                  <p class="why-card__text">Optimized architecture for instant loading and seamless browsing.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 03 SEO Optimized: your result climbs from third to first (replays on hover) -->
+            <article class="why-card" data-why-card>
+              <span class="why-card__num" aria-hidden="true">03</span>
+              <div class="why-card__inner">
+                <div class="why-card__stage serp" aria-hidden="true" data-why-serp>
+                  <div class="serp__search">
+                    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round">
+                      <circle cx="7" cy="7" r="5" />
+                      <path d="M11 11l4 4" />
+                    </svg>
+                    <span class="serp__query">web development studio</span>
                   </div>
-                  <div class="uptime-nodes">
-                    <span class="node-pill"><span class="node-status"></span> Singapore</span>
-                    <span class="node-pill"><span class="node-status"></span> Frankfurt</span>
-                    <span class="node-pill"><span class="node-status"></span> New York</span>
+                  <ol class="serp__list">
+                    <li class="serp__row serp__row--a"><i></i><span><b></b><em></em></span></li>
+                    <li class="serp__row serp__row--b"><i></i><span><b></b><em></em></span></li>
+                    <li class="serp__row serp__row--you">
+                      <i></i>
+                      <span><b>Your Brand</b><em>yourbrand.com</em></span>
+                      <strong class="serp__rank">#1</strong>
+                    </li>
+                  </ol>
+                </div>
+                <div class="why-card__content">
+                  <span class="why-card__tag">
+                    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="7" cy="7" r="5" />
+                      <path d="M11 11l4 4" />
+                    </svg>
+                    Search Superiority
+                  </span>
+                  <h3 class="why-card__title">SEO Optimized</h3>
+                  <p class="why-card__text">Built with clean code structures that search engines love.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 04 Secure & Reliable: a radar sweep and a status page (bars built by script.js) -->
+            <article class="why-card why-card--wide" data-why-card>
+              <span class="why-card__num" aria-hidden="true">04</span>
+              <div class="why-card__inner">
+                <div class="why-card__content">
+                  <span class="why-card__tag">
+                    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="7" width="10" height="8" rx="1.5" />
+                      <path d="M5 7V4a3 3 0 0 1 6 0v3" />
+                    </svg>
+                    24/7 Defense
+                  </span>
+                  <h3 class="why-card__title">Secure &amp; Reliable</h3>
+                  <p class="why-card__text">Modern deployment practices to keep your site online and protected 24/7.</p>
+                  <ul class="why-card__pills" aria-label="Highlights">
+                    <li>SSL / TLS</li>
+                    <li>Edge CDN</li>
+                    <li>Daily backups</li>
+                  </ul>
+                </div>
+
+                <div class="why-card__stage status" aria-hidden="true">
+                  <div class="status__radar">
+                    <span class="status__sweep"></span>
+                    <svg viewBox="0 0 48 48" class="status__shield">
+                      <path d="M24 6 38 12v12c0 9-7 15-14 18-7-3-14-9-14-18V12Z" />
+                      <path d="m18 24 4 4 8-8" />
+                    </svg>
+                    <i class="status__blip" style="--x: 22%; --y: 30%; --d: 0.4s"></i>
+                    <i class="status__blip" style="--x: 74%; --y: 62%; --d: 1.6s"></i>
+                    <i class="status__blip" style="--x: 38%; --y: 78%; --d: 2.5s"></i>
+                  </div>
+                  <div class="status__board">
+                    <p class="status__head"><span class="status__dot"></span>All systems operational
+                      <span class="status__pct">99.99%</span></p>
+                    <div class="status__bars" data-why-bars></div>
+                    <svg viewBox="0 0 280 44" class="status__ecg">
+                      <path class="status__ecg-track" pathLength="100"
+                        d="M0 22H70L80 8 90 36 100 22H180L190 6 200 38 210 22H280" />
+                      <path class="status__ecg-pulse" pathLength="100"
+                        d="M0 22H70L80 8 90 36 100 22H180L190 6 200 38 210 22H280" />
+                    </svg>
+                    <ul class="status__regions">
+                      <li>Singapore</li>
+                      <li>Frankfurt</li>
+                      <li>New York</li>
+                    </ul>
                   </div>
                 </div>
               </div>
-
-              <div class="why-card__content">
-                <h3 class="why-card__title">Secure &amp; Reliable</h3>
-                <p class="why-card__text">Modern deployment practices to keep your site online and protected 24/7.</p>
-              </div>
-            </div>
-          </article>
+            </article>
+          </div>
         </div>
       </div>
     </section>
