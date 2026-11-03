@@ -11,38 +11,18 @@
   <!-- Flag JS + hold scroll until the preloader finishes -->
   <script>document.documentElement.classList.add('js', 'is-loading');</script>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            black: {
-              DEFAULT: '#070708',
-              50: '#1b1b22',
-              100: '#15151a',
-              200: '#111115',
-              300: '#0d0d10',
-              900: '#050506',
-            }
-          },
-          fontFamily: {
-            syne: ['Syne', 'sans-serif'],
-            space: ['Space Grotesk', 'sans-serif'],
-            jakarta: ['Plus Jakarta Sans', 'sans-serif'],
-            italiana: ['Italiana', 'serif'],
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Fonts: linked here rather than @imported from styles.css, so they download alongside it -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=Italiana&display=swap">
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@1.64.0"></script>
-
-  <!-- Custom Styles -->
+  <!-- Custom Styles, then the Tailwind utilities (built ahead of time from tailwind.config.js;
+       they come last, where the Tailwind CDN script used to inject them) -->
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="tailwind.css">
+
+  <!-- Icons: the twelve Lucide icons the page uses -->
+  <script src="vendor/icons.js"></script>
 </head>
 <body class="mode-scroll bg-[#08080a] text-neutral-200 font-space selection:bg-white selection:text-black min-h-screen relative">
 

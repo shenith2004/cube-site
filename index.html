@@ -3,6 +3,11 @@
 
 <head>
   <meta charset="utf-8">
+  <!-- Only this site's own files may load. The inline theme script below is allowed by its
+       sha256 hash: if you change it, Chrome's console prints the new hash to paste here.
+       connect-src lists the two form services script.js can send enquiries to. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xTpUMg0MuPhQ5EP+in6S98erupmmXU1YGA784+uUY90='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://formspree.io; form-action 'self'; base-uri 'self'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CobWebZ — Web Development &amp; Infrastructure</title>
   <meta name="description"
@@ -15,17 +20,11 @@
     content="We build the web and keep it running. Full-stack development, deployment, security and server management.">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <script>
-    document.documentElement.classList.add('js');
-    // Set the theme before the first paint, so dark-mode visitors never see the light page flash
-    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light'; } catch (e) { }
-  </script>
+  <!-- Sets the theme before the first paint, so dark-mode visitors never see the light page
+       flash. Keep it on one line: its hash in the Content-Security-Policy above must match. -->
+  <script>document.documentElement.classList.add('js');try{if(localStorage.getItem('theme')==='dark'){document.documentElement.dataset.theme='dark';document.querySelector('meta[name="theme-color"]').content='#0c0d10'}}catch(e){}</script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..500&display=swap"
-    rel="stylesheet">
-
+  <link rel="preload" href="fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="variables.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -704,55 +703,6 @@
     <!-- ============ CONTACT ============ -->
     <section class="section" id="contact" aria-labelledby="contact-title">
       <div class="container-cube">
-        <!-- Decorative: a fanned stack of project files. --k is each card's distance from the
-             centre card; the cards start stacked there and spread out when revealed. -->
-        <div class="fan reveal" aria-hidden="true">
-          <div class="fan__card" style="--r:-11deg;--y:44px;--k:2">
-            <div class="fan__thumb fan__thumb--folder">
-              <svg viewBox="0 0 64 52">
-                <path d="M4 9a5 5 0 0 1 5-5h13.5l6 6H55a5 5 0 0 1 5 5v28a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" />
-              </svg>
-            </div>
-            <p class="fan__cap"><span class="fan__ico"
-                style="--c:#8fa5c6"></span><span>client-site<small>Folder</small></span></p>
-          </div>
-          <div class="fan__card" style="--r:-5deg;--y:10px;--k:1">
-            <div class="fan__thumb fan__thumb--code">
-              <i style="--w:46%;--c:#5b78a6"></i><i style="--w:72%"></i><i style="--w:58%"></i><i
-                style="--w:30%;--c:#b0664f"></i><i style="--w:66%"></i><i style="--w:40%;--c:#5b78a6"></i><i
-                style="--w:54%"></i>
-            </div>
-            <p class="fan__cap"><span class="fan__ico"
-                style="--c:#5b78a6"></span><span>views.py<small>Python</small></span></p>
-          </div>
-          <div class="fan__card" style="--r:0deg;--y:0px;--k:0">
-            <div class="fan__thumb fan__thumb--term">
-              <i style="--w:38%;--c:#8fa5c6"></i><i style="--w:70%;--c:#9cc3a8"></i><i style="--w:52%"></i><i
-                style="--w:64%"></i><i style="--w:44%;--c:#e6b9a8"></i><i style="--w:58%"></i>
-            </div>
-            <p class="fan__cap"><span class="fan__ico"
-                style="--c:#171717"></span><span>nginx.conf<small>Config</small></span></p>
-          </div>
-          <div class="fan__card" style="--r:5deg;--y:10px;--k:-1">
-            <div class="fan__thumb fan__thumb--chart">
-              <b>1,284</b>
-              <span class="fan__bars"><i style="--h:38%"></i><i style="--h:52%"></i><i style="--h:44%"></i><i
-                  style="--h:60%"></i><i style="--h:48%"></i><i style="--h:66%"></i><i style="--h:56%"></i><i
-                  style="--h:82%"></i></span>
-            </div>
-            <p class="fan__cap"><span class="fan__ico"
-                style="--c:#4f7a61"></span><span>scan-report<small>Security</small></span></p>
-          </div>
-          <div class="fan__card" style="--r:11deg;--y:44px;--k:-2">
-            <div class="fan__thumb fan__thumb--doc">
-              <i style="--w:58%;--c:#171717"></i><i style="--w:86%"></i><i style="--w:78%"></i><i style="--w:82%"></i><i
-                style="--w:50%"></i><i style="--w:72%"></i>
-            </div>
-            <p class="fan__cap"><span class="fan__ico"
-                style="--c:#d9a796"></span><span>proposal.pdf<small>Document</small></span></p>
-          </div>
-        </div>
-
         <header class="section-head reveal">
           <h2 id="contact-title" class="h-section" data-split-words>Start a <span class="accent">project.</span></h2>
           <p class="section-lead">Tell us what you're building and we'll reply with questions or a proposal. No

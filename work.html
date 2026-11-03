@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Only this site's own files may load. The inline theme script below is allowed by its
+       sha256 hash: if you change it, Chrome's console prints the new hash to paste here. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xTpUMg0MuPhQ5EP+in6S98erupmmXU1YGA784+uUY90='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Our Work — CobWebZ</title>
   <meta name="description" content="Live demo sites built by CobWebZ: a product showcase, a wood-fired pizzeria, an online clothing store and a photography collective. Open each one and click around.">
@@ -12,16 +16,11 @@
   <meta property="og:description" content="Live demo sites built by CobWebZ: a product showcase, a restaurant, an online store and a photography collective.">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <script>
-    document.documentElement.classList.add('js');
-    // Set the theme before the first paint, so dark-mode visitors never see the light page flash
-    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light'; } catch (e) {}
-  </script>
+  <!-- Sets the theme before the first paint, so dark-mode visitors never see the light page
+       flash. Keep it on one line: its hash in the Content-Security-Policy above must match. -->
+  <script>document.documentElement.classList.add('js');try{if(localStorage.getItem('theme')==='dark'){document.documentElement.dataset.theme='dark';document.querySelector('meta[name="theme-color"]').content='#0c0d10'}}catch(e){}</script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..500&display=swap" rel="stylesheet">
-
+  <link rel="preload" href="fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="variables.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -109,8 +108,10 @@
     </section>
 
     <!-- ============ PROJECTS ============ -->
-    <!-- To add a site: copy an <article>, point both links at its folder, and put a 1600×900 screenshot in assets/work/.
-         "Start a similar project" opens the enquiry form on the homepage with that plan preselected. -->
+    <!-- To add a site: copy an <article>, point both links at its folder, and put a full-page screenshot
+         760px wide in assets/work/ (name-scroll.webp). Set --frames on the image to its height ÷ 427.5
+         (one 16:9 frame), which paces the hover scroll. "Start a similar project" opens the enquiry
+         form on the homepage with that plan preselected. -->
     <section class="section showcase" aria-label="Projects">
       <div class="container-cube showcase__list">
         <article class="project reveal" aria-labelledby="project-vela">

@@ -52,17 +52,18 @@ const CUBE_CONFIG = {
     if (path === 'contact.email') return `mailto:${value}`;
     if (path === 'contact.phone') return `tel:${value.replace(/[^\d+]/g, '')}`;
     if (path === 'contact.whatsapp') return `https://wa.me/${value.replace(/\D/g, '')}`;
-    return value;
+    return /^https?:\/\//i.test(value) ? value : ''; // social profiles: web addresses only
   }
 
   function applyConfig() {
     $$('[data-config-item]').forEach((item) => {
       const path = item.dataset.configItem;
       const value = getConfig(path).trim();
-      item.hidden = !value;
-      if (!value) return;
+      const href = value && hrefFor(path, value);
+      item.hidden = !href;
+      if (!href) return;
       $$(`[data-config-link="${path}"]`, item).forEach((link) => {
-        link.href = hrefFor(path, value);
+        link.href = href;
         if (!link.textContent.trim()) {
           link.textContent = path === 'contact.whatsapp' ? `+${value.replace(/\D/g, '')}` : value;
         }
@@ -73,7 +74,7 @@ const CUBE_CONFIG = {
     if (contactList) contactList.hidden = !$$('[data-config-item]', contactList).some((li) => !li.hidden);
 
     const social = $('[data-social-block]');
-    if (social) social.hidden = !Object.values(CUBE_CONFIG.social).some((v) => v.trim());
+    if (social) social.hidden = !$$('[data-config-item]', social).some((li) => !li.hidden);
 
     $$('[data-config-text]').forEach((el) => {
       const value = getConfig(el.dataset.configText);
@@ -86,7 +87,9 @@ const CUBE_CONFIG = {
   /* ---------- Active nav link ---------- */
   function initActiveNav() {
     const links = $$('[data-nav]');
-    const sections = $$('main > section[id]');
+    const linked = new Set(links.map((a) => (a.getAttribute('href') || '').split('#')[1]));
+    // Only sections a link points to, so passing one without a link keeps the last one lit
+    const sections = $$('main > section[id]').filter((s) => linked.has(s.id));
     if (!links.length || !sections.length) return;
 
     const setActive = (id) => {
@@ -118,7 +121,9 @@ const CUBE_CONFIG = {
     items.forEach((li, i) => li.style.setProperty('--i', i));
     header.style.setProperty('--n', items.length);
     const darks = $$('[data-dark]'); // sections the ink-coloured brand would vanish against
+    let queued = false;
     const update = () => {
+      queued = false;
       header.classList.toggle('is-scrolled', window.scrollY > 30);
       const h = header.offsetHeight;
       header.classList.toggle('is-on-dark', darks.some((el) => {
@@ -126,37 +131,44 @@ const CUBE_CONFIG = {
         return r.top < h && r.bottom > h / 2;
       }));
     };
-    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('scroll', () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    }, { passive: true });
     update();
   }
 
   /* ---------- Theme toggle (Light / Dark mode) ---------- */
+  // Storage can be blocked (private browsing, strict cookie settings) and then throws; the
+  // toggle still works, the choice just isn't remembered
+  const storage = {
+    get(key) { try { return localStorage.getItem(key); } catch (e) { return null; } },
+    set(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* not remembered */ } }
+  };
+
   function initTheme() {
     const toggle = $('[data-theme-toggle]');
     if (!toggle) return;
     const sunIcon = $('.theme-icon-sun', toggle);
     const moonIcon = $('.theme-icon-moon', toggle);
-
-    const saved = localStorage.getItem('theme');
-    const theme = saved || 'light';
-
     const meta = $('meta[name="theme-color"]');
 
     function apply(t) {
-      document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.dataset.theme = t;
       if (sunIcon && moonIcon) {
         sunIcon.hidden = t === 'dark';
         moonIcon.hidden = t !== 'dark';
       }
       if (meta) meta.setAttribute('content', t === 'dark' ? '#0c0d10' : '#f0f1f3'); // browser UI colour
-      localStorage.setItem('theme', t);
     }
 
-    apply(theme);
+    apply(storage.get('theme') === 'dark' ? 'dark' : 'light');
 
     toggle.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      apply(current);
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      apply(next);
+      storage.set('theme', next);
     });
   }
 
@@ -387,8 +399,16 @@ const CUBE_CONFIG = {
       root.classList.toggle('is-live', on);
       if (!on && !drag) { tx = ty = 0; wake(); }
     }
-    // After initScrollEffects has written this frame's --p
-    window.addEventListener('scroll', () => requestAnimationFrame(syncLive), { passive: true });
+    // Once a frame, after initScrollEffects has written that frame's --p
+    let syncQueued = false;
+    window.addEventListener('scroll', () => {
+      if (syncQueued) return;
+      syncQueued = true;
+      requestAnimationFrame(() => {
+        syncQueued = false;
+        syncLive();
+      });
+    }, { passive: true });
     syncLive();
 
     // Mouse: it watches the pointer, leaning a little toward it
@@ -883,6 +903,14 @@ const CUBE_CONFIG = {
     const fit = () => webs.forEach((host) => host.style.setProperty('--sw', (100 / (host.offsetWidth || 100)).toFixed(3)));
     fit();
     window.addEventListener('resize', fit);
+
+    // The sway and the spider's bob stop while a web is off screen (style.css: .is-offscreen)
+    if ('IntersectionObserver' in window) {
+      const onScreen = new IntersectionObserver((entries) => entries.forEach((entry) => {
+        entry.target.classList.toggle('is-offscreen', !entry.isIntersecting);
+      }));
+      webs.forEach((host) => onScreen.observe(host));
+    }
   }
 
   /* ---------- Tech stack rows: drift, follow the scroll, slow under the pointer ---------- */
@@ -1416,14 +1444,14 @@ const CUBE_CONFIG = {
           res = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ access_key: web3formsKey.trim(), subject, from_name: 'CobWebZ website', replyto: data.email, ...data }),
+            body: JSON.stringify({ ...data, access_key: web3formsKey.trim(), subject, from_name: 'CobWebZ website', replyto: data.email }),
             signal: controller.signal
           });
         } else {
           res = await fetch(formspreeEndpoint.trim(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ _subject: subject, _replyto: data.email, ...data }),
+            body: JSON.stringify({ ...data, _subject: subject, _replyto: data.email }),
             signal: controller.signal
           });
         }
@@ -1541,31 +1569,39 @@ const CUBE_CONFIG = {
     fit();
     window.addEventListener('resize', fit);
 
-    // The pointer: light, edge glow and tilt, worked out once a frame
+    // The pointer: light, edge glow and tilt, worked out once a frame. The cards' untilted
+    // boxes (so the tilt can't feed back into itself) are measured when the pointer comes in
+    // and after a resize; reading them between style writes would force a layout per card.
     if (finePointer.matches) {
       let ev = null;
       let frame = 0;
+      let boxes = null;
+      const measure = () => {
+        boxes = cards.map((card) => {
+          let x = 0;
+          let y = 0;
+          for (let n = card; n && n !== root; n = n.offsetParent) {
+            x += n.offsetLeft;
+            y += n.offsetTop;
+          }
+          const max = card.classList.contains('why-card--wide') ? 3 : 6; // degrees
+          return { card, x, y, w: card.offsetWidth, h: card.offsetHeight, max };
+        });
+      };
       const track = () => {
         frame = 0;
         const r = root.getBoundingClientRect();
+        if (!boxes) measure();
         const mx = ev.clientX - r.left;
         const my = ev.clientY - r.top;
         root.style.setProperty('--mx', `${f(mx)}px`);
         root.style.setProperty('--my', `${f(my)}px`);
-        cards.forEach((card) => {
-          // From the card's untilted box, so the tilt can't feed back into itself
-          const w = card.offsetWidth;
-          const h = card.offsetHeight;
-          let x = mx;
-          let y = my;
-          for (let n = card; n && n !== root; n = n.offsetParent) {
-            x -= n.offsetLeft;
-            y -= n.offsetTop;
-          }
+        boxes.forEach(({ card, x: left, y: top, w, h, max }) => {
+          const x = mx - left;
+          const y = my - top;
           card.style.setProperty('--mouse-x', `${f(x)}px`);
           card.style.setProperty('--mouse-y', `${f(y)}px`);
           if (!reduceMotion.matches && x >= 0 && y >= 0 && x <= w && y <= h) {
-            const max = card.classList.contains('why-card--wide') ? 3 : 6; // degrees
             card.style.setProperty('--rx', `${f((0.5 - y / h) * max * 2)}deg`);
             card.style.setProperty('--ry', `${f((x / w - 0.5) * max * 2)}deg`);
           } else {
@@ -1574,6 +1610,8 @@ const CUBE_CONFIG = {
           }
         });
       };
+      root.addEventListener('pointerenter', () => { boxes = null; });
+      window.addEventListener('resize', () => { boxes = null; });
       root.addEventListener('pointermove', (e) => {
         ev = e;
         root.classList.add('is-lit');
@@ -1732,6 +1770,11 @@ const CUBE_CONFIG = {
     // 04 — the status page's bars, one per day
     const bars = $('[data-why-bars]', root);
     if (bars) bars.innerHTML = Array.from({ length: 36 }, (_, i) => `<i style="--i: ${i}"></i>`).join('');
+
+    // Its looping animations (radar, heartbeat, status lights) rest while it's off screen
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => root.classList.toggle('is-offscreen', !entry.isIntersecting)).observe(root);
+    }
   }
 
   applyConfig();

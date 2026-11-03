@@ -1,0 +1,2 @@
+# Installed only to rebuild the demos' Tailwind CSS (see hoodie/src/*.css)
+node_modules/
