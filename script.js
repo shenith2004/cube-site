@@ -158,29 +158,34 @@ const CUBE_CONFIG = {
     set(key, value) { try { localStorage.setItem(key, value); } catch (e) { /* not remembered */ } }
   };
 
+  // Two toggles: the sun/moon button in the header, and the switch in the menu that stands
+  // in for it on phones
   function initTheme() {
-    const toggle = $('[data-theme-toggle]');
-    if (!toggle) return;
-    const sunIcon = $('.theme-icon-sun', toggle);
-    const moonIcon = $('.theme-icon-moon', toggle);
+    const toggles = $$('[data-theme-toggle]');
+    if (!toggles.length) return;
     const meta = $('meta[name="theme-color"]');
 
     function apply(t) {
       document.documentElement.dataset.theme = t;
-      if (sunIcon && moonIcon) {
-        sunIcon.hidden = t === 'dark';
-        moonIcon.hidden = t !== 'dark';
-      }
+      toggles.forEach((toggle) => {
+        const sunIcon = $('.theme-icon-sun', toggle);
+        const moonIcon = $('.theme-icon-moon', toggle);
+        if (sunIcon && moonIcon) {
+          sunIcon.hidden = t === 'dark';
+          moonIcon.hidden = t !== 'dark';
+        }
+        if (toggle.getAttribute('role') === 'switch') toggle.setAttribute('aria-checked', String(t === 'dark'));
+      });
       if (meta) meta.setAttribute('content', t === 'dark' ? '#0c0d10' : '#f0f1f3'); // browser UI colour
     }
 
     apply(storage.get('theme') === 'dark' ? 'dark' : 'light');
 
-    toggle.addEventListener('click', () => {
+    toggles.forEach((toggle) => toggle.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       apply(next);
       storage.set('theme', next);
-    });
+    }));
   }
 
   /* ---------- Menu (dropdown under the Menu pill) ---------- */

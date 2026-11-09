@@ -435,6 +435,70 @@
     background: var(--color-ink);
   }
 
+  /* Phones: the header keeps only the menu button, and the theme toggle and the CTA move
+     to the foot of the menu (.menu__extras, hidden on wider screens) */
+  .menu__extras { display: none; }
+  @media (max-width: 640px) {
+    .site-header__actions > .theme-btn,
+    .site-header__actions > .site-header__cta-btn { display: none; }
+    .menu__extras {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--color-line);
+    }
+  }
+  .menu__theme {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--color-ink);
+    text-align: left;
+    transition: background-color 0.2s var(--ease-out);
+  }
+  .menu__theme:hover { background: var(--color-canvas); }
+  .menu__switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 34px;
+    height: 20px;
+    border-radius: var(--radius-pill);
+    background: var(--color-line-strong);
+    transition: background-color 0.25s var(--ease-out);
+  }
+  .menu__switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-surface);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: transform 0.25s var(--ease-out);
+  }
+  .menu__theme[aria-checked="true"] .menu__switch { background: var(--color-ink); }
+  .menu__theme[aria-checked="true"] .menu__switch::after { transform: translateX(14px); }
+  /* Same look as the header's pill CTA; :hover listed so the panel's link hover doesn't win */
+  .menu__panel .menu__cta,
+  .menu__panel .menu__cta:hover {
+    gap: 10px;
+    height: 44px;
+    padding: 0 6px 0 18px;
+    border-radius: var(--radius-pill);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    font-size: 14px;
+  }
+  .menu__cta:hover .site-header__cta-arrow { transform: translate(1px, -1px); }
+
   /* Pill CTA Button ("Explore Now" with white circular ↗ arrow) */
   .site-header__cta-btn {
     display: inline-flex;
@@ -482,21 +546,6 @@
   }
   .site-header__cta-btn:hover .site-header__cta-arrow {
     transform: translate(1px, -1px);
-  }
-  @media (max-width: 480px) {
-    .site-header__cta-btn {
-      padding: 0 4px 0 12px;
-      font-size: 12.5px;
-      height: 36px;
-      gap: 6px;
-    }
-    .site-header__cta-arrow {
-      width: 24px;
-      height: 24px;
-    }
-    .site-header__brand-name {
-      display: none;
-    }
   }
 
   /* ---------- Small elements ---------- */
@@ -726,7 +775,6 @@
   }
   /* Above the hero content, or its box would cover the spider's hover area at laptop widths */
   .cobweb[data-cobweb="spider"] { z-index: 1; }
-  .cobweb--tl { top: 0; left: 0; }
   .cobweb--tr { top: 0; right: 0; width: clamp(100px, 12vw, 190px); }
   .cobweb--br { bottom: 0; right: 0; }
   .cobweb__web {

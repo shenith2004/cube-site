@@ -73,6 +73,22 @@
               <li><a href="#pricing" data-nav>Pricing</a></li>
               <li><a href="#contact" data-nav>Contact</a></li>
             </ul>
+            <!-- On phones the header keeps only the menu button; these stand in for the two beside it -->
+            <div class="menu__extras">
+              <button type="button" class="menu__theme" role="switch" aria-checked="false" data-theme-toggle>
+                <span>Dark mode</span>
+                <span class="menu__switch" aria-hidden="true"></span>
+              </button>
+              <a href="work.html" class="menu__cta">
+                <span>Explore More</span>
+                <span class="site-header__cta-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4.5 11.5L11.5 4.5M11.5 4.5H6.5M11.5 4.5V9.5" />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </nav>
         </div>
 
@@ -122,7 +138,6 @@
           deploy it on containers and the edge, and keep your servers patched, monitored and secure.</p>
         <div class="hero__actions" data-hero-step>
           <a href="#contact" class="btn btn--primary btn--lg" data-magnetic>Start a Project</a>
-          <a href="#stack" class="hero__note">Explore the stack <span aria-hidden="true">→</span></a>
         </div>
       </div>
 
@@ -496,7 +511,7 @@
           <!-- Numbers count from data-from to their written value when they come into view -->
           <ul class="why-us__stats reveal" data-why-stats>
             <li><b data-from="0">100</b><span>Lighthouse target</span></li>
-            <li><b data-from="100" data-suffix="%">0%</b><span>Templates used</span></li>
+            <li><b data-from="5" data-decimals="1" data-suffix="s">0.8s</b><span>Load time target</span></li>
             <li><b data-from="90" data-decimals="2" data-suffix="%">99.99%</b><span>Uptime target</span></li>
             <li><b>24/7</b><span>Monitoring</span></li>
           </ul>
@@ -547,7 +562,7 @@
                     <g class="pen__cursor" data-pen-cursor>
                       <path d="M0 0l8 24 5-10 10-5z" />
                       <rect x="22" y="22" width="150" height="32" rx="16" />
-                      <text x="97" y="43">0% template</text>
+                      <text x="97" y="43">Hand-drawn</text>
                     </g>
                   </svg>
                   <code class="pen__code" data-pen-code>M40 170 C140 40, 220 60, 300 110</code>
