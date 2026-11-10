@@ -1679,6 +1679,211 @@
   }
   .price.is-selected { box-shadow: 0 0 0 2px var(--color-ink), var(--shadow-card); }
 
+  /* Optional Enhancements: same width, cards and gaps as .price-grid, one column on phones */
+  .addons {
+    max-width: 1120px;
+    margin: clamp(64px, 8vw, 104px) auto 0;
+  }
+  .addons__head {
+    max-width: 520px;
+    margin: 0 auto clamp(28px, 4vw, 44px);
+    text-align: center;
+  }
+  .addons__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-subtle);
+  }
+  .addons__title {
+    margin-top: 10px;
+    font-size: clamp(26px, 2.8vw, 34px);
+    line-height: 1.12;
+  }
+  .addons__lead {
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+  .addons__grid {
+    display: grid;
+    gap: 16px;
+  }
+  @media (min-width: 900px) {
+    .addons__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  }
+  /* The cards follow each other in, in the order data-stagger numbers them */
+  .addons__grid > .reveal { --delay: calc(var(--i, 0) * 90ms); }
+  .addons__group { padding: 32px; }
+  .addons__name {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+  .addons__list { margin-top: 20px; }
+  .addons__list li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-block: 14px;
+    border-top: 1px solid var(--color-line);
+  }
+  .addons__list li:last-child { padding-bottom: 0; }
+  .addons__item {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+  .addons__price {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-body);
+  }
+  @media (max-width: 479px) {
+    .addons__group { padding: 28px 24px; }
+  }
+
+  /* script.js wraps each add-on in a label with a tick box: box on the left, text beside it */
+  .addon {
+    position: relative;
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 4px;
+    cursor: pointer;
+  }
+  .addon__check {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .addon__box {
+    position: relative;
+    grid-row: 1 / 3;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border: 1px solid var(--color-line-strong);
+    border-radius: 6px;
+    background: var(--color-surface);
+    transition: background-color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+  }
+  /* The tick is a mask filled with the on-ink colour, so it flips with the theme */
+  .addon__box::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: var(--color-on-ink);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    opacity: 0;
+    scale: 0.6;
+    transition: opacity 0.2s var(--ease-out), scale 0.2s var(--ease-out);
+  }
+  .addon:hover .addon__box { border-color: var(--color-ink); }
+  .addon__check:checked + .addon__box { background: var(--color-ink); border-color: var(--color-ink); }
+  .addon__check:checked + .addon__box::before { opacity: 1; scale: 1; }
+  .addon__check:focus-visible + .addon__box { outline: 2px solid var(--color-dusty-blue-deep); outline-offset: 2px; }
+  .addon__check:checked ~ .addons__price { color: var(--color-ink); }
+
+  /* Quantity add-ons (data-addon-qty): the tick box and text, with a − n + picker beside them */
+  .addons__list li.has-qty { flex-direction: row; align-items: center; gap: 12px; }
+  .has-qty .addon { flex: 1 1 auto; min-width: 0; }
+  .qty {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    padding: 2px;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+  }
+  .qty__btn {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    font: inherit;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease-out);
+  }
+  .qty__btn:hover { background: var(--color-surface-soft); }
+  .qty__input {
+    width: 32px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    color: var(--color-ink);
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .qty__input::-webkit-outer-spin-button,
+  .qty__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .qty__btn:focus-visible,
+  .qty__input:focus-visible { outline: 2px solid var(--color-dusty-blue-deep); outline-offset: 1px; border-radius: 8px; }
+  .qty__btn:focus-visible { border-radius: 50%; }
+
+  /* Running estimate: pinned to the bottom of the screen while the add-ons are in view,
+     then it settles under them */
+  .estimate {
+    position: sticky;
+    bottom: 16px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px 24px;
+    margin-top: 20px;
+    padding: 18px 24px;
+    box-shadow: 0 0 0 1px var(--color-line), var(--shadow-card);
+  }
+  .estimate[hidden] { display: none; }
+  .estimate__body { flex: 1 1 260px; min-width: 0; }
+  .estimate__figure {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 10px;
+    margin-top: 6px;
+    font-size: 13px;
+  }
+  .estimate__figure b {
+    font-size: clamp(24px, 2.6vw, 30px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .estimate__plan { margin-top: 4px; font-size: 13px; }
+  @media (max-width: 639px) {
+    .estimate { bottom: 10px; padding: 16px 18px; }
+    .estimate__btn { flex: 1 1 100%; }
+  }
+
   .fine-print {
     margin-top: 32px;
     font-size: 13px;
@@ -1691,6 +1896,11 @@
      the pointer (--mx / --my). Each card tilts toward the pointer (--rx / --ry) and its edge
      lights up nearest it (--mouse-x / --mouse-y). */
   .why-us { padding-block: clamp(56px, 7vw, 112px); }
+  /* Wider than the other sections: up to 1440px, with slimmer side margins */
+  .why-us > .container-cube { width: min(1440px, 100% - 16px); }
+  @media (min-width: 640px) {
+    .why-us > .container-cube { width: min(1440px, 100% - 40px); }
+  }
   .why-us__panel {
     --w-bg: #0b0c0f;
     --w-fg: #f4f5f7;
@@ -2443,7 +2653,8 @@
     .field--full { grid-column: 1 / -1; }
   }
   .field { display: flex; flex-direction: column; gap: 8px; }
-  .field label {
+  .field label,
+  .field__label {
     display: flex;
     gap: 4px;
     font-size: 14px;
@@ -2500,7 +2711,46 @@
   .field__hint { font-size: 13px; }
   .field__error { display: none; font-size: 13px; color: var(--color-danger); }
   .field__error:not(:empty) { display: block; }
-  .field.is-flash select { animation: flash 1.2s var(--ease-out); }
+  .field.is-flash select,
+  .field.is-flash .estimate-box { animation: flash 1.2s var(--ease-out); }
+
+  /* The estimate carried over from Pricing: one row per item, total underneath */
+  .field[data-estimate-field][hidden] { display: none; }
+  .estimate-box {
+    padding: 14px 16px;
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    font-size: 14px;
+  }
+  .estimate-box__lines { display: grid; gap: 8px; }
+  .estimate-box__lines li,
+  .estimate-box__total {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 16px;
+    line-height: 1.5;
+  }
+  .estimate-box__lines li > :first-child { color: var(--color-ink); }
+  .estimate-box__lines li > :last-child {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .estimate-box__total {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink);
+  }
+  .estimate-box__total b { font-weight: 500; font-variant-numeric: tabular-nums; }
+  .estimate-box__edit {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-strong);
+    text-underline-offset: 3px;
+  }
   @keyframes flash {
     0%, 30% { border-color: var(--color-dusty-blue-deep); box-shadow: 0 0 0 4px rgba(143, 165, 198, 0.35); }
     100% { border-color: var(--color-line); box-shadow: 0 0 0 0 rgba(143, 165, 198, 0); }

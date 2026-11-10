@@ -46,7 +46,6 @@
           <li><a href="#about" class="site-nav__link" data-nav>About</a></li>
           <li><a href="#services" class="site-nav__link" data-nav>Services</a></li>
           <li><a href="#work" class="site-nav__link" data-nav>Products</a></li>
-          <li><a href="#stack" class="site-nav__link" data-nav>Technology</a></li>
           <li><a href="#pricing" class="site-nav__link" data-nav>Pricing</a></li>
           <li><a href="#contact" class="site-nav__link" data-nav>Contact</a></li>
         </ul>
@@ -69,7 +68,6 @@
               <li><a href="#about" data-nav>About</a></li>
               <li><a href="#services" data-nav>Services</a></li>
               <li><a href="#work" data-nav>Products</a></li>
-              <li><a href="#stack" data-nav>Technology</a></li>
               <li><a href="#pricing" data-nav>Pricing</a></li>
               <li><a href="#contact" data-nav>Contact</a></li>
             </ul>
@@ -436,33 +434,36 @@
           <article class="card price reveal" data-package="Static Deployments">
             <h3 class="price__name">Static Deployments</h3>
             <p class="price__desc">Fast, secure frontends for sites that don't need a server.</p>
-            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">45,000+</span>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">40,000+</span>
             </p>
             <p class="price__note">One-time, starting at</p>
             <ul class="price__list">
+              <li>Up to 5 standard pages (Home, About, Services, Gallery, Contact)</li>
               <li>Responsive frontend in HTML, CSS &amp; JavaScript</li>
-              <li>Custom domain with SSL</li>
-              <li>Basic hosting on Cloudflare Pages</li>
-              <li>Contact form &amp; basic SEO</li>
+              <li>Free-tier hosting on Cloudflare or GitHub Pages</li>
+              <li>Custom domain connection &amp; SSL configuration</li>
+              <li>Functional contact form forwarding to email</li>
+              <li>Basic SEO setup (meta titles, descriptions, alt tags)</li>
             </ul>
-            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Static Deployments">Get
+            <a href="#addons" class="btn btn--light btn--lg btn--block" data-select-package="Static Deployments">Get
               Started</a>
           </article>
 
           <article class="card price reveal" data-package="Dynamic Applications">
             <h3 class="price__name">Dynamic Applications</h3>
             <p class="price__desc">Full-stack apps with a database, user accounts and an API.</p>
-            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">120,000+</span>
+            <p class="price__price"><span class="price__currency">LKR</span> <span class="price__amount">100,000+</span>
             </p>
             <p class="price__note">One-time, starting at</p>
             <ul class="price__list">
-              <li>Backend in Python/Django or PHP</li>
-              <li>MySQL database design &amp; migrations</li>
-              <li>Backend routing &amp; REST APIs</li>
-              <li>Authentication &amp; admin dashboard</li>
-              <li>Docker-based staging &amp; production</li>
+              <li>Backend in Python/Django or PHP with MySQL database</li>
+              <li>5 to 7 dynamic core layout templates</li>
+              <li>Secure user authentication &amp; password management</li>
+              <li>Admin dashboard for internal content management</li>
+              <li>Docker-based staging &amp; production deployments</li>
+              <li>Built-in security against SQL injection &amp; CSRF</li>
             </ul>
-            <a href="#contact" class="btn btn--primary btn--lg btn--block"
+            <a href="#addons" class="btn btn--primary btn--lg btn--block"
               data-select-package="Dynamic Applications">Get Started</a>
           </article>
 
@@ -477,10 +478,106 @@
               <li>Monitoring, backups &amp; patch management</li>
               <li>Priority support</li>
             </ul>
-            <a href="#contact" class="btn btn--light btn--lg btn--block" data-select-package="Enterprise Retainer">Get
+            <a href="#addons" class="btn btn--light btn--lg btn--block" data-select-package="Enterprise Retainer">Get
               Started</a>
           </article>
         </div>
+
+        <!-- Optional Enhancements: add-ons quoted on top of any package. Each group is a card;
+             each item is a name with its price underneath. script.js turns every item into a
+             tick box and reads the name and price straight from this text (a price ending in
+             "/ mo" counts as monthly), so edit them here and the estimate follows. An item with
+             data-addon-qty gets a number picker instead (price × quantity, up to data-addon-max).
+             No data-package here, so these stay out of the enquiry form's plan dropdown. -->
+        <div class="addons" id="addons" aria-labelledby="addons-title">
+          <header class="addons__head reveal">
+            <p class="addons__eyebrow">Add-ons</p>
+            <h3 id="addons-title" class="addons__title">Optional Enhancements</h3>
+            <p class="addons__lead" data-addons-lead>Bolt any of these onto a package. They're added to the same
+              written quote.</p>
+          </header>
+
+          <div class="addons__grid" data-stagger>
+            <section class="card addons__group reveal" aria-labelledby="addons-visual">
+              <h4 id="addons-visual" class="addons__name">Interactive &amp; Visual</h4>
+              <ul class="addons__list">
+                <li data-addon-qty data-addon-max="20">
+                  <span class="addons__item">Additional Pages</span>
+                  <span class="addons__price">LKR 5,000 / page</span>
+                </li>
+                <li>
+                  <span class="addons__item">Interactive 3D Models</span>
+                  <span class="addons__price">Starting at LKR 15,000</span>
+                </li>
+                <li>
+                  <span class="addons__item">Advanced Scroll Animations (GSAP)</span>
+                  <span class="addons__price">Starting at LKR 10,000</span>
+                </li>
+                <li>
+                  <span class="addons__item">High-Fidelity UI/UX Prototyping </span>
+                  <span class="addons__price">Starting at LKR 20,000</span>
+                </li>
+                <li>
+                  <span class="addons__item">System-Synced Dark Mode Toggle</span>
+                  <span class="addons__price">LKR 8,000</span>
+                </li>
+              </ul>
+            </section>
+
+            <section class="card addons__group reveal" aria-labelledby="addons-function">
+              <h4 id="addons-function" class="addons__name">Functionality &amp; Integrations</h4>
+              <ul class="addons__list">
+                <li>
+                  <span class="addons__item">Payment Gateway Setup </span>
+                  <span class="addons__price">Starting at LKR 25,000</span>
+                </li>
+                <li>
+                  <span class="addons__item">Multilingual Support </span>
+                  <span class="addons__price">Starting at LKR 20,000</span>
+                </li>
+                <li>
+                  <span class="addons__item">Third-Party API Hooks (CRM, WhatsApp)</span>
+                  <span class="addons__price">Starting at LKR 10,000</span>
+                </li>
+                <li>
+                  <span class="addons__item">Legacy Data Migration</span>
+                  <span class="addons__price">Starting at LKR 15,000</span>
+                </li>
+              </ul>
+            </section>
+
+            <section class="card addons__group reveal" aria-labelledby="addons-retainers">
+              <h4 id="addons-retainers" class="addons__name">Monthly Retainers &amp; Marketing</h4>
+              <ul class="addons__list">
+                <li>
+                  <span class="addons__item">Advanced Technical SEO &amp; Analytics Dashboard</span>
+                  <span class="addons__price">Starting at LKR 10,000 · one-time</span>
+                </li>
+                <li>
+                  <span class="addons__item">Basic Maintenance Plan (Updates, Backups, Uptime)</span>
+                  <span class="addons__price">LKR 5,000 / mo</span>
+                </li>
+                <li>
+                  <span class="addons__item">Content Management Retainer (4 updates/posts)</span>
+                  <span class="addons__price">LKR 5,000 / mo</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <!-- Running estimate for the chosen plan plus the ticked add-ons. script.js shows and
+               fills it; it stays pinned to the bottom of the screen while the add-ons scroll past. -->
+          <div class="card estimate" data-estimate hidden>
+            <div class="estimate__body" aria-live="polite">
+              <p class="addons__eyebrow">Your estimate</p>
+              <p class="estimate__figure"><b data-estimate-total>—</b> <span data-estimate-note></span></p>
+              <p class="estimate__plan" data-estimate-plan></p>
+            </div>
+            <a href="#contact" class="btn btn--primary estimate__btn" data-estimate-add>Add to enquiry <span
+                aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
         <p class="fine-print reveal">Prices in Sri Lankan rupees. Domain, hosting and third-party fees are billed by
           their providers.</p>
       </div>
@@ -728,26 +825,8 @@
               <p class="field__error" id="f-name-err"></p>
             </div>
             <div class="field">
-              <label for="f-email">Email <span aria-hidden="true">*</span></label>
-              <input id="f-email" name="email" type="email" autocomplete="email" required maxlength="150"
-                aria-describedby="f-email-err">
-              <p class="field__error" id="f-email-err"></p>
-            </div>
-            <div class="field">
               <label for="f-business">Company <span class="field__opt">Optional</span></label>
               <input id="f-business" name="business" type="text" autocomplete="organization" maxlength="120">
-            </div>
-            <div class="field">
-              <label for="f-type">Service <span aria-hidden="true">*</span></label>
-              <select id="f-type" name="project_type" required aria-describedby="f-type-err">
-                <option value="">Select a service</option>
-                <option>Full-stack development</option>
-                <option>Infrastructure &amp; deployment</option>
-                <option>Security &amp; vulnerability scanning</option>
-                <option>Server management</option>
-                <option>Not sure yet</option>
-              </select>
-              <p class="field__error" id="f-type-err"></p>
             </div>
             <div class="field">
               <label for="f-package">Plan <span class="field__opt">Optional</span></label>
@@ -766,14 +845,22 @@
                 <option>200,000+</option>
               </select>
             </div>
+            <!-- The plan above plus the add-ons ticked under Pricing, filled in by script.js
+                 and sent with the enquiry. Hidden until a plan or add-on is chosen. -->
+            <div class="field field--full" data-estimate-field hidden>
+              <p class="field__label" id="f-estimate-label">Your estimate</p>
+              <div class="estimate-box" role="group" aria-labelledby="f-estimate-label">
+                <ul class="estimate-box__lines" data-estimate-lines></ul>
+                <p class="estimate-box__total"><span>Estimated total</span> <b data-estimate-sum></b></p>
+              </div>
+              <p class="field__hint">A starting estimate, not a quote. <a href="#addons" class="estimate-box__edit">Change
+                  add-ons</a></p>
+            </div>
             <div class="field field--full">
-              <label for="f-message">Project description <span aria-hidden="true">*</span></label>
-              <textarea id="f-message" name="message" rows="5" required minlength="20" maxlength="3000"
-                aria-describedby="f-message-hint f-message-err"
+              <label for="f-message">Project description <span class="field__opt">Optional</span></label>
+              <textarea id="f-message" name="message" rows="5" maxlength="3000" aria-describedby="f-message-hint"
                 placeholder="What are you building, what should it do, and do you have a deadline?"></textarea>
-              <p class="field__hint" id="f-message-hint"><span data-char-count>0</span> / 3000 · minimum 20 characters
-              </p>
-              <p class="field__error" id="f-message-err"></p>
+              <p class="field__hint" id="f-message-hint"><span data-char-count>0</span> / 3000</p>
             </div>
             <!-- Spam trap: real visitors never see or fill this -->
             <div class="hp" aria-hidden="true">
@@ -821,20 +908,8 @@
             <li><a href="#overview">Overview</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#work">Our Work</a></li>
-            <li><a href="#stack">Tech Stack</a></li>
             <li><a href="#pricing">Pricing</a></li>
             <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h2 class="footer__h">Services</h2>
-          <ul>
-            <li><a href="#contact" data-select-type="Full-stack development">Full-Stack Development</a></li>
-            <li><a href="#contact" data-select-type="Infrastructure &amp; deployment">Infrastructure &amp;
-                Deployment</a></li>
-            <li><a href="#contact" data-select-type="Security &amp; vulnerability scanning">Security &amp; Scanning</a>
-            </li>
-            <li><a href="#contact" data-select-type="Server management">Server Management</a></li>
           </ul>
         </div>
         <!-- Shown only when a social URL is set in script.js -->
