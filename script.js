@@ -1956,12 +1956,14 @@ const CUBE_CONFIG = {
     const submitLabel = $('[data-submit-label]', form);
     const message = $('#f-message', form);
     const counter = $('[data-char-count]', form);
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     const waNumber = CUBE_CONFIG.contact.whatsapp.replace(/\D/g, '');
     const defaultLabel = waNumber ? 'Send on WhatsApp' : 'Send enquiry';
     submitLabel.textContent = defaultLabel;
 
     const rules = {
-      name: (v) => (v.trim().length < 2 ? 'Please enter your name.' : '')
+      name: (v) => (v.trim().length < 2 ? 'Please enter your name.' : ''),
+      email: (v) => (!v.trim() ? 'Please enter your email address.' : !EMAIL_RE.test(v.trim()) ? 'Please enter a valid email address, e.g. name@example.com.' : '')
     };
 
     function validateField(field) {
@@ -2026,6 +2028,7 @@ const CUBE_CONFIG = {
     function summary(data) {
       return [
         `Name: ${data.name}`,
+        `Email: ${data.email}`,
         `Business: ${data.business || '—'}`,
         `Plan: ${data.package || 'Not sure yet'}`,
         ...(data.addons ? ['Add-ons:', ...data.addons.split('\n').map((line) => `• ${line}`)] : []),
@@ -2045,14 +2048,14 @@ const CUBE_CONFIG = {
           res = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ ...data, access_key: web3formsKey.trim(), subject, from_name: 'CobWebZ website' }),
+            body: JSON.stringify({ ...data, access_key: web3formsKey.trim(), subject, from_name: 'CobWebZ website', replyto: data.email }),
             signal: controller.signal
           });
         } else {
           res = await fetch(formspreeEndpoint.trim(), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ ...data, _subject: subject }),
+            body: JSON.stringify({ ...data, _subject: subject, _replyto: data.email }),
             signal: controller.signal
           });
         }
@@ -2130,7 +2133,7 @@ const CUBE_CONFIG = {
       try {
         await send(data);
         showStatus('success', `Thanks, ${data.name.split(' ')[0]} — your enquiry has been sent.`,
-          `We'll be in touch as soon as possible.`);
+          `We'll reply to ${data.email} as soon as possible.`);
         resetForm();
       } catch (err) {
         console.error('[CobWebZ] Enquiry failed:', err);
