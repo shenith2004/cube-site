@@ -12,7 +12,7 @@ const CUBE_CONFIG = {
   contact: {
     email: '',       // e.g. 'hello@yourdomain.com'
     phone: '',       // e.g. '+94 77 123 4567'
-    whatsapp: ''     // international format, digits only, e.g. '94771234567'
+    whatsapp: '94719070320' // 071 907 0320, international format, digits only. Enquiries go here.
   },
 
   social: {
@@ -22,8 +22,9 @@ const CUBE_CONFIG = {
     github: ''
   },
 
-  /* Enquiry delivery. The site is static, so a form service is required to
-     actually receive enquiries. Configure ONE of these:
+  /* Enquiry delivery. With contact.whatsapp set, the form opens WhatsApp with the
+     enquiry, plan, add-ons and estimate written out, ready for the visitor to send.
+     Clear contact.whatsapp to use a form service instead. Configure ONE of these:
        - web3formsKey: free access key from https://web3forms.com
        - formspreeEndpoint: e.g. 'https://formspree.io/f/abcdwxyz'
      With neither set, the form falls back to opening the visitor's email app
@@ -1706,10 +1707,9 @@ const CUBE_CONFIG = {
     reduceMotion.addEventListener('change', start);
   }
 
-  /* ---------- Enquiry selections (plan / service) ---------- */
+  /* ---------- Enquiry selections (plan) ---------- */
   const form = $('[data-enquiry-form]');
   const packageSelect = $('[data-package-select]');
-  const typeSelect = $('#f-type');
 
   function buildFormOptions() {
     $$('[data-package]').forEach((card) => {
@@ -1739,24 +1739,213 @@ const CUBE_CONFIG = {
     $$('[data-package]').forEach((c) => c.classList.toggle('is-selected', c.dataset.package === packageSelect.value));
   }
 
+  /* ---------- Add-ons and the running estimate ---------- */
+  // Plan and add-on prices are read from the text on the page, so the HTML stays the only
+  // place to edit them. The plan lives in the form's plan dropdown; the add-ons are tick
+  // boxes added to each Optional Enhancements item. An item marked data-addon-qty (e.g.
+  // Additional Pages) also gets a − / + number picker; its tick box follows the count.
+  const flatText = (el) => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '');
+  const lkr = (text) => {
+    const m = text.match(/\d[\d,]*/);
+    return m ? Number(m[0].replace(/,/g, '')) : null;
+  };
+  const fmtLKR = (n) => `LKR ${n.toLocaleString('en-US')}`;
+  let addons = [];
+
+  // How many of an add-on: the picker's value (0…max) for quantity items, otherwise 1
+  const qtyOf = (a) => (a.qty ? Math.max(0, Math.min(a.max, parseInt(a.qty.value, 10) || 0)) : 1);
+
+  function setQty(a, n) {
+    a.qty.value = String(Math.max(0, Math.min(a.max, n)));
+    a.input.checked = qtyOf(a) > 0;
+  }
+
+  function addQuantity(li, a) {
+    const button = (text, label, step) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'qty__btn';
+      b.textContent = text;
+      b.setAttribute('aria-label', label);
+      b.addEventListener('click', () => { setQty(a, qtyOf(a) + step); updateEstimate(); });
+      return b;
+    };
+    a.qty = document.createElement('input');
+    Object.assign(a.qty, { type: 'number', className: 'qty__input', min: '0', max: String(a.max), step: '1', value: '0' });
+    a.qty.inputMode = 'numeric';
+    a.qty.setAttribute('aria-label', `${a.name}, how many`);
+    // While typing, follow the number; on leaving the field, tidy it into range
+    a.qty.addEventListener('input', () => { a.input.checked = qtyOf(a) > 0; updateEstimate(); });
+    a.qty.addEventListener('change', () => { setQty(a, qtyOf(a)); updateEstimate(); });
+
+    const picker = document.createElement('div');
+    picker.className = 'qty';
+    picker.append(button('−', `One fewer: ${a.name}`, -1), a.qty, button('+', `One more: ${a.name}`, 1));
+    li.classList.add('has-qty');
+    li.append(picker);
+  }
+
+  function initAddons() {
+    addons = $$('.addons__list li').map((li) => {
+      const name = flatText($('.addons__item', li));
+      const priceText = flatText($('.addons__price', li));
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.className = 'addon__check';
+      input.value = name;
+      const box = document.createElement('span');
+      box.className = 'addon__box';
+      box.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('label');
+      label.className = 'addon';
+      label.append(input, box, ...li.childNodes);
+      li.append(label);
+      const a = {
+        name,
+        priceText,
+        price: lkr(priceText) || 0,
+        monthly: /\/\s*mo\b/i.test(priceText),
+        from: /starting|from|\+/i.test(priceText),
+        input,
+        qty: null,
+        max: Number(li.dataset.addonMax) || 20
+      };
+      if (li.hasAttribute('data-addon-qty')) addQuantity(li, a);
+      input.addEventListener('change', () => {
+        // Ticking a quantity item starts it at 1; unticking sets it back to 0
+        if (a.qty) setQty(a, input.checked ? Math.max(1, qtyOf(a)) : 0);
+        updateEstimate();
+      });
+      return a;
+    });
+
+    const panel = $('[data-estimate]');
+    if (panel) panel.hidden = false;
+    // "Add to enquiry" scrolls to the form (its own href) and points out the estimate there
+    $('[data-estimate-add]')?.addEventListener('click', () => {
+      const field = $('[data-estimate-field]');
+      if (!field || field.hidden) return;
+      field.classList.remove('is-flash');
+      void field.offsetWidth;
+      field.classList.add('is-flash');
+      setTimeout(() => field.classList.remove('is-flash'), 1300);
+    });
+    updateEstimate();
+  }
+
+  function getEstimate() {
+    const card = $$('[data-package]').find((c) => c.dataset.package === packageSelect.value) || null;
+    const planText = card ? flatText($('.price__price', card)) : '';
+    const planPrice = card ? lkr(planText) : null;
+    const picked = addons.filter((a) => a.input.checked);
+    const sum = (list) => list.reduce((total, a) => total + a.price * qtyOf(a), 0);
+    return {
+      plan: card ? card.dataset.package : '',
+      planText,                                // e.g. "LKR 40,000+" or "Custom"
+      custom: Boolean(card) && planPrice === null,
+      picked,
+      once: (planPrice || 0) + sum(picked.filter((a) => !a.monthly)),
+      monthly: sum(picked.filter((a) => a.monthly)),
+      from: planText.includes('+') || picked.some((a) => a.from) // starting prices, so the total is too
+    };
+  }
+
+  // [name, price] for one ticked add-on, e.g. ["Additional Pages × 3", "LKR 15,000"]
+  function addonLine(a) {
+    if (!a.qty) return [a.name, a.priceText];
+    const n = qtyOf(a);
+    return [`${a.name} × ${n}`, fmtLKR(a.price * n)];
+  }
+
+  // One line for the form and the message, e.g. "LKR 55,000+ one-time + LKR 5,000 / mo"
+  function estimateText(e) {
+    const parts = [];
+    if (e.custom) parts.push('Custom retainer (quoted after a discovery call)');
+    if (e.once) parts.push(`${fmtLKR(e.once)}${e.from ? '+' : ''} one-time`);
+    if (e.monthly) parts.push(`${fmtLKR(e.monthly)} / mo`);
+    return parts.join(' + ');
+  }
+
+  function updateEstimate() {
+    if (!packageSelect) return;
+    const e = getEstimate();
+    const count = e.picked.length;
+    const addonCount = `${count} add-on${count === 1 ? '' : 's'}`;
+    const plus = e.from ? '+' : '';
+
+    // Pricing: the add-ons intro and the pinned estimate panel
+    const lead = $('[data-addons-lead]');
+    if (lead) {
+      lead.textContent = e.plan
+        ? `Extras for your ${e.plan} plan. Tick any to add them to your estimate.`
+        : 'Pick a plan above, then tick any extras to build an estimate.';
+    }
+
+    let total = '—';
+    let note = '';
+    if (e.custom) {
+      total = e.once ? `Custom + ${fmtLKR(e.once)}${plus}` : 'Custom';
+      note = 'retainer quoted after a call';
+    } else if (e.once) {
+      total = `${fmtLKR(e.once)}${plus}`;
+      note = 'one-time';
+    } else if (e.monthly) {
+      total = fmtLKR(e.monthly);
+      note = 'per month';
+    }
+    if (e.monthly && (e.custom || e.once)) note += ` · plus ${fmtLKR(e.monthly)} / mo`;
+
+    const totalEl = $('[data-estimate-total]');
+    if (totalEl) totalEl.textContent = total;
+    const noteEl = $('[data-estimate-note]');
+    if (noteEl) noteEl.textContent = note;
+    const planEl = $('[data-estimate-plan]');
+    if (planEl) {
+      planEl.textContent = e.plan
+        ? `${e.plan} · ${count ? addonCount : 'no add-ons yet'}`
+        : count ? `No plan chosen yet · ${addonCount}` : 'Choose a plan above to start.';
+    }
+
+    // Enquiry form: the itemised estimate
+    const field = $('[data-estimate-field]');
+    if (!field) return;
+    field.hidden = !e.plan && !count;
+    const lines = $('[data-estimate-lines]', field);
+    lines.replaceChildren(...[
+      ...(e.plan ? [[`${e.plan} plan`, e.planText]] : []),
+      ...e.picked.map(addonLine)
+    ].map(([name, price]) => {
+      const li = document.createElement('li');
+      const n = document.createElement('span');
+      const p = document.createElement('span');
+      n.textContent = name;
+      p.textContent = price;
+      li.append(n, p);
+      return li;
+    }));
+    $('[data-estimate-sum]', field).textContent = estimateText(e) || '—';
+  }
+
   function initSelections() {
     if (!form) return;
     buildFormOptions();
+    initAddons();
 
     document.addEventListener('click', (e) => {
-      const trigger = e.target.closest('[data-select-package], [data-select-type]');
+      const trigger = e.target.closest('[data-select-package]');
       if (!trigger) return;
-      if (trigger.dataset.selectPackage) setSelect(packageSelect, trigger.dataset.selectPackage);
-      if (trigger.dataset.selectType) setSelect(typeSelect, trigger.dataset.selectType);
-      // The link's own href (#contact) handles scrolling
+      setSelect(packageSelect, trigger.dataset.selectPackage);
+      // The link's own href handles scrolling (#addons, so the add-ons come next)
     });
 
-    packageSelect.addEventListener('change', syncSelectedCards);
+    packageSelect.addEventListener('change', () => {
+      syncSelectedCards();
+      updateEstimate();
+    });
 
     // Support deep links, e.g. ?package=Dynamic%20Applications#contact
     const params = new URLSearchParams(window.location.search);
     if (params.get('package')) setSelect(packageSelect, params.get('package'));
-    if (params.get('type')) setSelect(typeSelect, params.get('type'));
   }
 
   /* ---------- Enquiry form: validation + submission ---------- */
@@ -1768,12 +1957,13 @@ const CUBE_CONFIG = {
     const message = $('#f-message', form);
     const counter = $('[data-char-count]', form);
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const waNumber = CUBE_CONFIG.contact.whatsapp.replace(/\D/g, '');
+    const defaultLabel = waNumber ? 'Send on WhatsApp' : 'Send enquiry';
+    submitLabel.textContent = defaultLabel;
 
     const rules = {
       name: (v) => (v.trim().length < 2 ? 'Please enter your name.' : ''),
-      email: (v) => (!v.trim() ? 'Please enter your email address.' : !EMAIL_RE.test(v.trim()) ? 'Please enter a valid email address, e.g. name@example.com.' : ''),
-      project_type: (v) => (!v ? 'Please choose a service.' : ''),
-      message: (v) => (v.trim().length < 20 ? `Please describe your project in at least 20 characters (${v.trim().length} so far).` : '')
+      email: (v) => (!v.trim() ? 'Please enter your email address.' : !EMAIL_RE.test(v.trim()) ? 'Please enter a valid email address, e.g. name@example.com.' : '')
     };
 
     function validateField(field) {
@@ -1819,9 +2009,19 @@ const CUBE_CONFIG = {
       return [`${prefix} `, link, '.'];
     }
 
+    // The plan's price, the ticked add-ons and the estimate travel with the form fields
     function collect() {
       const data = Object.fromEntries(new FormData(form).entries());
       delete data.botcheck;
+      const est = getEstimate();
+      if (est.plan) data.package = `${est.plan} — ${est.planText}`;
+      if (est.picked.length) {
+        data.addons = est.picked.map((a) => {
+          const [name, price] = addonLine(a);
+          return a.qty ? `${name} — ${price} (${a.priceText})` : `${name} — ${price}`;
+        }).join('\n');
+      }
+      if (est.plan || est.picked.length) data.estimate = estimateText(est);
       return data;
     }
 
@@ -1830,11 +2030,11 @@ const CUBE_CONFIG = {
         `Name: ${data.name}`,
         `Email: ${data.email}`,
         `Business: ${data.business || '—'}`,
-        `Service: ${data.project_type}`,
         `Plan: ${data.package || 'Not sure yet'}`,
+        ...(data.addons ? ['Add-ons:', ...data.addons.split('\n').map((line) => `• ${line}`)] : []),
+        ...(data.estimate ? [`Estimate: ${data.estimate}`] : []),
         `Budget (LKR): ${data.budget || 'Prefer not to say'}`,
-        '',
-        data.message
+        ...(data.message.trim() ? ['', data.message.trim()] : [])
       ].join('\n');
     }
 
@@ -1868,8 +2068,13 @@ const CUBE_CONFIG = {
 
     function resetForm() {
       form.reset();
+      addons.forEach((a) => {
+        a.input.checked = false;
+        if (a.qty) setQty(a, 0);
+      });
       updateCount();
       syncSelectedCards();
+      updateEstimate();
       $$('[aria-invalid]', form).forEach((f) => f.removeAttribute('aria-invalid'));
     }
 
@@ -1889,6 +2094,22 @@ const CUBE_CONFIG = {
 
       const data = collect();
       const { web3formsKey, formspreeEndpoint } = CUBE_CONFIG.form;
+
+      // WhatsApp: open a chat with the enquiry written out. Nothing is sent until the visitor
+      // presses Send there, so the form keeps its contents in case they need to try again.
+      if (waNumber) {
+        const text = `*${CUBE_CONFIG.form.subject}*\n\n${summary(data)}`;
+        const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank', 'noopener');
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'Open WhatsApp';
+        showStatus('info', 'WhatsApp should now open with your enquiry filled in.',
+          ['It has not been sent yet — press Send in WhatsApp to deliver it. Nothing opened? ', link, '.']);
+        return;
+      }
 
       if (!web3formsKey.trim() && !formspreeEndpoint.trim()) {
         const email = CUBE_CONFIG.contact.email.trim();
@@ -1920,7 +2141,7 @@ const CUBE_CONFIG = {
           emailFallbackNodes('Please try again in a moment, or email us directly at'));
       } finally {
         submitBtn.disabled = false;
-        submitLabel.textContent = 'Send enquiry';
+        submitLabel.textContent = defaultLabel;
       }
     });
   }
